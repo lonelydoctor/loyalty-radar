@@ -1,0 +1,7 @@
+locale: en
+timezone: UTC
+region: global
+source_packs: [core, industry, forums-global]
+translation:
+  provider: google-public
+  model: ""

@@ -1,0 +1,46 @@
+{
+  "name": "loyalty-radar",
+  "version": "0.1.0",
+  "description": "Source-backed loyalty intelligence for points, miles, travel cards, and loyalty ecosystems.",
+  "author": {
+    "name": "lonelydoctor",
+    "url": "https://github.com/lonelydoctor"
+  },
+  "homepage": "https://lonelydoctor.github.io/loyalty-radar/",
+  "repository": "https://github.com/lonelydoctor/loyalty-radar",
+  "license": "MIT",
+  "keywords": [
+    "loyalty",
+    "frequent-flyer",
+    "points-and-miles",
+    "travel-cards",
+    "agent-skills"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Loyalty Radar",
+    "shortDescription": "Rank loyalty offers, risks, and ecosystem signals",
+    "longDescription": "Scan public loyalty sources, cluster repeated evidence, and produce personalized reports for airline, hotel, card, and rental-car programs.",
+    "developerName": "lonelydoctor",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://lonelydoctor.github.io/loyalty-radar/",
+    "defaultPrompt": [
+      "Run my two-week loyalty intelligence report.",
+      "生成过去两周的常旅客情报报告。",
+      "Show only high-priority card and loyalty risks."
+    ],
+    "brandColor": "#2458A6",
+    "composerIcon": "./assets/icon-128.png",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo.png",
+    "screenshots": [
+      "./assets/screenshot-overview.png",
+      "./assets/screenshot-desktop-zh-CN.png",
+      "./assets/screenshot-mobile-en.png"
+    ]
+  }
+}

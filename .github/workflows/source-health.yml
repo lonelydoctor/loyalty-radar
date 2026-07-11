@@ -1,0 +1,61 @@
+name: Weekly source health
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Maximum number of public sources to probe (1-25)
+        required: false
+        default: "15"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-source-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    name: Limited public-source probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SOURCE_LIMIT: ${{ github.event.inputs.limit || '15' }}
+    steps:
+      - name: Check out repository without write credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked runtime
+        run: uv sync --frozen --no-editable
+
+      - name: Probe a bounded source sample
+        run: >-
+          uv run --frozen python .github/scripts/live_source_health.py
+          --limit "${SOURCE_LIMIT}"
+          --output "${RUNNER_TEMP}/source-health.json"
+          --summary "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload health metadata only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-health-${{ github.run_id }}
+          path: ${{ runner.temp }}/source-health.json
+          if-no-files-found: error
+          retention-days: 14

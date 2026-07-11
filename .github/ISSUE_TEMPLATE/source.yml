@@ -1,0 +1,91 @@
+name: Source request or contribution
+description: Propose a public loyalty source or a change to a Source Pack.
+title: "[Source]: "
+labels:
+  - source
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Sources must be publicly accessible without login, private cookies, CAPTCHA bypass, or anti-bot circumvention. A request is not a promise that the source can be included.
+
+  - type: input
+    id: name
+    attributes:
+      label: Source name
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Public URL or feed URL
+      placeholder: https://example.com/feed/
+    validations:
+      required: true
+
+  - type: dropdown
+    id: vertical
+    attributes:
+      label: Primary vertical
+      options:
+        - Airline
+        - Hotel
+        - Credit card or transferable points
+        - Rental car
+        - Cross-vertical loyalty industry
+    validations:
+      required: true
+
+  - type: input
+    id: market
+    attributes:
+      label: Region and language
+      placeholder: Japan, Japanese
+    validations:
+      required: true
+
+  - type: dropdown
+    id: access
+    attributes:
+      label: Public access method
+      options:
+        - RSS or Atom
+        - Public HTML
+        - Public forum HTML
+        - Browser-assisted only
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: Why this source adds unique signal
+      description: Explain the events or datapoints it catches that existing sources miss.
+    validations:
+      required: true
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Public examples
+      description: Link to 1-3 representative public items. Do not paste article bodies.
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Access, rate-limit, or reuse constraints
+      description: Note robots guidance, published API/feed limits, Cloudflare, or known instability.
+
+  - type: checkboxes
+    id: compliance
+    attributes:
+      label: Source checklist
+      options:
+        - label: The source can be inspected without an account or private cookie.
+          required: true
+        - label: This proposal does not require CAPTCHA or anti-bot bypass.
+          required: true
+        - label: I understand reports link to sources and do not republish full article bodies.
+          required: true

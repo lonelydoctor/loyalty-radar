@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish release assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked release environment
+        run: uv sync --frozen --no-editable --extra dev
+
+      - name: Validate tag and distribution contract
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          uv run --frozen python .github/scripts/validate_distribution.py --expected-version "${VERSION}"
+
+      - name: Run fixture-only release tests
+        env:
+          LOYALTY_RADAR_TEST_MODE: fixture
+        run: uv run --frozen pytest -m "not live and not screenshot" --strict-markers
+
+      - name: Build Python distributions
+        run: uv build
+
+      - name: Build Plugin ZIP, Skill ZIP, and checksums
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          uv run --frozen python .github/scripts/package_release.py --version "${VERSION}" --dist dist
+
+      - name: Upload immutable release bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: loyalty-radar-${{ github.ref_name }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" dist/* --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" dist/* \
+              --verify-tag \
+              --generate-notes \
+              --title "Loyalty Radar ${GITHUB_REF_NAME}"
+          fi

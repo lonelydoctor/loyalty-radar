@@ -1,0 +1,232 @@
+meta:
+  title: 忠诚计划情报雷达
+  subtitle: 过去两周的会员行动与全球忠诚计划生态信号
+  generated: 生成时间 {value}
+  window: 过去 {days} 天
+  future: 未来 {days} 天观察
+  unverified: 仅汇总公开来源，不做官网确认
+  schema: 报告数据规范 {value}
+navigation:
+  report: 完整报告
+  overview: 信息图概览
+  markdown: 文字报告
+  json: 审计数据
+  language: 语言
+languages:
+  en: English
+  zh-CN: 简体中文
+metrics:
+  events: 入选事件
+  sources_ok: 健康来源
+  sources_limited: 受限或失败
+  urgent: P0/P1 事件
+sections:
+  must_read: 今日必看
+  c_end: C端玩法雷达
+  risk: Bug、权益追回与风控
+  ecosystem: 忠诚计划生态雷达
+  watch: 后续观察
+  timeline: 未来 60 天
+  health: 来源健康检查
+  evidence: 证据
+  methodology: 方法说明
+filters:
+  search: 搜索事件、项目或来源
+  lane: 信息分类
+  vertical: 行业
+  priority: 优先级
+  sort: 排序
+  all: 全部
+  c_end: C端信息
+  risk: 异常与风控
+  industry: 行业信息
+  watch: 后续观察
+  hotel: 酒店
+  airline: 航空
+  credit_card: 信用卡
+  rental_car: 租车
+  loyalty: 忠诚计划
+  priority_order: 优先级
+  newest: 最新发布
+  evidence: 证据数量
+labels:
+  source: 来源
+  published: 发布时间
+  unknown_time: 时间未提供
+  priority: 优先级
+  score: 评分
+  confidence: 置信度
+  risk: 风险
+  action: 行动
+  consumer_impact: 会员影响
+  vertical: 行业
+  topic: 类型
+  signal: 生态信号
+  stakeholders: 利益相关方
+  metrics: 数字锚点
+  future_dates: 未来节点
+  evidence_count: 证据
+  why: 为什么重要
+  details: 详情
+  status: 状态
+  fetched: 抓取
+  dated: 有日期
+  eligible: 合格
+  rejected: 剔除
+  duplicate: 重复
+  selected: 入选
+  reason: 说明
+  open_source: 打开来源
+  no_items: 本栏目暂无合格事件。
+  more_in_report: 更多事件请查看完整报告。
+vertical:
+  hotel: 酒店
+  airline: 航空
+  credit_card: 信用卡
+  rental_car: 租车
+  loyalty: 忠诚计划
+topic:
+  policy_change: 政策或权益变化
+  offer: 优惠活动
+  datapoint: 用户实测
+  bug: 系统异常
+  clawback: 权益追回
+  lounge: 休息室
+  transfer_bonus: 转点奖励
+  trip_report: 体验报告
+  status_match: 会籍匹配
+  portal_stack: 门户叠加
+  statement_credit: 账单报销
+  devaluation: 积分贬值
+  industry_signal: 行业信号
+ecosystem_signal:
+  revenue_shift: 收益转移
+  cost_reimbursement_conflict: 成本补偿冲突
+  benefit_capacity_pressure: 权益容量压力
+  devaluation_or_inflation: 积分贬值或通胀
+  qualification_gatekeeping: 资格门槛收紧
+  partner_contract_shift: 合作关系变化
+  regulatory_or_legal_pressure: 监管或法律压力
+  operational_reliability: 运营可靠性
+  supply_demand_stress: 供需压力
+  consumer_backlash: 用户反弹
+stakeholder:
+  member: 会员
+  hotel_owner: 酒店业主
+  franchisee: 加盟商
+  airline_partner: 航司伙伴
+  issuer: 发卡机构
+  merchant: 商户
+  regulator: 监管机构
+  rental_location: 租车门店
+action:
+  需报名: 需报名
+  可直接用: 可直接使用
+  定向/YMMV: 定向或因人而异
+  只观察: 只观察
+  高风险勿操作: 高风险，勿操作
+risk:
+  正常权益: 正常权益
+  YMMV: 因人而异
+  可能 clawback: 可能追回
+  高风控风险: 高风控风险
+consumer_impact:
+  直接可用: 可直接使用
+  需避坑: 需要避坑
+  可能贬值: 可能贬值
+  权益履约风险: 权益履约风险
+  长期观察: 长期观察
+priority:
+  P0 必须关注: P0 必须关注
+  P1 高价值: P1 高价值
+  P2 值得阅读: P2 值得阅读
+  P3 补充信息: P3 补充信息
+  P4 线索库: P4 线索库
+health:
+  ok: 成功
+  failed: 失败
+  skipped: 受限
+  disabled: 已禁用
+  detail_ok: 解析成功
+  detail_browser_only: 需要浏览器辅助，脚本未直接抓取
+  detail_p2: 本次未启用低信噪比补充来源
+  detail_disabled: 来源包中已禁用
+  detail_http: 来源返回 HTTP {code}
+  detail_network: 网络请求失败
+  detail_parser: 内容无法解析
+  detail_unknown: 来源不可用，技术详情请查看审计 JSON
+confidence:
+  多用户 DP: 多用户实测
+  评论 DP: 评论实测
+  单帖线索: 单帖线索
+  博客整理: 博客整理
+  多源重复: 多来源重复
+  多源证实: 多来源证实
+translation:
+  healthy: 翻译完成
+  partial: 翻译不完整
+  provider: 翻译提供方
+fallback:
+  translation_failed: 翻译不可用，请打开来源查看原文。
+  empty: 来源未提供摘要。
+footer:
+  disclosure: Loyalty Radar 仅汇总公开证据，不对照忠诚计划官网确认。
+  privacy: 不登录、不使用 Cookie、不绕过验证码，也不读取私人账户数据。
+  project: 开源项目
+cli:
+  config_written: 配置已写入 {path}
+  report_written: 报告已生成到 {path}
+  source_pack_valid: 来源包校验通过。
+  source_pack_invalid: 来源包校验失败。
+  deprecated: 此兼容命令即将弃用，请改用 loyalty-radar。
+  prompt_timezone: IANA 时区
+  prompt_region: 主要地区
+  prompt_programs: 忠诚计划，使用英文逗号分隔
+  prompt_memberships: 会员等级，格式为 项目=等级，使用英文逗号分隔
+  prompt_issuers: 重点发卡机构，使用英文逗号分隔
+  prompt_cards: 已持有的旅行信用卡，使用英文逗号分隔
+  prompt_packs: 来源包，使用英文逗号分隔
+  source_list_header: "来源包\t默认启用\t来源数\t说明"
+  source_list_total: "总计\t-\t{sources}\t{packs} 个来源包"
+  health_header: "来源\t状态\t抓取数\t说明"
+  "yes": 是
+  "no": 否
+source_pack_description:
+  core: 稳定的忠诚计划与优惠信息源，侧重会员可操作内容。
+  industry: 行业媒体与新闻查询矩阵，捕获结构性生态信号。
+  forums-global: 全球公开论坛与社区信息源。
+  forums-cn: 中文常旅客和信用卡公开社区。
+  experimental: 噪声较高或访问受限，并在健康检查中明确显示的来源。
+catalog:
+  title: 公开来源目录
+  subtitle: Loyalty Radar 配置的公开论坛、信息订阅、媒体与新闻查询来源。
+  notice: 本页只展示仓库中的来源配置，不展示当前新闻、优惠或实时来源健康状态。
+  version: v0.1.0 来源基线
+  configured_sources: 已配置来源
+  source_packs: 来源包
+  script_collectors: 脚本候选源
+  browser_assisted: 浏览器辅助
+  search: 搜索来源、发布方、项目或地区
+  pack_filter: 来源包
+  method_filter: 抓取方式
+  priority_filter: 来源优先级
+  all: 全部
+  default_enabled: 默认启用
+  optional: 可选
+  enabled: 已启用
+  disabled: 已禁用
+  open_source: 打开公开来源
+  no_results: 没有符合筛选条件的已配置来源。
+  visible_count: 当前显示
+  pack: 来源包
+  priority: 优先级
+  method: 方式
+  language: 语言
+  region: 地区
+  programs: 重点项目
+  collection_boundary: 仅访问公开端点；不登录、不使用 Cookie、不绕过验证码或访问控制。
+fetch_method:
+  rss: RSS / Atom
+  flyert_forum: 公开论坛 HTML
+  html_keyword: 关键词过滤 HTML
+  browser_only: 浏览器辅助

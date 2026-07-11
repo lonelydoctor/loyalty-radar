@@ -1,0 +1,116 @@
+issuers:
+  - issuer: Chase
+    keywords:
+      - Chase
+      - Ultimate Rewards
+      - UR
+      - JPMorgan
+      - JPM
+      - 大通
+    families:
+      - name: Sapphire
+        keywords:
+          - Sapphire
+          - Sapphire Reserve
+          - Sapphire Preferred
+          - CSR
+          - CSP
+          - Sapphire Reserve Business
+          - Chase Travel
+          - The Edit
+      - name: Ink
+        keywords:
+          - Ink
+          - Ink Business Preferred
+          - Ink Business Cash
+          - Ink Business Unlimited
+          - Ink Plus
+      - name: Freedom
+        keywords:
+          - Freedom
+          - Freedom Flex
+          - Freedom Unlimited
+      - name: United
+        keywords:
+          - United
+          - MileagePlus
+          - United Club
+          - Explorer Card
+          - Quest Card
+      - name: Hyatt
+        keywords:
+          - World of Hyatt Credit Card
+          - Hyatt card
+          - Hyatt Business
+      - name: IHG
+        keywords:
+          - IHG Premier
+          - IHG Traveler
+          - IHG Premier Business
+      - name: Marriott
+        keywords:
+          - Marriott Boundless
+          - Marriott Bountiful
+          - Ritz-Carlton Card
+      - name: Southwest
+        keywords:
+          - Southwest
+          - Companion Pass
+      - name: Lounge
+        keywords:
+          - Sapphire Lounge
+          - Chase Sapphire Lounge
+          - Priority Pass
+  - issuer: American Express
+    keywords:
+      - American Express
+      - Amex
+      - AMEX
+      - Membership Rewards
+      - MR
+      - 美国运通
+    families:
+      - name: Platinum
+        keywords:
+          - Platinum
+          - Business Platinum
+          - Biz Plat
+          - Centurion Lounge
+          - Fine Hotels
+          - FHR
+      - name: Gold
+        keywords:
+          - Gold Card
+          - Business Gold
+          - Amex Gold
+      - name: Green
+        keywords:
+          - Green Card
+          - Amex Green
+      - name: Blue Business
+        keywords:
+          - Blue Business Plus
+          - Blue Business Cash
+          - BBP
+      - name: Hilton
+        keywords:
+          - Hilton Aspire
+          - Hilton Surpass
+          - Hilton Business
+          - Hilton Honors Card
+      - name: Marriott
+        keywords:
+          - Marriott Brilliant
+          - Marriott Bevy
+          - Marriott Business
+      - name: Delta
+        keywords:
+          - Delta Gold
+          - Delta Platinum
+          - Delta Reserve
+          - SkyMiles
+      - name: Offers
+        keywords:
+          - Amex Offers
+          - merchant offer
+          - statement credit

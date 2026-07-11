@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Usage questions and ideas
+    url: https://github.com/lonelydoctor/loyalty-radar/discussions
+    about: Use Discussions for workflows, report interpretation, and ideas that are not confirmed bugs.
+  - name: Security and privacy reports
+    url: https://github.com/lonelydoctor/loyalty-radar/security/policy
+    about: Follow the private reporting process for vulnerabilities or accidental data exposure.

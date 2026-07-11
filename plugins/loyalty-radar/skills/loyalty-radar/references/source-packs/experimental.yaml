@@ -1,0 +1,85 @@
+pack:
+  id: experimental
+  name: Experimental and browser-assisted sources
+  description: Noisy or access-limited sources kept visible in source health.
+  default_enabled: false
+sources:
+- id: reddit-churning
+  name: Reddit r/churning
+  site: Reddit
+  priority: P2
+  source_type: reddit_fallback
+  fetch_method: browser_only
+  url: https://www.reddit.com/r/churning/
+  programs:
+  - Chase
+  - American Express
+  enabled: true
+  note: RSS/JSON often return 403 from script fetches; use browser-assisted reading
+    only.
+  region: global
+  language: en
+  default_limit: 10
+  rate_limit_seconds: 0.8
+- id: reddit-amex
+  name: Reddit r/amex
+  site: Reddit
+  priority: P2
+  source_type: reddit_fallback
+  fetch_method: browser_only
+  url: https://www.reddit.com/r/amex/
+  programs:
+  - American Express
+  enabled: true
+  note: RSS/JSON often return 403 from script fetches; use browser-assisted reading
+    only.
+  region: global
+  language: en
+  default_limit: 10
+  rate_limit_seconds: 0.8
+- id: reddit-awardtravel
+  name: Reddit r/awardtravel
+  site: Reddit
+  priority: P2
+  source_type: reddit_fallback
+  fetch_method: browser_only
+  url: https://www.reddit.com/r/awardtravel/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - Star Alliance
+  enabled: true
+  note: RSS/JSON often return 403 from script fetches; use browser-assisted reading
+    only.
+  region: global
+  language: en
+  default_limit: 10
+  rate_limit_seconds: 0.8
+- id: slickdeals-hot-deals
+  name: Slickdeals - Hot Deals
+  site: Slickdeals
+  priority: P2
+  source_type: forum
+  fetch_method: html_keyword
+  url: https://slickdeals.net/forums/forumdisplay.php?f=9
+  programs:
+  - Chase
+  - American Express
+  default_limit: 10
+  keywords:
+  - Chase
+  - Amex
+  - American Express
+  - Sapphire
+  - Platinum
+  - travel credit
+  - airline credit
+  enabled: false
+  note: Too noisy for default daily runs; enable manually for deal hunting.
+  region: global
+  language: en
+  rate_limit_seconds: 0.8

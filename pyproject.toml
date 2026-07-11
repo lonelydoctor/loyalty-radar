@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loyalty-radar"
+version = "0.1.0"
+description = "Source-backed loyalty intelligence for points, miles, travel cards, and loyalty ecosystems."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "lonelydoctor" }]
+keywords = ["loyalty", "frequent-flyer", "points", "miles", "agent-skills"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "beautifulsoup4>=4.12,<5",
+  "Pillow>=10,<13",
+  "platformdirs>=4,<5",
+  "PyYAML>=6,<7",
+  "requests>=2.31,<3",
+]
+
+[project.optional-dependencies]
+render = ["playwright>=1.49,<2"]
+dev = [
+  "build>=1.2,<2",
+  "mypy>=1.13,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<8",
+  "ruff>=0.9,<1",
+]
+
+[project.scripts]
+loyalty-radar = "loyalty_radar.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/lonelydoctor/loyalty-radar"
+Documentation = "https://lonelydoctor.github.io/loyalty-radar/"
+Repository = "https://github.com/lonelydoctor/loyalty-radar"
+Issues = "https://github.com/lonelydoctor/loyalty-radar/issues"
+
+[tool.setuptools]
+package-dir = {"" = "plugins/loyalty-radar/skills/loyalty-radar/scripts"}
+
+[tool.setuptools.packages.find]
+where = ["plugins/loyalty-radar/skills/loyalty-radar/scripts"]
+include = ["loyalty_radar*"]
+
+[tool.setuptools.package-data]
+loyalty_radar = ["py.typed"]
+
+[tool.setuptools.data-files]
+"share/loyalty-radar" = [
+  "plugins/loyalty-radar/skills/loyalty-radar/SKILL.md",
+  "plugins/loyalty-radar/skills/loyalty-radar/agents/openai.yaml",
+]
+"share/loyalty-radar/references" = [
+  "plugins/loyalty-radar/skills/loyalty-radar/references/*.yaml",
+]
+"share/loyalty-radar/references/locales" = [
+  "plugins/loyalty-radar/skills/loyalty-radar/references/locales/*.yaml",
+]
+"share/loyalty-radar/references/source-packs" = [
+  "plugins/loyalty-radar/skills/loyalty-radar/references/source-packs/*.yaml",
+]
+"share/loyalty-radar/references/schemas" = [
+  "plugins/loyalty-radar/skills/loyalty-radar/references/schemas/*.json",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+pythonpath = ["plugins/loyalty-radar/skills/loyalty-radar/scripts"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]

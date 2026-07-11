@@ -1,0 +1,702 @@
+sources:
+  # Flyert: Chinese frequent-traveler and card forums. GBK pages.
+  - id: flyert-air-china
+    name: 飞客茶馆 - 中国国航
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=68
+    encoding: gbk
+    programs: [Air China]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: flyert-star-alliance
+    name: 飞客茶馆 - 星空联盟
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=110
+    encoding: gbk
+    programs: [Star Alliance]
+    program_fallback: true
+    default_limit: 12
+    enabled: true
+  - id: flyert-lounge
+    name: 飞客茶馆 - 候机楼 Lounge
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=371
+    encoding: gbk
+    programs: [Star Alliance, Chase, American Express]
+    default_limit: 12
+    enabled: true
+  - id: flyert-marriott
+    name: 飞客茶馆 - 万豪旅享家
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=63
+    encoding: gbk
+    programs: [Marriott]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: flyert-hyatt
+    name: 飞客茶馆 - 凯悦天地
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=60
+    encoding: gbk
+    programs: [Hyatt]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: flyert-hilton
+    name: 飞客茶馆 - 希尔顿荣誉客会
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=61
+    encoding: gbk
+    programs: [Hilton]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: flyert-ihg
+    name: 飞客茶馆 - IHG 优悦会
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=23
+    encoding: gbk
+    programs: [IHG]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: flyert-card-hot
+    name: 飞客茶馆 - 用卡热点
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=59
+    encoding: gbk
+    programs: [Chase, American Express]
+    default_limit: 15
+    enabled: true
+  - id: flyert-overseas-card
+    name: 飞客茶馆 - 海外用卡
+    site: Flyert
+    priority: P0
+    source_type: forum
+    fetch_method: flyert_forum
+    url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=228
+    encoding: gbk
+    programs: [Chase, American Express]
+    default_limit: 15
+    enabled: true
+
+  # FlyerTalk: vBulletin RSS feeds.
+  - id: ft-card-programs
+    name: FlyerTalk - Credit, Debit and Prepaid Card Programs
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=390
+    programs: [Chase, American Express]
+    default_limit: 20
+    enabled: true
+  - id: ft-amex-mr
+    name: FlyerTalk - American Express Membership Rewards
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410
+    programs: [American Express]
+    program_fallback: true
+    default_limit: 20
+    enabled: true
+  - id: ft-chase-ur
+    name: FlyerTalk - Chase Ultimate Rewards
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=722
+    programs: [Chase, Hyatt, Marriott, IHG]
+    program_fallback: true
+    default_limit: 20
+    enabled: true
+  - id: ft-airport-lounges
+    name: FlyerTalk - Airport Lounges
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=763
+    programs: [Chase, American Express, Star Alliance]
+    default_limit: 15
+    enabled: true
+  - id: ft-marriott
+    name: FlyerTalk - Marriott Bonvoy
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=766
+    programs: [Marriott]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-hyatt
+    name: FlyerTalk - World of Hyatt
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=418
+    programs: [Hyatt]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-hilton
+    name: FlyerTalk - Hilton Honors
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=417
+    programs: [Hilton]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-ihg
+    name: FlyerTalk - IHG One Rewards
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=426
+    programs: [IHG]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-star-alliance
+    name: FlyerTalk - Star Alliance
+    site: FlyerTalk
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=413
+    programs: [Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-united
+    name: FlyerTalk - United MileagePlus
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=681
+    programs: [United, Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-aeroplan
+    name: FlyerTalk - Air Canada Aeroplan
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=375
+    programs: [Air Canada, Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-ana
+    name: FlyerTalk - ANA Mileage Club
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=443
+    programs: [ANA, Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-krisflyer
+    name: FlyerTalk - Singapore Airlines KrisFlyer
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=500
+    programs: [Singapore Airlines, Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-miles-more
+    name: FlyerTalk - Lufthansa Miles & More
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=495
+    programs: [Lufthansa, Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-asiana
+    name: FlyerTalk - Asiana Club
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=614
+    programs: [Asiana, Star Alliance]
+    program_fallback: true
+    default_limit: 15
+    enabled: true
+  - id: ft-rental-car-discussion
+    name: FlyerTalk - Rental Car Discussion
+    site: FlyerTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=745
+    programs: [Hertz, Avis, Budget, National, Enterprise, Alamo, Sixt, Europcar]
+    verticals: [rental_car]
+    keywords:
+      - loyalty
+      - rewards
+      - elite
+      - status
+      - upgrade
+      - points
+      - Hertz
+      - Avis
+      - National
+      - Emerald Club
+      - Sixt
+    default_limit: 20
+    enabled: true
+
+  # Blogs and high-signal comments.
+  - id: doctor-of-credit-cards
+    name: Doctor of Credit - Credit Cards
+    site: Doctor of Credit
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.doctorofcredit.com/category/credit-cards/feed/
+    programs: [Chase, American Express]
+    include_comments: true
+    max_comment_threads: 3
+    default_limit: 20
+    enabled: true
+  - id: frequent-miler
+    name: Frequent Miler
+    site: Frequent Miler
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://frequentmiler.com/feed/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG]
+    include_comments: false
+    default_limit: 25
+    enabled: true
+  - id: us-credit-card-guide
+    name: 美国信用卡指南
+    site: US Credit Card Guide
+    priority: P0
+    source_type: rss
+    fetch_method: rss
+    url: https://www.uscreditcardguide.com/zh/feed/
+    programs: [Chase, American Express]
+    include_comments: false
+    default_limit: 20
+    enabled: true
+    language: zh-CN
+  - id: myfico-credit-cards
+    name: myFICO - Credit Cards
+    site: myFICO
+    priority: P1
+    source_type: rss
+    fetch_method: browser_only
+    url: https://ficoforums.myfico.com/fico/rss/board?board.id=creditcard
+    programs: [Chase, American Express]
+    include_comments: false
+    default_limit: 20
+    enabled: true
+    note: Direct RSS requests may return HTTP 403; use browser- or Jina-assisted reading.
+  - id: creditboards-credit-forum
+    name: CreditBoards - Credit Forum
+    site: CreditBoards
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://creditboards.com/forums/index.php?/forum/2-credit-forum.xml/
+    programs: [Chase, American Express]
+    include_comments: false
+    default_limit: 15
+    enabled: true
+  - id: loyaltylobby
+    name: LoyaltyLobby
+    site: LoyaltyLobby
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://loyaltylobby.com/feed/
+    programs: [Marriott, Hyatt, Hilton, IHG, Star Alliance]
+    default_limit: 25
+    enabled: true
+  - id: one-mile-at-a-time
+    name: One Mile at a Time
+    site: One Mile at a Time
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://onemileatatime.com/feed/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG, Star Alliance]
+    default_limit: 25
+    enabled: true
+  - id: view-from-the-wing
+    name: View from the Wing
+    site: View from the Wing
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://viewfromthewing.com/feed/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG, Star Alliance]
+    default_limit: 20
+    enabled: true
+  - id: skift
+    name: Skift
+    site: Skift
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://skift.com/feed/
+    programs: [Marriott, Hyatt, Hilton, IHG, Accor, United, Delta, American Airlines]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 25
+    keywords: &loyalty_ecosystem_keywords
+      - loyalty
+      - rewards
+      - points
+      - miles
+      - Bonvoy
+      - World of Hyatt
+      - Hilton Honors
+      - IHG One Rewards
+      - elite status
+      - status match
+      - credit card
+      - credit-card
+      - co-branded
+      - reimbursement
+      - devaluation
+      - award
+      - lounge
+      - regulator
+      - CFPB
+      - DOT
+    enabled: true
+  - id: hospitalitynet-news
+    name: HospitalityNet
+    site: HospitalityNet
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.hospitalitynet.org/rss/news.xml
+    programs: [Marriott, Hyatt, Hilton, IHG, Accor, Wyndham, Choice]
+    verticals: [hotel]
+    default_limit: 25
+    keywords: *loyalty_ecosystem_keywords
+    enabled: true
+  - id: the-points-guy
+    name: The Points Guy
+    site: The Points Guy
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://thepointsguy.com/feed/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG, Star Alliance, United, Delta, American Airlines, Hertz]
+    verticals: [hotel, airline, credit_card, rental_car]
+    default_limit: 25
+    enabled: true
+  - id: awardwallet
+    name: AwardWallet
+    site: AwardWallet
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://awardwallet.com/blog/feed/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG, United, Delta, American Airlines, Air Canada, Flying Blue, Avios]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 25
+    enabled: true
+  - id: dannydealguru
+    name: DannyDealGuru
+    site: DannyDealGuru
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://dannydealguru.com/feed/
+    programs: [Chase, American Express, Citi, Capital One, Marriott, Hyatt, Hilton, IHG]
+    verticals: [credit_card, hotel, airline]
+    default_limit: 20
+    enabled: true
+  - id: milestalk
+    name: MilesTalk
+    site: MilesTalk
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://milestalk.com/feed/
+    programs: [Chase, American Express, Citi, Capital One, Marriott, Hyatt, Hilton, IHG, United, Delta, American Airlines]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 20
+    enabled: true
+  - id: dansdeals
+    name: DansDeals
+    site: DansDeals
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.dansdeals.com/feed/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG, United, Delta, American Airlines]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 20
+    enabled: true
+  - id: head-for-points
+    name: Head for Points
+    site: Head for Points
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://www.headforpoints.com/feed/
+    programs: [Avios, British Airways, Virgin Atlantic, American Express, Marriott, Hyatt, Hilton, IHG]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 20
+    enabled: true
+  - id: prince-of-travel
+    name: Prince of Travel
+    site: Prince of Travel
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://princeoftravel.com/feed/
+    programs: [Air Canada, Star Alliance, American Express, Marriott, Hyatt, Hilton, IHG]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 20
+    enabled: true
+  - id: mainly-miles
+    name: Mainly Miles
+    site: Mainly Miles
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://mainlymiles.com/feed/
+    programs: [Singapore Airlines, Star Alliance, American Express, Marriott, Hyatt, Hilton, IHG]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 20
+    enabled: true
+
+  # Google News RSS query matrix for global loyalty ecosystem signals.
+  - id: google-news-hotel-ecosystem
+    name: Google News - Hotel Loyalty Ecosystem
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=hotel%20loyalty%20program%20owners%20reimbursement%20credit%20card%20fees%20Marriott%20Hyatt%20Hilton%20IHG%20Accor%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [Marriott, Hyatt, Hilton, IHG, Accor, Wyndham, Choice]
+    verticals: [hotel, credit_card]
+    default_limit: 12
+    enabled: true
+  - id: google-news-airline-ecosystem
+    name: Google News - Airline Loyalty Ecosystem
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=airline%20miles%20loyalty%20program%20credit%20card%20revenue%20devaluation%20elite%20benefits%20United%20Delta%20American%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [United, Delta, American Airlines, Air Canada, ANA, Singapore Airlines, Lufthansa, Avios, Flying Blue]
+    verticals: [airline, credit_card]
+    default_limit: 12
+    enabled: true
+  - id: google-news-credit-rewards-regulatory
+    name: Google News - Rewards Regulatory Pressure
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=DOT%20CFPB%20EU%20credit%20card%20rewards%20program%20bait-and-switch%20devaluation%20interchange%20lawsuit%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [Chase, American Express, Citi, Capital One, Bilt]
+    verticals: [credit_card, airline]
+    default_limit: 12
+    enabled: true
+  - id: google-news-rental-car-loyalty
+    name: Google News - Rental Car Loyalty Ecosystem
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=Hertz%20Avis%20National%20Emerald%20Club%20car%20rental%20loyalty%20status%20match%20elite%20benefits%20points%20changes%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [Hertz, Avis, Budget, National, Enterprise, Alamo, Sixt, Europcar]
+    verticals: [rental_car]
+    default_limit: 12
+    enabled: true
+  - id: google-news-cend-transfer-bonus
+    name: Google News - Transfer Bonus and Points Plays
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=transfer%20bonus%20Amex%20Membership%20Rewards%20Chase%20Ultimate%20Rewards%20Hyatt%20Flying%20Blue%20Avios%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [Chase, American Express, Hyatt, Marriott, Flying Blue, Avios]
+    verticals: [credit_card, hotel, airline]
+    default_limit: 12
+    enabled: true
+  - id: google-news-cend-clawback-bug
+    name: Google News - Credits Bugs and Clawbacks
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=Chase%20Amex%20hotel%20credit%20clawback%20cancelled%20reservation%20statement%20credit%20not%20posting%20transfer%20failed%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG]
+    verticals: [credit_card, hotel, airline]
+    default_limit: 12
+    enabled: true
+  - id: google-news-cend-status-lounge
+    name: Google News - Status Match Lounge and Capacity
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: https://news.google.com/rss/search?q=status%20match%20hotel%20airline%20rental%20car%20lounge%20access%20elite%20benefits%20capacity%20controlled%20when:14d&hl=en-US&gl=US&ceid=US:en
+    programs: [Marriott, Hyatt, Hilton, IHG, United, Delta, American Airlines, Hertz, National, Avis]
+    verticals: [hotel, airline, rental_car, credit_card]
+    default_limit: 12
+    enabled: true
+  - id: google-news-loyalty-devaluation
+    name: Google News - Global Loyalty Devaluation
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: "https://news.google.com/rss/search?q=%28loyalty%20OR%20rewards%20OR%20points%20OR%20miles%29%20%28devaluation%20OR%20dynamic%20pricing%20OR%20award%20pricing%20OR%20points%20inflation%29%20when:14d&hl=en-US&gl=US&ceid=US:en"
+    programs: [Marriott, Hyatt, Hilton, IHG, Accor, Wyndham, United, Delta, American Airlines, Air Canada, ANA, Avios, Flying Blue, Chase, American Express]
+    verticals: [hotel, airline, credit_card]
+    default_limit: 15
+    enabled: true
+  - id: google-news-loyalty-partner-contracts
+    name: Google News - Loyalty Partner and Cobrand Contracts
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: "https://news.google.com/rss/search?q=%28loyalty%20OR%20rewards%29%20%28cobrand%20OR%20co-brand%20OR%20issuer%20OR%20partnership%20OR%20transfer%20partner%20OR%20alliance%29%20when:14d&hl=en-US&gl=US&ceid=US:en"
+    programs: [Chase, American Express, Citi, Capital One, Bilt, Marriott, Hyatt, Hilton, IHG, United, Delta, American Airlines, Air Canada, Avios, Flying Blue]
+    verticals: [hotel, airline, credit_card, rental_car]
+    default_limit: 15
+    enabled: true
+  - id: google-news-loyalty-consumer-backlash
+    name: Google News - Loyalty Consumer Backlash
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: "https://news.google.com/rss/search?q=%28loyalty%20OR%20rewards%20OR%20points%20OR%20miles%29%20%28complaints%20OR%20backlash%20OR%20protest%20OR%20rollback%20OR%20owners%20OR%20franchisees%29%20when:14d&hl=en-US&gl=US&ceid=US:en"
+    programs: [Marriott, Hyatt, Hilton, IHG, Accor, United, Delta, American Airlines, Air Canada, Chase, American Express, Hertz, Avis, National]
+    verticals: [hotel, airline, credit_card, rental_car]
+    default_limit: 15
+    enabled: true
+  - id: google-news-loyalty-operational-failures
+    name: Google News - Loyalty Operational Failures
+    site: Google News
+    priority: P1
+    source_type: rss
+    fetch_method: rss
+    url: "https://news.google.com/rss/search?q=%28loyalty%20OR%20rewards%20OR%20points%20OR%20miles%29%20%28not%20posting%20OR%20transfer%20failed%20OR%20clawback%20OR%20account%20shutdown%20OR%20redemption%20outage%29%20when:14d&hl=en-US&gl=US&ceid=US:en"
+    programs: [Chase, American Express, Citi, Capital One, Marriott, Hyatt, Hilton, IHG, United, Delta, American Airlines, Air Canada, Hertz, Avis, National]
+    verticals: [hotel, airline, credit_card, rental_car]
+    default_limit: 15
+    enabled: true
+
+  # Useful but unstable/noisy sources. Report explicitly instead of failing silently.
+  - id: uscardforum
+    name: 美卡论坛
+    site: US Card Forum
+    priority: P1
+    source_type: reddit_fallback
+    fetch_method: browser_only
+    url: https://www.uscardforum.com/
+    programs: [Chase, American Express]
+    enabled: true
+    language: zh-CN
+    note: Cloudflare frequently blocks direct script fetches; use Codex browser/web reading manually when needed.
+  - id: reddit-churning
+    name: Reddit r/churning
+    site: Reddit
+    priority: P2
+    source_type: reddit_fallback
+    fetch_method: browser_only
+    url: https://www.reddit.com/r/churning/
+    programs: [Chase, American Express]
+    enabled: true
+    note: RSS/JSON often return 403 from script fetches; use browser-assisted reading only.
+  - id: reddit-amex
+    name: Reddit r/amex
+    site: Reddit
+    priority: P2
+    source_type: reddit_fallback
+    fetch_method: browser_only
+    url: https://www.reddit.com/r/amex/
+    programs: [American Express]
+    enabled: true
+    note: RSS/JSON often return 403 from script fetches; use browser-assisted reading only.
+  - id: reddit-awardtravel
+    name: Reddit r/awardtravel
+    site: Reddit
+    priority: P2
+    source_type: reddit_fallback
+    fetch_method: browser_only
+    url: https://www.reddit.com/r/awardtravel/
+    programs: [Chase, American Express, Marriott, Hyatt, Hilton, IHG, Star Alliance]
+    enabled: true
+    note: RSS/JSON often return 403 from script fetches; use browser-assisted reading only.
+  - id: slickdeals-hot-deals
+    name: Slickdeals - Hot Deals
+    site: Slickdeals
+    priority: P2
+    source_type: forum
+    fetch_method: html_keyword
+    url: https://slickdeals.net/forums/forumdisplay.php?f=9
+    programs: [Chase, American Express]
+    default_limit: 10
+    keywords:
+      - Chase
+      - Amex
+      - American Express
+      - Sapphire
+      - Platinum
+      - travel credit
+      - airline credit
+    enabled: false
+    note: Too noisy for default daily runs; enable manually for deal hunting.

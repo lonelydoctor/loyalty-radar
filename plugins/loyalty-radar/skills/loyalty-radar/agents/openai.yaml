@@ -1,0 +1,4 @@
+interface:
+  display_name: "Loyalty Radar"
+  short_description: "Prioritize public loyalty offers, risks, and ecosystem signals."
+  default_prompt: "Run Loyalty Radar for the past two weeks, track future dates mentioned within the next 60 days, cluster repeated evidence into events, prioritize member actions and global ecosystem risks, use my configured locale, and return the infographic plus the interactive report and audit JSON."

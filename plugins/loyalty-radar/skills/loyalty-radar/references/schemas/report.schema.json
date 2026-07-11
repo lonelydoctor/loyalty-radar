@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/lonelydoctor/loyalty-radar/blob/main/plugins/loyalty-radar/skills/loyalty-radar/references/schemas/report.schema.json",
+  "title": "Loyalty Radar report",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "items", "health", "translation_health"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "generated_at": {"type": "string"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "original", "localized", "evidence"],
+        "properties": {
+          "event_id": {"type": "string"},
+          "original": {"$ref": "#/$defs/text"},
+          "localized": {
+            "type": "object",
+            "additionalProperties": {"$ref": "#/$defs/text"}
+          },
+          "evidence": {"type": "array"}
+        }
+      }
+    },
+    "health": {"type": "array"},
+    "translation_health": {"type": "object"}
+  },
+  "$defs": {
+    "text": {
+      "type": "object",
+      "properties": {
+        "title": {"type": "string"},
+        "summary": {"type": "string"},
+        "why_it_matters": {"type": "string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+include LICENSE
+include README.md
+include README.zh-CN.md
+include CHANGELOG.md
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
+include PRIVACY.md
+include SECURITY.md
+include TRADEMARKS.md
+recursive-include plugins/loyalty-radar *.md *.yaml *.json *.py *.txt *.png
+recursive-include docs *.md *.html *.png *.gif
+recursive-include tests *.py
+recursive-include tools *.py
+recursive-include .agents *.json
+recursive-include .github *.yml *.md
+prune reports
+prune output
+global-exclude __pycache__ *.py[cod] .DS_Store

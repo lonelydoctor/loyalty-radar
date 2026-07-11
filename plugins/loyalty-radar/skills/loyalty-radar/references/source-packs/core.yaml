@@ -1,0 +1,327 @@
+pack:
+  id: core
+  name: Core loyalty sources
+  description: Stable editorial and deal feeds with strong member-level signal.
+  default_enabled: true
+sources:
+- id: doctor-of-credit-cards
+  name: Doctor of Credit - Credit Cards
+  site: Doctor of Credit
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.doctorofcredit.com/category/credit-cards/feed/
+  programs:
+  - Chase
+  - American Express
+  include_comments: true
+  max_comment_threads: 3
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: frequent-miler
+  name: Frequent Miler
+  site: Frequent Miler
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://frequentmiler.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  include_comments: false
+  default_limit: 25
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: us-credit-card-guide
+  name: 美国信用卡指南
+  site: US Credit Card Guide
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.uscreditcardguide.com/zh/feed/
+  programs:
+  - Chase
+  - American Express
+  include_comments: false
+  default_limit: 20
+  enabled: true
+  language: zh-CN
+  region: global
+  rate_limit_seconds: 0.8
+- id: loyaltylobby
+  name: LoyaltyLobby
+  site: LoyaltyLobby
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://loyaltylobby.com/feed/
+  programs:
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - Star Alliance
+  default_limit: 25
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: one-mile-at-a-time
+  name: One Mile at a Time
+  site: One Mile at a Time
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://onemileatatime.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - Star Alliance
+  default_limit: 25
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: view-from-the-wing
+  name: View from the Wing
+  site: View from the Wing
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://viewfromthewing.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - Star Alliance
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: the-points-guy
+  name: The Points Guy
+  site: The Points Guy
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://thepointsguy.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - Star Alliance
+  - United
+  - Delta
+  - American Airlines
+  - Hertz
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  - rental_car
+  default_limit: 25
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: awardwallet
+  name: AwardWallet
+  site: AwardWallet
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://awardwallet.com/blog/feed/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - United
+  - Delta
+  - American Airlines
+  - Air Canada
+  - Flying Blue
+  - Avios
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  default_limit: 25
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: dannydealguru
+  name: DannyDealGuru
+  site: DannyDealGuru
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://dannydealguru.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Citi
+  - Capital One
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  verticals:
+  - credit_card
+  - hotel
+  - airline
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: milestalk
+  name: MilesTalk
+  site: MilesTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://milestalk.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Citi
+  - Capital One
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - United
+  - Delta
+  - American Airlines
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: dansdeals
+  name: DansDeals
+  site: DansDeals
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.dansdeals.com/feed/
+  programs:
+  - Chase
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  - United
+  - Delta
+  - American Airlines
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: head-for-points
+  name: Head for Points
+  site: Head for Points
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.headforpoints.com/feed/
+  programs:
+  - Avios
+  - British Airways
+  - Virgin Atlantic
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: prince-of-travel
+  name: Prince of Travel
+  site: Prince of Travel
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://princeoftravel.com/feed/
+  programs:
+  - Air Canada
+  - Star Alliance
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: mainly-miles
+  name: Mainly Miles
+  site: Mainly Miles
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://mainlymiles.com/feed/
+  programs:
+  - Singapore Airlines
+  - Star Alliance
+  - American Express
+  - Marriott
+  - Hyatt
+  - Hilton
+  - IHG
+  verticals:
+  - hotel
+  - airline
+  - credit_card
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8

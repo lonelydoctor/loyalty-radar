@@ -1,0 +1,60 @@
+name: Installation problem
+description: Ask for help installing the Plugin, Agent Skill, or Python CLI.
+title: "[Install]: "
+labels:
+  - installation
+body:
+  - type: dropdown
+    id: method
+    attributes:
+      label: Installation path
+      options:
+        - Codex Skill-only Plugin
+        - Agent Skill directory
+        - Claude or another Agent Skills client
+        - uv tool install
+        - Source checkout
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, Python version, and Agent/client version.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Commands or installation steps
+      description: Put commands in a code block. Remove usernames and private paths.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Redacted output
+      description: Include the first relevant error and any exit code.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked the English or Chinese Quick Start for this installation path.
+          required: true
+        - label: I removed tokens, cookies, membership data, and private filesystem paths.
+          required: true

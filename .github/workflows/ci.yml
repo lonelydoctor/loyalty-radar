@@ -1,0 +1,152 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fixture-tests:
+    name: Fixture tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.11"
+          - os: ubuntu-latest
+            python: "3.12"
+          - os: ubuntu-latest
+            python: "3.13"
+          - os: macos-latest
+            python: "3.12"
+          - os: windows-latest
+            python: "3.12"
+    env:
+      LOYALTY_RADAR_TEST_MODE: fixture
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked test environment
+        run: uv sync --frozen --no-editable --extra dev
+
+      - name: Run fixture-only tests
+        run: uv run --frozen pytest -m "not live and not screenshot" --strict-markers
+
+  distribution:
+    name: Distribution contract and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked build environment
+        run: uv sync --frozen --no-editable --extra dev
+
+      - name: Validate Plugin, Skill, source packs, and i18n contract
+        run: uv run --frozen python .github/scripts/validate_distribution.py
+
+      - name: Build wheel and source distribution
+        run: uv build
+
+      - name: Install wheel in a clean environment
+        shell: bash
+        run: |
+          uv venv "${RUNNER_TEMP}/loyalty-radar-smoke" --python 3.12
+          uv pip install --python "${RUNNER_TEMP}/loyalty-radar-smoke/bin/python" dist/*.whl
+          "${RUNNER_TEMP}/loyalty-radar-smoke/bin/loyalty-radar" --help
+
+      - name: Upload Python distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  screenshot-tests:
+    name: Public source catalog screenshot checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked rendering environment
+        run: uv sync --frozen --no-editable --extra dev --extra render
+
+      - name: Install Chromium
+        run: uv run --frozen playwright install --with-deps chromium
+
+      - name: Validate static Pages payload
+        run: uv run --frozen python .github/scripts/validate_pages.py docs/site
+
+      - name: Check 1440px, 390px, and 2400x1800 layouts
+        run: >-
+          uv run --frozen python .github/scripts/screenshot_smoke.py
+          --site docs/site
+          --output test-results/screenshots
+
+      - name: Upload screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-evidence
+          path: test-results/screenshots/
+          if-no-files-found: warn
+          retention-days: 7

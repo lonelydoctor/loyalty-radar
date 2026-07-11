@@ -1,0 +1,232 @@
+meta:
+  title: Loyalty Radar
+  subtitle: Two-week member actions and global loyalty ecosystem signals
+  generated: Generated {value}
+  window: Past {days} days
+  future: Future {days}-day watch
+  unverified: Public sources; no official verification
+  schema: Report schema {value}
+navigation:
+  report: Full report
+  overview: Overview
+  markdown: Markdown
+  json: Audit JSON
+  language: Language
+languages:
+  en: English
+  zh-CN: 简体中文
+metrics:
+  events: Selected events
+  sources_ok: Sources healthy
+  sources_limited: Limited or failed
+  urgent: P0/P1 events
+sections:
+  must_read: Must read
+  c_end: Member play radar
+  risk: Bug, clawback, and risk
+  ecosystem: Loyalty ecosystem radar
+  watch: Watch next
+  timeline: Next 60 days
+  health: Source health
+  evidence: Evidence
+  methodology: Methodology
+filters:
+  search: Search events, programs, or sources
+  lane: Information lane
+  vertical: Vertical
+  priority: Priority
+  sort: Sort
+  all: All
+  c_end: Member actions
+  risk: Bugs and risk
+  industry: Industry signals
+  watch: Future watch
+  hotel: Hotel
+  airline: Airline
+  credit_card: Credit card
+  rental_car: Rental car
+  loyalty: Loyalty
+  priority_order: Priority
+  newest: Newest
+  evidence: Evidence count
+labels:
+  source: Source
+  published: Published
+  unknown_time: Time unavailable
+  priority: Priority
+  score: Score
+  confidence: Confidence
+  risk: Risk
+  action: Action
+  consumer_impact: Member impact
+  vertical: Vertical
+  topic: Topic
+  signal: Ecosystem signal
+  stakeholders: Stakeholders
+  metrics: Metrics
+  future_dates: Future dates
+  evidence_count: Evidence
+  why: Why it matters
+  details: Details
+  status: Status
+  fetched: Fetched
+  dated: Dated
+  eligible: Eligible
+  rejected: Rejected
+  duplicate: Duplicates
+  selected: Selected
+  reason: Detail
+  open_source: Open source
+  no_items: No qualifying items in this section.
+  more_in_report: More events are available in the full report.
+vertical:
+  hotel: Hotel
+  airline: Airline
+  credit_card: Credit card
+  rental_car: Rental car
+  loyalty: Loyalty
+topic:
+  policy_change: Policy or benefit change
+  offer: Offer
+  datapoint: User datapoint
+  bug: System issue
+  clawback: Clawback
+  lounge: Lounge
+  transfer_bonus: Transfer bonus
+  trip_report: Trip report
+  status_match: Status match
+  portal_stack: Portal stack
+  statement_credit: Statement credit
+  devaluation: Devaluation
+  industry_signal: Industry signal
+ecosystem_signal:
+  revenue_shift: Revenue shift
+  cost_reimbursement_conflict: Cost/reimbursement conflict
+  benefit_capacity_pressure: Benefit capacity pressure
+  devaluation_or_inflation: Devaluation or inflation
+  qualification_gatekeeping: Qualification gatekeeping
+  partner_contract_shift: Partner contract shift
+  regulatory_or_legal_pressure: Regulatory or legal pressure
+  operational_reliability: Operational reliability
+  supply_demand_stress: Supply/demand stress
+  consumer_backlash: Consumer backlash
+stakeholder:
+  member: Member
+  hotel_owner: Hotel owner
+  franchisee: Franchisee
+  airline_partner: Airline partner
+  issuer: Issuer
+  merchant: Merchant
+  regulator: Regulator
+  rental_location: Rental location
+action:
+  需报名: Registration required
+  可直接用: Ready to use
+  定向/YMMV: Targeted / YMMV
+  只观察: Watch only
+  高风险勿操作: High risk; do not act
+risk:
+  正常权益: Normal benefit
+  YMMV: YMMV
+  可能 clawback: Possible clawback
+  高风控风险: High account risk
+consumer_impact:
+  直接可用: Actionable now
+  需避坑: Avoid or verify
+  可能贬值: Possible devaluation
+  权益履约风险: Benefit delivery risk
+  长期观察: Long-term watch
+priority:
+  P0 必须关注: P0 Critical
+  P1 高价值: P1 High value
+  P2 值得阅读: P2 Worth reading
+  P3 补充信息: P3 Context
+  P4 线索库: P4 Lead
+health:
+  ok: Healthy
+  failed: Failed
+  skipped: Limited
+  disabled: Disabled
+  detail_ok: Parsed successfully
+  detail_browser_only: Browser-assisted source; no direct script collection
+  detail_p2: Optional noisy source disabled for this run
+  detail_disabled: Disabled in the source pack
+  detail_http: Source returned HTTP {code}
+  detail_network: Network request failed
+  detail_parser: Content could not be parsed
+  detail_unknown: Source unavailable; inspect the audit JSON
+confidence:
+  多用户 DP: Multiple user datapoints
+  评论 DP: Comment datapoint
+  单帖线索: Single-post lead
+  博客整理: Editorial summary
+  多源重复: Repeated across sources
+  多源证实: Corroborated by multiple sources
+translation:
+  healthy: Translation ready
+  partial: Translation partial
+  provider: Translation provider
+fallback:
+  translation_failed: Translation unavailable. Open the source to review the original.
+  empty: No summary supplied by the source.
+footer:
+  disclosure: Loyalty Radar summarizes public evidence and does not verify against official program pages.
+  privacy: No login, cookies, CAPTCHA bypass, or private account data.
+  project: Open-source project
+cli:
+  config_written: Configuration written to {path}
+  report_written: Report generated in {path}
+  source_pack_valid: Source pack is valid.
+  source_pack_invalid: Source pack validation failed.
+  deprecated: This compatibility command is deprecated; use loyalty-radar.
+  prompt_timezone: IANA timezone
+  prompt_region: Primary region
+  prompt_programs: Loyalty programs, comma separated
+  prompt_memberships: Membership levels as Program=Status, comma separated
+  prompt_issuers: Preferred card issuers, comma separated
+  prompt_cards: Held travel cards, comma separated
+  prompt_packs: Source packs, comma separated
+  source_list_header: "PACK\tDEFAULT\tSOURCES\tDESCRIPTION"
+  source_list_total: "TOTAL\t-\t{sources}\t{packs} packs"
+  health_header: "SOURCE\tSTATUS\tFETCHED\tDETAIL"
+  "yes": "yes"
+  "no": "no"
+source_pack_description:
+  core: Stable editorial and deal feeds with strong member-level signal.
+  industry: Trade press and news-query feeds for structural ecosystem signals.
+  forums-global: Public global forums and community feeds.
+  forums-cn: Public Chinese-language frequent-traveler and card communities.
+  experimental: Noisy or access-limited sources kept explicit in health output.
+catalog:
+  title: Public source catalog
+  subtitle: Configured public forums, feeds, publishers, and news queries used by Loyalty Radar.
+  notice: This page shows repository source configuration, not current news, offers, or live source health.
+  version: Catalog baseline v0.1.0
+  configured_sources: Configured sources
+  source_packs: Source packs
+  script_collectors: Script-eligible
+  browser_assisted: Browser-assisted
+  search: Search source, publisher, program, or region
+  pack_filter: Source pack
+  method_filter: Fetch method
+  priority_filter: Source priority
+  all: All
+  default_enabled: Default
+  optional: Optional
+  enabled: Enabled
+  disabled: Disabled
+  open_source: Open public source
+  no_results: No configured source matches these filters.
+  visible_count: Visible sources
+  pack: Pack
+  priority: Priority
+  method: Method
+  language: Language
+  region: Region
+  programs: Programs
+  collection_boundary: Public endpoints only. No login, cookies, CAPTCHA bypass, or access-control evasion.
+fetch_method:
+  rss: RSS / Atom
+  flyert_forum: Public forum HTML
+  html_keyword: Filtered public HTML
+  browser_only: Browser-assisted

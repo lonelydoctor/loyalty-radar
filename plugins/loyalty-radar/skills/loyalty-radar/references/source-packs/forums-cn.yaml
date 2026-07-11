@@ -1,0 +1,168 @@
+pack:
+  id: forums-cn
+  name: Chinese-language forums
+  description: Public Chinese frequent-traveler and card communities.
+  default_enabled: false
+sources:
+- id: flyert-air-china
+  name: 飞客茶馆 - 中国国航
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=68
+  encoding: gbk
+  programs:
+  - Air China
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-star-alliance
+  name: 飞客茶馆 - 星空联盟
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=110
+  encoding: gbk
+  programs:
+  - Star Alliance
+  program_fallback: true
+  default_limit: 12
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-lounge
+  name: 飞客茶馆 - 候机楼 Lounge
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=371
+  encoding: gbk
+  programs:
+  - Star Alliance
+  - Chase
+  - American Express
+  default_limit: 12
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-marriott
+  name: 飞客茶馆 - 万豪旅享家
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=63
+  encoding: gbk
+  programs:
+  - Marriott
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-hyatt
+  name: 飞客茶馆 - 凯悦天地
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=60
+  encoding: gbk
+  programs:
+  - Hyatt
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-hilton
+  name: 飞客茶馆 - 希尔顿荣誉客会
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=61
+  encoding: gbk
+  programs:
+  - Hilton
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-ihg
+  name: 飞客茶馆 - IHG 优悦会
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=23
+  encoding: gbk
+  programs:
+  - IHG
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-card-hot
+  name: 飞客茶馆 - 用卡热点
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=59
+  encoding: gbk
+  programs:
+  - Chase
+  - American Express
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: flyert-overseas-card
+  name: 飞客茶馆 - 海外用卡
+  site: Flyert
+  priority: P0
+  source_type: forum
+  fetch_method: flyert_forum
+  url: https://www.flyert.com/forum.php?mod=forumdisplay&orderby=dateline&fid=228
+  encoding: gbk
+  programs:
+  - Chase
+  - American Express
+  default_limit: 15
+  enabled: true
+  region: global
+  language: zh-CN
+  rate_limit_seconds: 1.5
+- id: uscardforum
+  name: 美卡论坛
+  site: US Card Forum
+  priority: P1
+  source_type: reddit_fallback
+  fetch_method: browser_only
+  url: https://www.uscardforum.com/
+  programs:
+  - Chase
+  - American Express
+  enabled: true
+  language: zh-CN
+  note: Cloudflare frequently blocks direct script fetches; use Codex browser/web
+    reading manually when needed.
+  region: global
+  default_limit: 10
+  rate_limit_seconds: 0.8

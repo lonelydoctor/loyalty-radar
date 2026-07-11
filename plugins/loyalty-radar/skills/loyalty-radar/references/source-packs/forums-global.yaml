@@ -1,0 +1,309 @@
+pack:
+  id: forums-global
+  name: Global forums
+  description: Public forum feeds for user datapoints across global programs.
+  default_enabled: true
+sources:
+- id: ft-card-programs
+  name: FlyerTalk - Credit, Debit and Prepaid Card Programs
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=390
+  programs:
+  - Chase
+  - American Express
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-amex-mr
+  name: FlyerTalk - American Express Membership Rewards
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410
+  programs:
+  - American Express
+  program_fallback: true
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-chase-ur
+  name: FlyerTalk - Chase Ultimate Rewards
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=722
+  programs:
+  - Chase
+  - Hyatt
+  - Marriott
+  - IHG
+  program_fallback: true
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-airport-lounges
+  name: FlyerTalk - Airport Lounges
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=763
+  programs:
+  - Chase
+  - American Express
+  - Star Alliance
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-marriott
+  name: FlyerTalk - Marriott Bonvoy
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=766
+  programs:
+  - Marriott
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-hyatt
+  name: FlyerTalk - World of Hyatt
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=418
+  programs:
+  - Hyatt
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-hilton
+  name: FlyerTalk - Hilton Honors
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=417
+  programs:
+  - Hilton
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-ihg
+  name: FlyerTalk - IHG One Rewards
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=426
+  programs:
+  - IHG
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-star-alliance
+  name: FlyerTalk - Star Alliance
+  site: FlyerTalk
+  priority: P0
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=413
+  programs:
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-united
+  name: FlyerTalk - United MileagePlus
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=681
+  programs:
+  - United
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-aeroplan
+  name: FlyerTalk - Air Canada Aeroplan
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=375
+  programs:
+  - Air Canada
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-ana
+  name: FlyerTalk - ANA Mileage Club
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=443
+  programs:
+  - ANA
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-krisflyer
+  name: FlyerTalk - Singapore Airlines KrisFlyer
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=500
+  programs:
+  - Singapore Airlines
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-miles-more
+  name: FlyerTalk - Lufthansa Miles & More
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=495
+  programs:
+  - Lufthansa
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-asiana
+  name: FlyerTalk - Asiana Club
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=614
+  programs:
+  - Asiana
+  - Star Alliance
+  program_fallback: true
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: ft-rental-car-discussion
+  name: FlyerTalk - Rental Car Discussion
+  site: FlyerTalk
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=745
+  programs:
+  - Hertz
+  - Avis
+  - Budget
+  - National
+  - Enterprise
+  - Alamo
+  - Sixt
+  - Europcar
+  verticals:
+  - rental_car
+  keywords:
+  - loyalty
+  - rewards
+  - elite
+  - status
+  - upgrade
+  - points
+  - Hertz
+  - Avis
+  - National
+  - Emerald Club
+  - Sixt
+  default_limit: 20
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: myfico-credit-cards
+  name: myFICO - Credit Cards
+  site: myFICO
+  priority: P1
+  source_type: rss
+  fetch_method: browser_only
+  url: https://ficoforums.myfico.com/fico/rss/board?board.id=creditcard
+  programs:
+  - Chase
+  - American Express
+  include_comments: false
+  default_limit: 20
+  enabled: true
+  note: Direct RSS requests may return HTTP 403; use browser- or Jina-assisted reading.
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
+- id: creditboards-credit-forum
+  name: CreditBoards - Credit Forum
+  site: CreditBoards
+  priority: P1
+  source_type: rss
+  fetch_method: rss
+  url: https://creditboards.com/forums/index.php?/forum/2-credit-forum.xml/
+  programs:
+  - Chase
+  - American Express
+  include_comments: false
+  default_limit: 15
+  enabled: true
+  region: global
+  language: en
+  rate_limit_seconds: 0.8
