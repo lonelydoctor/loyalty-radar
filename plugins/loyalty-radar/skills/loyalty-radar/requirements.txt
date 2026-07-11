@@ -3,3 +3,4 @@ Pillow>=10,<13
 platformdirs>=4,<5
 PyYAML>=6,<7
 requests>=2.31,<3
+tzdata>=2025.2
