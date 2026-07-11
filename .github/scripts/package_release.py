@@ -25,6 +25,8 @@ def archive_tree(source: Path, archive: Path, archive_root: str) -> None:
         for path in sorted(source.rglob("*")):
             if path.is_symlink():
                 raise ValueError(f"Release archives cannot contain symlinks: {path}")
+            if re.search(r"\s+\d+\.[^.]+$", path.name):
+                raise ValueError(f"Conflict-copy filename cannot be released: {path}")
             if not path.is_file() or any(
                 part in EXCLUDED_PARTS or part.endswith(".egg-info") for part in path.parts
             ):
