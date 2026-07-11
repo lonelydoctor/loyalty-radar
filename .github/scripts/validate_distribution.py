@@ -348,6 +348,12 @@ def validate_public_hygiene(validation: Validation) -> None:
     for path in forbidden_dirs:
         validation.require(not path.exists(), f"Private/generated directory must not be committed: {path.name}")
 
+    profile_files = {path.name for path in REFERENCES.glob("profile*.yaml")}
+    validation.require(
+        profile_files == {"profile.yaml", "profile.default.yaml"},
+        f"Unexpected profile file detected: {sorted(profile_files)}",
+    )
+
     text_suffixes = {".md", ".py", ".toml", ".yaml", ".yml", ".json", ".txt", ".html", ".css", ".js"}
     patterns = {
         "absolute macOS home path": re.compile(r"/" r"Users/[^/\s]+/"),
@@ -361,6 +367,7 @@ def validate_public_hygiene(validation: Validation) -> None:
     for path in ROOT.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in text_suffixes or any(part in ignored_parts for part in path.parts):
             continue
+        validation.require(not re.search(r"\s+\d+\.[^.]+$", path.name), f"Conflict-copy filename is forbidden: {path.relative_to(ROOT)}")
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
