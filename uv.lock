@@ -386,7 +386,7 @@ wheels = [
 
 [[package]]
 name = "loyalty-radar"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -413,11 +413,11 @@ render = [
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12,<5" },
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.2,<2" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.13,<2" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.13,<3" },
     { name = "pillow", specifier = ">=10,<13" },
     { name = "platformdirs", specifier = ">=4,<5" },
     { name = "playwright", marker = "extra == 'render'", specifier = ">=1.49,<2" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<9" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<10" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6,<8" },
     { name = "pyyaml", specifier = ">=6,<7" },
     { name = "requests", specifier = ">=2.31,<3" },

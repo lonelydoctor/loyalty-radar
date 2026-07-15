@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Loyalty Radar is preparing its first public beta. After `v0.1.0` is published, security fixes will target the latest `0.1.x` release and the default branch.
+Loyalty Radar is in public beta. Security fixes target the latest `0.1.x` release and the default branch.
 
 | Version | Supported |
 | --- | --- |
@@ -61,4 +61,3 @@ Loyalty Radar treats all fetched text, URLs, filenames, configuration, and trans
 - show failed and skipped sources instead of attempting access-control bypasses.
 
 See [PRIVACY.md](PRIVACY.md) for the data-flow model.
-

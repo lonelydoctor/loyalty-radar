@@ -1,6 +1,6 @@
 # Privacy and Data Handling
 
-Loyalty Radar is a local-first open-source Skill and command-line tool. It has no hosted account system, product telemetry, advertising identifier, or background scheduler in `v0.1.0`.
+Loyalty Radar is a local-first open-source Skill and command-line tool. It has no hosted account system, product telemetry, advertising identifier, or background scheduler in the `v0.1.x` public beta.
 
 This document describes the project's intended data flows. It does not govern third-party websites, translation services, agent hosts, or tools used to install the project.
 

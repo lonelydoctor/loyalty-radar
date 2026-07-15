@@ -116,8 +116,16 @@ def validate_manifests(expected_version: str | None, validation: Validation) -> 
         project = {}
 
     version = str(plugin.get("version") or "")
+    init_path = SKILL / "scripts" / "loyalty_radar" / "__init__.py"
+    try:
+        init_text = init_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        validation.errors.append(f"{init_path.relative_to(ROOT)}: {exc}")
+        init_text = ""
+    init_match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', init_text, flags=re.MULTILINE)
     validation.require(plugin.get("name") == "loyalty-radar", "plugin.json name must be loyalty-radar")
     validation.require(version == str(project.get("version") or ""), "Plugin and Python package versions must match")
+    validation.require(bool(init_match) and init_match.group(1) == version, "Plugin, package, and runtime versions must match")
     if expected_version:
         validation.require(version == expected_version, f"tag version {expected_version} does not match {version}")
     validation.require(plugin.get("license") == "MIT", "plugin.json license must be MIT")
@@ -305,6 +313,10 @@ def validate_public_hygiene(validation: Validation) -> None:
         validation.require(not path.exists(), f"Mock report artifact must not be published: {path.relative_to(ROOT)}")
     validation.require((ROOT / "tools" / "build_public_site.py").is_file(), "Source Catalog builder is required")
     validation.require((ROOT / "docs" / "assets" / "catalog-en.gif").is_file(), "Source Catalog GIF is required")
+
+    manifest_text = (ROOT / "MANIFEST.in").read_text(encoding="utf-8") if (ROOT / "MANIFEST.in").is_file() else ""
+    validation.require("prune tests" in manifest_text, "Source distributions must explicitly prune tests")
+    validation.require("recursive-include tests" not in manifest_text, "Source distributions must not include test fixtures")
 
     profile = load_yaml(REFERENCES / "profile.yaml", validation)
     validation.require(profile.get("profile_name") == "blank-public-profile", "Compatibility profile must be blank")
