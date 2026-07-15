@@ -11,6 +11,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
+from . import __version__
+
 SCHEMA_VERSION = "1.0"
 
 
@@ -104,7 +106,7 @@ def build_report(
 ) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
-        "product": {"name": "Loyalty Radar", "version": "0.1.0"},
+        "product": {"name": "Loyalty Radar", "version": __version__},
         "generated_at": generated_at,
         "mode": mode,
         "focus": focus,
@@ -123,7 +125,7 @@ def upgrade_report(payload: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("Report JSON must contain an object")
     upgraded = copy.deepcopy(payload)
     upgraded["schema_version"] = SCHEMA_VERSION
-    upgraded.setdefault("product", {"name": "Loyalty Radar", "version": "0.1.0"})
+    upgraded.setdefault("product", {"name": "Loyalty Radar", "version": __version__})
     upgraded.setdefault("future_watch_days", 60)
     upgraded.setdefault("source_packs", [])
     upgraded.setdefault("translation_health", {})

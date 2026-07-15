@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+from . import __version__
 from .health import localized_health_detail
 from .i18n import Catalog, load_catalog, normalize_locale
 
@@ -68,6 +69,13 @@ def _priority_code(event: dict[str, Any]) -> str:
     tier = str(event.get("priority_tier") or event.get("priority") or "P4")
     match = re.match(r"P[0-4]", tier)
     return match.group(0) if match else "P4"
+
+
+def _product_version(payload: dict[str, Any]) -> str:
+    product = payload.get("product")
+    if isinstance(product, dict) and str(product.get("version") or "").strip():
+        return str(product["version"]).strip()
+    return __version__
 
 
 def _lane(event: dict[str, Any]) -> str:
@@ -397,6 +405,7 @@ def render_overview_html(payload: dict[str, Any], locale: str) -> str:
         lanes[_lane(event)].append(event)
     days = max(1, math.ceil(int(payload.get("hours", 336)) / 24))
     generated = str(payload.get("generated_at") or "").replace("T", " ")[:16]
+    product_version = _product_version(payload)
     health = payload.get("health", [])
     healthy = sum(1 for row in health if row.get("status") == "ok")
     limited = len(health) - healthy
@@ -417,7 +426,7 @@ body.tight h1{{font-size:61px}} body.tight .lanes{{height:1395px}} body.tight .o
 <header><div><div class="kicker">{_escape(catalog.text('meta.window',days=days))} · {_escape(catalog.text('meta.future',days=payload.get('future_watch_days',60)))}</div><h1>{_escape(catalog.text('meta.title'))}</h1><p class="subtitle">{_escape(catalog.text('meta.subtitle'))}</p></div><div class="stamp">{_escape(catalog.text('meta.generated',value=generated))}<br>{_escape(catalog.text('meta.unverified'))}</div></header>
 <section class="metrics"><div class="metric"><strong>{len(events)}</strong><span>{_escape(catalog.text('metrics.events'))}</span></div><div class="metric"><strong>{healthy}</strong><span>{_escape(catalog.text('metrics.sources_ok'))}</span></div><div class="metric"><strong>{limited}</strong><span>{_escape(catalog.text('metrics.sources_limited'))}</span></div><div class="metric"><strong>{sum(1 for e in events if _priority_code(e) in {'P0','P1'})}</strong><span>{_escape(catalog.text('metrics.urgent'))}</span></div></section>
 <main class="lanes"><section class="lane"><div class="lane-title"><h2>{_escape(catalog.text('sections.c_end'))}</h2><span>{len(lanes['c-end'])}</span></div><div class="cards">{c_cards}</div></section><section class="lane"><div class="lane-title"><h2>{_escape(catalog.text('sections.ecosystem'))}</h2><span>{len(lanes['industry'])}</span></div><div class="cards">{i_cards}</div></section></main>
-<footer><span>Loyalty Radar v0.1.0</span><span>{_escape(catalog.text('footer.disclosure'))}</span></footer>
+<footer><span>Loyalty Radar v{_escape(product_version)}</span><span>{_escape(catalog.text('footer.disclosure'))}</span></footer>
 <script>function fit(){{const b=document.body;if(b.scrollHeight>1800)b.classList.add('tight');if(b.scrollHeight>1800)b.classList.add('tighter');}}window.addEventListener('load',fit);</script></body></html>"""
 
 
@@ -607,7 +616,7 @@ def _render_png_with_pillow(payload: dict[str, Any], locale: str, output: Path, 
             y = draw_lines(inner_x, y + 8, why_lines, font(small_size), "#2458a6", 3) + 6
             meta = f"{event.get('source', '')} · {str(event.get('published_at') or '')[:10]}"
             draw_lines(inner_x, y, wrap(meta, font(small_size), inner_width), font(small_size), "#667085", 3)
-    draw.text((margin, height - 38), f"Loyalty Radar v0.1.0 · {catalog.text('meta.unverified')}", fill="#667085", font=font(13))
+    draw.text((margin, height - 38), f"Loyalty Radar v{_product_version(payload)} · {catalog.text('meta.unverified')}", fill="#667085", font=font(13))
     output.parent.mkdir(parents=True, exist_ok=True)
     image.save(output)
     return True

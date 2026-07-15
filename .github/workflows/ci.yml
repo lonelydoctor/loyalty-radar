@@ -91,6 +91,9 @@ jobs:
       - name: Build wheel and source distribution
         run: uv build
 
+      - name: Audit all release candidate archives
+        run: uv run --frozen python .github/scripts/package_release.py --dist dist
+
       - name: Install wheel in a clean environment
         shell: bash
         run: |

@@ -4,7 +4,7 @@
 
 > Turn public loyalty-program noise into source-backed, prioritized events for points, miles, travel cards, hotels, airlines, and rental cars.
 
-**Public beta:** `v0.1.0` is the first public release. Interfaces and source availability may change during the beta.
+**Public beta:** `v0.1.1` is the current patch release; `v0.1.0` was the first public release. Interfaces and source availability may change during the beta.
 
 ![Loyalty Radar public source catalog](docs/assets/overview-en.png)
 
@@ -26,7 +26,7 @@ Choose one installation form. All three use the same Skill and Python implementa
 Install the tagged public Marketplace:
 
 ```bash
-codex plugin marketplace add lonelydoctor/loyalty-radar --ref v0.1.0
+codex plugin marketplace add lonelydoctor/loyalty-radar --ref v0.1.1
 codex plugin add loyalty-radar@loyalty-radar
 ```
 
@@ -77,7 +77,7 @@ loyalty-radar run --mode daily --locale en
 The package requires Python 3.11 or newer. A published tag can later be installed directly from Git:
 
 ```bash
-uv tool install "git+https://github.com/lonelydoctor/loyalty-radar.git@v0.1.0"
+uv tool install "git+https://github.com/lonelydoctor/loyalty-radar.git@v0.1.1"
 ```
 
 ## Common commands
@@ -131,12 +131,14 @@ Visible reports never silently fall back to the wrong language. Translation fail
 | Translation providers | `google-public`, `openai-compatible`, and `none` |
 | Rendering | HTML, PNG, Markdown, and schema-versioned JSON; Pillow fallback when Playwright is unavailable |
 | Personalization | User-owned profile, membership, card, region, topic, and source-pack configuration |
-| Scheduling and delivery | Not included in v0.1.0; runs are started manually by an agent or user |
+| Scheduling and delivery | Not included in v0.1.x; runs are started manually by an agent or user |
 | Hosted service and telemetry | Not included |
 
 ## 59-source catalog
 
 The catalog contains 59 configured source entries at the v0.1.0 baseline. An entry is not a promise that a site will always be reachable: every run records success, failure, skip, browser-assisted status, and row counts instead of silently dropping unavailable sources.
+
+The read-only weekly GitHub health workflow probes a bounded sample rather than scraping the full catalog. Its sample is balanced across script-eligible Source Packs and rotates each ISO week so lower-priority and industry sources are not permanently hidden behind a P0-heavy prefix. Endpoint failures remain evidence about availability, not claims that a source published no news.
 
 | Source pack | Default | Typical coverage | Notes |
 | --- | --- | --- | --- |

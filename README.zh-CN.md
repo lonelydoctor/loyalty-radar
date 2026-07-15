@@ -4,7 +4,7 @@
 
 > 将公开渠道中的常旅客噪声整理为有来源、可排序的事件，覆盖积分里程、旅行信用卡、酒店、航司与租车忠诚计划。
 
-**公开测试版：** `v0.1.0` 是首个公开版本。测试期间，接口和来源可用性仍可能调整。
+**公开测试版：** `v0.1.1` 是当前补丁版本，`v0.1.0` 是首个公开版本。测试期间，接口和来源可用性仍可能调整。
 
 ![Loyalty Radar 公开来源目录](docs/assets/overview-zh-CN.png)
 
@@ -26,7 +26,7 @@ Loyalty Radar 不会默认逐条前往官网核验。它负责整理公开来源
 安装已打标签的公开 Marketplace：
 
 ```bash
-codex plugin marketplace add lonelydoctor/loyalty-radar --ref v0.1.0
+codex plugin marketplace add lonelydoctor/loyalty-radar --ref v0.1.1
 codex plugin add loyalty-radar@loyalty-radar
 ```
 
@@ -77,7 +77,7 @@ loyalty-radar run --mode daily --locale zh-CN
 需要 Python 3.11 或更高版本。正式标签发布后，也可以直接从 Git 安装：
 
 ```bash
-uv tool install "git+https://github.com/lonelydoctor/loyalty-radar.git@v0.1.0"
+uv tool install "git+https://github.com/lonelydoctor/loyalty-radar.git@v0.1.1"
 ```
 
 ## 常用命令
@@ -131,12 +131,14 @@ loyalty-radar render --input-json path/to/report.json --locale zh-CN
 | 翻译提供方 | `google-public`、`openai-compatible` 和 `none` |
 | 渲染 | HTML、PNG、Markdown 与带版本的 JSON；无 Playwright 时使用 Pillow 降级 |
 | 个性化 | 用户自有的地区、会籍、卡组、主题和来源包配置 |
-| 定时与推送 | v0.1.0 不包含；由 Agent 或用户手动触发 |
+| 定时与推送 | v0.1.x 不包含；由 Agent 或用户手动触发 |
 | 托管服务与遥测 | 不包含 |
 
 ## 59 个来源目录
 
 v0.1.0 基线目录包含 59 个来源配置。来源入库不等于网站始终可访问：每次运行都会记录成功、失败、跳过、浏览器辅助和各阶段条目数，不会静默丢弃不可用来源。
+
+GitHub 上的每周只读健康工作流只探测有限样本，不会抓取完整目录。样本会在可由脚本探测的来源包之间均衡分配，并按 ISO 周轮换，避免行业源或较低优先级来源长期被 P0 前缀遮蔽。端点失败只表示当时的可访问性，不代表该来源没有发布新闻。
 
 | 来源包 | 默认状态 | 典型覆盖 | 说明 |
 | --- | --- | --- | --- |

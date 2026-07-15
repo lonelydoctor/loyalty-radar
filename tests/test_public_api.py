@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from loyalty_radar import cli
+from loyalty_radar import __version__, cli
 from loyalty_radar.config import load_settings, load_yaml
 from loyalty_radar.i18n import load_catalog, validate_catalogs
 from loyalty_radar.paths import REFERENCES_DIR
@@ -15,7 +15,13 @@ from loyalty_radar.rendering import (
     render_overview_html,
     select_overview_events,
 )
-from loyalty_radar.schema import SCHEMA_VERSION, read_report, upgrade_report, write_report
+from loyalty_radar.schema import (
+    SCHEMA_VERSION,
+    build_report,
+    read_report,
+    upgrade_report,
+    write_report,
+)
 from loyalty_radar.sources import combine_packs, list_packs, validate_all_packs, validate_pack_data
 from loyalty_radar.translation import localize_report
 
@@ -156,6 +162,18 @@ class I18nAndSchemaTests(unittest.TestCase):
             payload = read_report(path)
             self.assertEqual(payload["schema_version"], "1.0")
             self.assertEqual(payload["items"][0]["original"]["title"], "ORIGINAL_MEMBER_TITLE_SHOULD_NOT_LEAK")
+
+    def test_new_reports_use_the_installed_product_version(self) -> None:
+        payload = build_report(
+            [],
+            [],
+            generated_at="2026-07-15T00:00:00+00:00",
+            mode="daily",
+            focus="all",
+            hours=336,
+            timezone="UTC",
+        )
+        self.assertEqual(payload["product"]["version"], __version__)
 
 
 class TranslationTests(unittest.TestCase):

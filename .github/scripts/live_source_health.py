@@ -28,8 +28,11 @@ def bounded_limit(value: str) -> int:
     return number
 
 
-def load_candidates() -> tuple[list[dict[str, Any]], list[dict[str, str]], list[dict[str, str]]]:
-    by_priority: dict[str, dict[str, deque[dict[str, Any]]]] = defaultdict(lambda: defaultdict(deque))
+PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2}
+
+
+def load_candidates() -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, str]], list[dict[str, str]]]:
+    by_pack: dict[str, list[dict[str, Any]]] = defaultdict(list)
     browser_only: list[dict[str, str]] = []
     disabled: list[dict[str, str]] = []
     for path in sorted(PACK_DIR.glob("*.yaml")):
@@ -47,16 +50,67 @@ def load_candidates() -> tuple[list[dict[str, Any]], list[dict[str, str]], list[
                 continue
             item = dict(source)
             item["pack_id"] = pack_id
-            by_priority[str(item.get("priority") or "P2")][pack_id].append(item)
+            by_pack[pack_id].append(item)
 
-    ordered: list[dict[str, Any]] = []
-    for priority in ("P0", "P1", "P2"):
-        groups = by_priority.get(priority, {})
-        while any(groups.values()):
-            for pack_id in sorted(groups):
-                if groups[pack_id]:
-                    ordered.append(groups[pack_id].popleft())
+    ordered = {
+        pack_id: sorted(
+            rows,
+            key=lambda row: (
+                PRIORITY_ORDER.get(str(row.get("priority") or "P2"), 3),
+                str(row.get("id") or ""),
+            ),
+        )
+        for pack_id, rows in by_pack.items()
+    }
     return ordered, browser_only, disabled
+
+
+def select_rotating_sample(
+    candidates_by_pack: dict[str, list[dict[str, Any]]],
+    limit: int,
+    rotation: int,
+) -> list[dict[str, Any]]:
+    """Select a balanced sample and advance each pack by its weekly quota."""
+
+    pack_ids = sorted(pack_id for pack_id, rows in candidates_by_pack.items() if rows)
+    if not pack_ids or limit <= 0:
+        return []
+    pack_shift = rotation % len(pack_ids)
+    pack_ids = pack_ids[pack_shift:] + pack_ids[:pack_shift]
+    total = sum(len(candidates_by_pack[pack_id]) for pack_id in pack_ids)
+    remaining = min(limit, total)
+    quotas = {pack_id: 0 for pack_id in pack_ids}
+    while remaining:
+        progressed = False
+        for pack_id in pack_ids:
+            if quotas[pack_id] >= len(candidates_by_pack[pack_id]):
+                continue
+            quotas[pack_id] += 1
+            remaining -= 1
+            progressed = True
+            if remaining == 0:
+                break
+        if not progressed:
+            break
+
+    selected_by_pack: dict[str, deque[dict[str, Any]]] = {}
+    for pack_id in pack_ids:
+        rows = candidates_by_pack[pack_id]
+        quota = quotas[pack_id]
+        start = (rotation * quota) % len(rows) if quota else 0
+        selected_by_pack[pack_id] = deque(rows[(start + index) % len(rows)] for index in range(quota))
+
+    selected: list[dict[str, Any]] = []
+    while any(selected_by_pack.values()):
+        for pack_id in pack_ids:
+            if selected_by_pack[pack_id]:
+                selected.append(selected_by_pack[pack_id].popleft())
+    return selected
+
+
+def default_rotation() -> int:
+    calendar = datetime.now(UTC).isocalendar()
+    return calendar.year * 53 + calendar.week
 
 
 def check_source(source: dict[str, Any], last_request: dict[str, float]) -> dict[str, Any]:
@@ -132,17 +186,20 @@ def write_summary(path: Path, report: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=bounded_limit, default=15)
+    parser.add_argument("--rotation", type=int, help="Deterministic sample rotation; defaults to the current ISO week")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--summary", type=Path)
     args = parser.parse_args()
 
     try:
-        candidates, browser_only, disabled = load_candidates()
+        candidates_by_pack, browser_only, disabled = load_candidates()
     except (OSError, yaml.YAMLError, TypeError, ValueError) as exc:
         print(f"Could not load source packs: {exc}", file=sys.stderr)
         return 2
 
-    selected = candidates[: args.limit]
+    rotation = args.rotation if args.rotation is not None else default_rotation()
+    selected = select_rotating_sample(candidates_by_pack, args.limit, rotation)
+    candidate_count = sum(len(rows) for rows in candidates_by_pack.values())
     last_request: dict[str, float] = {}
     results = [check_source(source, last_request) for source in selected]
     counts = dict(Counter(str(item["status"]) for item in results))
@@ -151,10 +208,12 @@ def main() -> int:
         "generated_at": datetime.now(UTC).isoformat(),
         "mode": "limited_source_health",
         "requested_limit": args.limit,
-        "catalog_sources": len(candidates) + len(browser_only) + len(disabled),
-        "script_eligible_sources": len(candidates),
+        "rotation": rotation,
+        "catalog_sources": candidate_count + len(browser_only) + len(disabled),
+        "script_eligible_sources": candidate_count,
         "checked": len(results),
-        "not_selected_this_run": max(0, len(candidates) - len(results)),
+        "not_selected_this_run": max(0, candidate_count - len(results)),
+        "selected_by_pack": dict(Counter(str(item.get("pack_id") or "") for item in selected)),
         "browser_assisted_sources": browser_only,
         "disabled_sources": disabled,
         "counts": counts,

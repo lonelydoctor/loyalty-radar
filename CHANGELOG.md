@@ -6,11 +6,27 @@ The project follows [Semantic Versioning](https://semver.org/). The format is ba
 
 ## [Unreleased]
 
-No user-visible changes have been assigned beyond the first public-beta release.
+No user-visible changes have been assigned after `v0.1.1`.
 
-## [0.1.0] - Unreleased
+## [0.1.1] - 2026-07-15
 
-First public-beta release. The release date and artifact links will be added only after the release workflow completes.
+Public-beta packaging and source-health hardening release.
+
+### Changed
+
+- Weekly source-health checks now balance their bounded sample across Source Packs and rotate candidates by ISO week instead of repeatedly probing the same P0-heavy prefix.
+- Runtime report footers and JSON product metadata now use the installed package version instead of a hardcoded release string.
+- README installation examples now target the latest immutable patch tag.
+
+### Fixed
+
+- Source distributions no longer bundle deterministic test fixtures or repository-only CI, Pages, and tooling files.
+- CI and release packaging now inspect every wheel, source archive, Plugin ZIP, and Skill ZIP for test paths, mock-report markers, private paths, and common secret formats.
+- The first public release is now recorded with its actual publication date.
+
+## [0.1.0] - 2026-07-11
+
+First public-beta release.
 
 ### Added
 
