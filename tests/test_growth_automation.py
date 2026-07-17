@@ -405,6 +405,7 @@ def test_weekly_public_brief_workflow_has_audited_dry_run_and_no_auto_merge() ->
     text = workflow("weekly-public-brief.yml")
 
     assert 'cron: "27 1 * * 2"' in text
+    assert "runs-on: macos-latest" in text
     assert "dry_run:" in text
     assert "--preset public-weekly" in text
     assert "loyalty-radar audit" in text
@@ -415,6 +416,14 @@ def test_weekly_public_brief_workflow_has_audited_dry_run_and_no_auto_merge() ->
     assert "bot/brief-${WEEK}" in text
     assert "gh pr merge" not in text
     assert "--auto" not in text
+
+
+def test_source_health_uses_the_same_hosted_runner_network_as_public_weekly() -> None:
+    text = workflow("source-health.yml")
+
+    assert "runs-on: macos-latest" in text
+    assert "live_source_health.py" in text
+    assert "source_health_escalation.py" in text
 
 
 def test_growth_workflow_has_no_checkout_and_only_github_native_inputs() -> None:
