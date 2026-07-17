@@ -314,7 +314,14 @@ def validate_github_automation(validation: Validation) -> None:
 
     weekly_text = (workflow_dir / "weekly-public-brief.yml").read_text(encoding="utf-8") if (workflow_dir / "weekly-public-brief.yml").is_file() else ""
     validation.require('cron: "27 1 * * 2"' in weekly_text, "weekly-public-brief.yml schedule must remain Tuesday 01:27 UTC")
-    for required in ("--preset public-weekly", "--policy public", "retention-days: 14", "Required human review (Top 10)"):
+    for required in (
+        "--preset public-weekly",
+        "--policy public",
+        "retention-days: 14",
+        "Required human review (Top 10)",
+        "Public brief PR blocked: ${WEEK}",
+        "/compare/${DEFAULT_BRANCH}...${BRANCH}?expand=1",
+    ):
         validation.require(required in weekly_text, f"weekly-public-brief.yml is missing {required}")
 
     source_pr = payloads.get("source-pr-health.yml", {})

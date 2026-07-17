@@ -414,6 +414,9 @@ def test_weekly_public_brief_workflow_has_audited_dry_run_and_no_auto_merge() ->
     assert "generate_outreach.py audit" not in text
     assert "retention-days: 14" in text
     assert "bot/brief-${WEEK}" in text
+    assert "Public brief PR blocked: ${WEEK}" in text
+    assert "/compare/${DEFAULT_BRANCH}...${BRANCH}?expand=1" in text
+    assert "Allow GitHub Actions to create and approve pull requests" in text
     assert "gh pr merge" not in text
     assert "--auto" not in text
 

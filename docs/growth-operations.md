@@ -37,6 +37,8 @@ The Tuesday workflow runs `loyalty-radar run --preset public-weekly` against the
 
 The workflow creates a report Pull Request only when the public audit policy passes. It never merges the Pull Request.
 
+Repository maintainers must enable **Settings > Actions > General > Workflow permissions > Allow GitHub Actions to create and approve pull requests**. This permits the workflow to open a review Pull Request; it does not approve or merge that Pull Request. If the setting is disabled, the workflow keeps the audited branch, opens one deduplicated `launch-blocker` Issue with a manual compare link, and exits unsuccessfully instead of silently losing the review candidate.
+
 Automated gates:
 
 1. Script-fetch source success is at least 70%.
@@ -103,3 +105,5 @@ The growth Issue receives a replaceable current-state block plus an append-only 
 - the next operating decision implied by the thresholds above.
 
 Raw daily metrics are retained as a 90-day Actions artifact. The snapshot contains aggregate repository measurements only.
+
+GitHub does not expose a supported repository Social Preview upload API. After regenerating `docs/site/assets/social-preview.png`, a maintainer uploads that factual image through **Settings > General > Social preview**. The image is generated from product metadata and source-health labels, not report events or test fixtures.
