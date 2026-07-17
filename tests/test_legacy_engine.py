@@ -199,6 +199,18 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(health.direct_error, "HTTP 403")
         self.assertIn("feedly-public fallback", health.detail)
 
+    def test_feedly_public_parser_rejects_an_empty_cache_as_unhealthy(self) -> None:
+        feed_url = "https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=390"
+        payload = json.dumps({"id": f"feed/{feed_url}", "items": []})
+
+        with self.assertRaisesRegex(run_digest.FetchError, "no cached items"):
+            run_digest.parse_feedly_public_stream(
+                payload,
+                {"source_type": "rss"},
+                5,
+                expected_feed_url=feed_url,
+            )
+
 
 class ClassifierTests(unittest.TestCase):
     def classify(self, title: str, summary: str = "") -> run_digest.IntelItem:

@@ -786,6 +786,8 @@ def parse_feedly_public_stream(
     items = payload.get("items")
     if not isinstance(items, list):
         raise FetchError("feedly-public response is missing items")
+    if not items:
+        raise FetchError("feedly-public stream has no cached items")
 
     rows: list[dict[str, Any]] = []
     for item in items[:limit]:
@@ -817,7 +819,10 @@ def parse_feedly_public_stream(
                 "source_type": source_cfg.get("source_type", "rss"),
             }
         )
-    return [row for row in rows if row["title"] and row["url"]]
+    usable_rows = [row for row in rows if row["title"] and row["url"]]
+    if not usable_rows:
+        raise FetchError("feedly-public stream has no usable items")
+    return usable_rows
 
 
 def parse_flyert_local_datetime(value: str) -> dt.datetime | None:

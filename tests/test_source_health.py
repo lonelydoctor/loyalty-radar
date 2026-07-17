@@ -108,7 +108,7 @@ def test_feedly_fallback_probe_records_direct_failure_without_retaining_body(mon
             return False
 
         def json(self):
-            return {"id": f"feed/{source_url}", "items": []}
+            return {"id": f"feed/{source_url}", "items": [{"id": "public-entry"}]}
 
     monkeypatch.setattr(health.requests, "get", lambda *_args, **_kwargs: Response())
     result = {"status": "http_error", "status_code": 403}

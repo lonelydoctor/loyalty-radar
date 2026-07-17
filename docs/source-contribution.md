@@ -111,7 +111,7 @@ The initial catalog includes these collector classes:
 
 Adding a new `fetch_method` requires a separate implementation review covering redirects, response limits, timeouts, encoding, HTML escaping, failure states, and deterministic fixtures.
 
-`feedly-public` is a direct-failure fallback, not a replacement source. A contribution must prove that the returned stream ID matches the configured RSS URL, items keep original HTTP(S) links and publication times, fallback use is visible in health output, and no account credential or private text is sent.
+`feedly-public` is a direct-failure fallback, not a replacement source. A contribution must prove that the returned stream ID matches the configured RSS URL, at least one usable cached item is present, items keep original HTTP(S) links and publication times, fallback use is visible in health output, and no account credential or private text is sent.
 
 ## Query design for industry signals
 

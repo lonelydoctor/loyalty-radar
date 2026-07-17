@@ -137,7 +137,7 @@ New code should depend on the narrow modules rather than adding behavior to the 
 
 The catalog is divided into `core`, `industry`, `forums-global`, `forums-cn`, and `experimental`. Each entry declares source identity, priority, region, language, fetch method, URL, limits, and program/vertical hints.
 
-RSS collection is direct-first. A source may explicitly declare the reviewed `feedly-public` fallback for data-center blocking. The collector validates the returned stream identity, keeps original item links and timestamps, and records fallback usage separately in private and public health aggregates.
+RSS collection is direct-first. A source may explicitly declare the reviewed `feedly-public` fallback for data-center blocking. The collector validates the returned stream identity and at least one usable cached item, keeps original item links and timestamps, and records fallback usage separately in private and public health aggregates.
 
 Pack loading follows these rules:
 

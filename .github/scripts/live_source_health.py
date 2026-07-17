@@ -250,8 +250,12 @@ def apply_feedly_public_fallback(
             if not isinstance(payload, dict) or payload.get("id") != expected_id:
                 result["fallback_error"] = "unexpected stream"
                 return
-            if not isinstance(payload.get("items"), list):
+            items = payload.get("items")
+            if not isinstance(items, list):
                 result["fallback_error"] = "missing items"
+                return
+            if not items:
+                result["fallback_error"] = "no cached items"
                 return
             result.update(
                 {
