@@ -223,7 +223,7 @@ def validate_source_packs(validation: Validation) -> None:
                 validation.require(int(source.get("default_limit")) > 0, f"{label}.default_limit must be positive")
             except (TypeError, ValueError):
                 validation.errors.append(f"{label}.default_limit must be an integer")
-    validation.require(source_count == 59, f"v0.1.0 public catalog must contain exactly 59 sources, found {source_count}")
+    validation.require(source_count == 59, f"v0.1.2 public catalog must contain exactly 59 sources, found {source_count}")
 
 
 def validate_locales_and_schemas(validation: Validation) -> None:
@@ -235,13 +235,28 @@ def validate_locales_and_schemas(validation: Validation) -> None:
     for locale, catalog in (("en", en), ("zh-CN", zh)):
         for key, value in flatten_leaves(catalog):
             validation.require(isinstance(value, str) and bool(value.strip()), f"{locale} locale value is empty or non-text: {key}")
-    for name in ("config.schema.json", "report.schema.json", "source-pack.schema.json"):
+    for name in (
+        "config.schema.json",
+        "report.schema.json",
+        "source-pack.schema.json",
+        "public-report.schema.json",
+    ):
         load_json(REFERENCES / "schemas" / name, validation)
 
 
 def validate_github_automation(validation: Validation) -> None:
     workflow_dir = ROOT / ".github" / "workflows"
-    expected = {"ci.yml", "source-health.yml", "release.yml", "pages.yml"}
+    expected = {
+        "ci.yml",
+        "ecosystem-smoke.yml",
+        "growth-metrics.yml",
+        "pages.yml",
+        "public-brief-merged.yml",
+        "release.yml",
+        "source-health.yml",
+        "source-pr-health.yml",
+        "weekly-public-brief.yml",
+    }
     paths = sorted(workflow_dir.glob("*.yml"))
     validation.require({path.name for path in paths} == expected, "GitHub workflow set is incomplete or contains an unreviewed workflow")
 
@@ -263,13 +278,44 @@ def validate_github_automation(validation: Validation) -> None:
         validation.require("pull_request_target" not in triggers, f"{path.name}: pull_request_target is forbidden")
         validation.require(payload.get("permissions") != "write-all", f"{path.name}: write-all permissions are forbidden")
         text = path.read_text(encoding="utf-8")
-        validation.require("git push" not in text and "git commit" not in text, f"{path.name}: workflows must not commit generated or scraped content")
+        if path.name == "weekly-public-brief.yml":
+            validation.require("bot/brief-${WEEK}" in text, "weekly-public-brief.yml must use a deterministic bot branch")
+            validation.require("public-briefs/${WEEK}/report.json" in text, "weekly-public-brief.yml must commit only the audited public-report contract")
+            validation.require("gh pr merge" not in text and "--auto" not in text, "weekly-public-brief.yml must never merge automatically")
+        else:
+            validation.require(
+                "git push" not in text and "git commit" not in text,
+                f"{path.name}: only the audited weekly-brief workflow may commit content",
+            )
+        for token_name in ("TWITTER_TOKEN", "REDDIT_TOKEN", "FLYERTALK_TOKEN", "V2EX_TOKEN"):
+            validation.require(token_name not in text, f"{path.name}: external community posting tokens are forbidden")
 
     health_on = payloads.get("source-health.yml", {}).get("on", {})
     if isinstance(health_on, dict):
         validation.require(set(health_on) == {"schedule", "workflow_dispatch"}, "source-health.yml must remain schedule/manual only")
     health_permissions = payloads.get("source-health.yml", {}).get("permissions", {})
-    validation.require(health_permissions == {"contents": "read"}, "source-health.yml must have read-only repository permission")
+    validation.require(
+        health_permissions == {"contents": "read", "issues": "write"},
+        "source-health.yml may write only deduplicated health Issues",
+    )
+
+    growth_text = (workflow_dir / "growth-metrics.yml").read_text(encoding="utf-8") if (workflow_dir / "growth-metrics.yml").is_file() else ""
+    validation.require("actions/checkout" not in growth_text, "growth-metrics.yml must not checkout the repository")
+    validation.require('cron: "13 2 * * *"' in growth_text, "growth-metrics.yml schedule must remain 02:13 UTC daily")
+
+    weekly_text = (workflow_dir / "weekly-public-brief.yml").read_text(encoding="utf-8") if (workflow_dir / "weekly-public-brief.yml").is_file() else ""
+    validation.require('cron: "27 1 * * 2"' in weekly_text, "weekly-public-brief.yml schedule must remain Tuesday 01:27 UTC")
+    for required in ("--preset public-weekly", "--policy public", "retention-days: 14", "Required human review (Top 10)"):
+        validation.require(required in weekly_text, f"weekly-public-brief.yml is missing {required}")
+
+    source_pr = payloads.get("source-pr-health.yml", {})
+    validation.require(
+        source_pr.get("permissions") == {"contents": "read"},
+        "source-pr-health.yml must remain read-only",
+    )
+    source_pr_text = (workflow_dir / "source-pr-health.yml").read_text(encoding="utf-8") if (workflow_dir / "source-pr-health.yml").is_file() else ""
+    validation.require("continue-on-error: true" in source_pr_text, "source-pr-health.yml must remain non-blocking")
+    validation.require("--source-id" in source_pr_text, "source-pr-health.yml must probe only changed sources")
 
     ci_text = (workflow_dir / "ci.yml").read_text(encoding="utf-8") if (workflow_dir / "ci.yml").is_file() else ""
     for required in ("ubuntu-latest", "macos-latest", "windows-latest", 'python: "3.11"', 'python: "3.12"', 'python: "3.13"'):
@@ -362,7 +408,7 @@ def validate_public_hygiene(validation: Validation) -> None:
 
     profile_files = {path.name for path in REFERENCES.glob("profile*.yaml")}
     validation.require(
-        profile_files == {"profile.yaml", "profile.default.yaml"},
+        profile_files == {"profile.yaml", "profile.default.yaml", "profile.public-weekly.yaml"},
         f"Unexpected profile file detected: {sorted(profile_files)}",
     )
 

@@ -1,0 +1,70 @@
+name: Source PR health probe
+
+on:
+  pull_request:
+    paths:
+      - "plugins/loyalty-radar/skills/loyalty-radar/references/source-packs/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-pr-health-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: Best-effort changed-source probe
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the untrusted PR without persisted credentials
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+
+      - name: Install locked runtime
+        run: uv sync --frozen --no-editable
+
+      - name: Select only added or modified source IDs
+        run: >-
+          uv run --frozen python .github/scripts/changed_source_ids.py
+          --base "${{ github.event.pull_request.base.sha }}"
+          --output "${RUNNER_TEMP}/changed-source-ids.txt"
+
+      - name: Probe changed public endpoints without retaining response bodies
+        shell: bash
+        run: |
+          if [[ ! -s "${RUNNER_TEMP}/changed-source-ids.txt" ]]; then
+            printf '## Changed-source health\n\nNo added or materially changed source endpoint required a probe.\n' >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+          ARGS=()
+          while IFS= read -r SOURCE_ID; do
+            ARGS+=(--source-id "${SOURCE_ID}")
+          done < "${RUNNER_TEMP}/changed-source-ids.txt"
+          uv run --frozen python .github/scripts/live_source_health.py \
+            "${ARGS[@]}" \
+            --output "${RUNNER_TEMP}/source-pr-health.json" \
+            --summary "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload health metadata only
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-pr-health-${{ github.event.pull_request.number }}
+          path: |
+            ${{ runner.temp }}/changed-source-ids.txt
+            ${{ runner.temp }}/source-pr-health.json
+          if-no-files-found: warn
+          retention-days: 14

@@ -23,7 +23,11 @@ from loyalty_radar.schema import (
     write_report,
 )
 from loyalty_radar.sources import combine_packs, list_packs, validate_all_packs, validate_pack_data
-from loyalty_radar.translation import localize_report
+from loyalty_radar.translation import (
+    _postprocess_report_locale,
+    _postprocess_translation,
+    localize_report,
+)
 
 
 class FakeProvider:
@@ -177,6 +181,62 @@ class I18nAndSchemaTests(unittest.TestCase):
 
 
 class TranslationTests(unittest.TestCase):
+    def test_loyalty_glossary_repairs_misleading_public_translation(self) -> None:
+        self.assertEqual(
+            _postprocess_translation(
+                "Chase 向 IHG 提供 100% 转会奖金：不要错过",
+                "Chase offers a 100% transfer bonus to IHG: give it a miss",
+                "zh-CN",
+            ),
+            "Chase 向 IHG 提供 100% 转点奖励：不建议转点",
+        )
+        self.assertEqual(
+            _postprocess_translation(
+                "Chase Sapphire 首选100,000积分优惠",
+                "Chase Sapphire Preferred 100,000 points offer",
+                "zh-CN",
+            ),
+            "Chase Sapphire Preferred 100,000 积分优惠",
+        )
+
+    def test_bonus_points_context_repairs_currency_mistranslation(self) -> None:
+        payload = {
+            "items": [
+                {
+                    "original": {
+                        "title": "ALL Accor Up To 7,500 Per Stay",
+                        "summary": "Members can earn up to 7,500 bonus points per stay.",
+                    },
+                    "localized": {"zh-CN": {"title": "ALL Accor 每次住宿最高 7,500 元"}},
+                }
+            ]
+        }
+        _postprocess_report_locale(payload, "zh-CN")
+        self.assertEqual(
+            payload["items"][0]["localized"]["zh-CN"]["title"],
+            "ALL Accor 每次住宿最高 7,500 点奖励积分",
+        )
+
+    def test_existing_localized_fields_receive_glossary_repairs(self) -> None:
+        payload = {
+            "items": [
+                {
+                    "original": {
+                        "title": "Chase Sapphire Preferred 100,000 points offer",
+                        "summary": "",
+                        "why_it_matters": "",
+                    },
+                    "localized": {"zh-CN": {"title": "Chase Sapphire 首选100,000积分优惠"}},
+                    "evidence": [],
+                }
+            ]
+        }
+        _postprocess_report_locale(payload, "zh-CN")
+        self.assertEqual(
+            payload["items"][0]["localized"]["zh-CN"]["title"],
+            "Chase Sapphire Preferred 100,000 积分优惠",
+        )
+
     def test_batch_provider_populates_target_locale_and_cache(self) -> None:
         payload = sample_report()
         for event in payload["items"]:

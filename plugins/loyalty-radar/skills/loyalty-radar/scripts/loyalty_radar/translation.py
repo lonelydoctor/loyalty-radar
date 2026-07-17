@@ -7,6 +7,7 @@ import json
 import os
 import re
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
@@ -159,6 +160,83 @@ def _cache_key(provider: TranslationProvider, source_locale: str, target_locale:
     return f"{provider.name}|{provider.model}|{source_locale}|{target_locale}|{digest}"
 
 
+def _postprocess_translation(value: str, original: str, target_locale: str) -> str:
+    if target_locale != "zh-CN":
+        return value
+    replacements = {
+        "转会奖金": "转点奖励",
+        "转乘奖励": "转点奖励",
+        "转移奖金": "转点奖励",
+        "转账奖金": "转点奖励",
+        "转会合作伙伴": "转点伙伴",
+        "转乘合作伙伴": "转点伙伴",
+        "转移合作伙伴": "转点伙伴",
+        "总统圈地位": "President's Circle 会籍",
+        "名片": "商业信用卡",
+        "飞凡里程常客计划": "SkyMiles",
+    }
+    processed = value
+    for source, target in replacements.items():
+        processed = processed.replace(source, target)
+    if "give it a miss" in original.casefold():
+        processed = processed.replace("不要错过", "不建议转点")
+    if "u.s. bank" in original.casefold() or "us bank" in original.casefold():
+        processed = processed.replace("美国银行", "U.S. Bank")
+        processed = processed.replace("U.S. Bank正在", "U.S. Bank 正在")
+    if "capital one" in original.casefold():
+        processed = processed.replace("第一资本", "Capital One")
+    if "sapphire preferred" in original.casefold():
+        processed = processed.replace("Sapphire 首选", "Sapphire Preferred")
+        processed = re.sub(r"Sapphire Preferred(?=\d)", "Sapphire Preferred ", processed)
+    if "rapid rewards" in original.casefold():
+        processed = processed.replace("快速奖励", "Rapid Rewards")
+        processed = processed.replace("Rapid Rewards积分", "Rapid Rewards 积分")
+    if "accor" in original.casefold():
+        processed = processed.replace("雅高航空", "雅高")
+    for amount in re.findall(r"([0-9]+(?:\.[0-9]+)?)\s*(?:usd\s*)?(?:cents?|¢)", original, re.I):
+        processed = processed.replace(f"{amount} 美元", f"{amount} 美分")
+        processed = processed.replace(f"{amount}美元", f"{amount}美分")
+    processed = re.sub(r"(?<=\d)(美元|美分|积分|里程)", r" \1", processed)
+    return processed
+
+
+def _postprocess_report_locale(payload: dict[str, Any], target_locale: str) -> None:
+    if target_locale != "zh-CN":
+        return
+    for event in payload.get("items", []):
+        original = event.get("original", {})
+        localized = event.get("localized", {}).get(target_locale, {})
+        for field_name in ("title", "summary", "why_it_matters"):
+            if localized.get(field_name):
+                localized[field_name] = _postprocess_translation(
+                    str(localized[field_name]),
+                    str(original.get(field_name) or ""),
+                    target_locale,
+                )
+        for evidence in event.get("evidence", []):
+            evidence_original = evidence.get("original", {})
+            evidence_localized = evidence.get("localized", {}).get(target_locale, {})
+            for field_name in ("title", "summary"):
+                if evidence_localized.get(field_name):
+                    evidence_localized[field_name] = _postprocess_translation(
+                        str(evidence_localized[field_name]),
+                        str(evidence_original.get(field_name) or ""),
+                        target_locale,
+                    )
+        title_original = str(original.get("title") or "")
+        summary_original = str(original.get("summary") or "")
+        title_localized = str(localized.get("title") or "")
+        if (
+            "bonus points" in summary_original.casefold()
+            and not re.search(r"[$€£]", title_original)
+            and "元" in title_localized
+        ):
+            for amount in re.findall(r"\b\d[\d,]*(?:\.\d+)?\b", title_original):
+                title_localized = title_localized.replace(f"{amount} 元", f"{amount} 点奖励积分")
+                title_localized = title_localized.replace(f"{amount}元", f"{amount}点奖励积分")
+            localized["title"] = title_localized
+
+
 def _text_slots(payload: dict[str, Any]) -> list[tuple[dict[str, Any], str, str]]:
     slots: list[tuple[dict[str, Any], str, str]] = []
     for event in payload.get("items", []):
@@ -180,6 +258,7 @@ def localize_report(
     cache_path: Path | None = None,
     batch_size: int = 20,
     delay: float = 0.0,
+    progress: Callable[[int, int], None] | None = None,
 ) -> TranslationHealth:
     target = normalize_locale(locale)
     cache_file = cache_path or translation_cache_path()
@@ -197,19 +276,21 @@ def localize_report(
             health.passthrough += 1
             continue
         if _is_target_language(original, target):
-            localized[field_name] = original
+            localized[field_name] = _postprocess_translation(original, original, target)
             health.passthrough += 1
             continue
         health.requested += 1
         key = _cache_key(provider, "auto", target, original)
         if key in cache:
-            localized[field_name] = cache[key]
+            localized[field_name] = _postprocess_translation(cache[key], original, target)
             health.cache_hits += 1
             continue
         pending.append((owner, field_name, original, key))
 
-    for start in range(0, len(pending), max(1, batch_size)):
-        batch = pending[start : start + max(1, batch_size)]
+    effective_batch_size = max(1, batch_size)
+    total_batches = (len(pending) + effective_batch_size - 1) // effective_batch_size
+    for batch_index, start in enumerate(range(0, len(pending), effective_batch_size), start=1):
+        batch = pending[start : start + effective_batch_size]
         health.request_attempts += 1
         try:
             translated = provider.translate_batch([row[2] for row in batch], "auto", target)
@@ -219,6 +300,7 @@ def localize_report(
                 value = str(value).strip()
                 if not value:
                     raise ValueError("Translation provider returned an empty string")
+                value = _postprocess_translation(value, _original, target)
                 owner.setdefault("localized", {}).setdefault(target, {})[field_name] = value
                 cache[key] = value
                 health.translated += 1
@@ -230,9 +312,12 @@ def localize_report(
             for owner, field_name, _original, _key in batch:
                 owner.setdefault("localized", {}).setdefault(target, {})[field_name] = placeholder
                 health.failed += 1
-        if delay and start + batch_size < len(pending):
+        if delay and start + effective_batch_size < len(pending):
             time.sleep(delay)
+        if progress:
+            progress(batch_index, total_batches)
 
+    _postprocess_report_locale(payload, target)
     _save_cache(cache_file, cache)
     payload.setdefault("translation_health", {})[target] = asdict(health)
     return health

@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: weekly-source-health
@@ -24,6 +25,8 @@ jobs:
     timeout-minutes: 20
     env:
       SOURCE_LIMIT: ${{ github.event.inputs.limit || '15' }}
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository without write credentials
         uses: actions/checkout@v7
@@ -51,11 +54,25 @@ jobs:
           --output "${RUNNER_TEMP}/source-health.json"
           --summary "${GITHUB_STEP_SUMMARY}"
 
+      - name: Persist streaks and apply deduplicated P0 escalation
+        run: >-
+          uv run --frozen python .github/scripts/source_health_escalation.py
+          --current "${RUNNER_TEMP}/source-health.json"
+          --state-output "${RUNNER_TEMP}/source-health-state.json"
+          --actions-output "${RUNNER_TEMP}/source-health-actions.json"
+          --dashboard-output "${RUNNER_TEMP}/source-health-dashboard.md"
+          --repository "${GITHUB_REPOSITORY}"
+          --apply
+
       - name: Upload health metadata only
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: source-health-${{ github.run_id }}
-          path: ${{ runner.temp }}/source-health.json
+          path: |
+            ${{ runner.temp }}/source-health.json
+            ${{ runner.temp }}/source-health-state.json
+            ${{ runner.temp }}/source-health-actions.json
+            ${{ runner.temp }}/source-health-dashboard.md
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90

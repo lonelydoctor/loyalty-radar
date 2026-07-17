@@ -4,7 +4,7 @@
 
 > Turn public loyalty-program noise into source-backed, prioritized events for points, miles, travel cards, hotels, airlines, and rental cars.
 
-**Public beta:** `v0.1.1` is the current patch release; `v0.1.0` was the first public release. Interfaces and source availability may change during the beta.
+**Public beta:** `v0.1.2` is the current patch release; `v0.1.0` was the first public release. Interfaces and source availability may change during the beta.
 
 ![Loyalty Radar public source catalog](docs/assets/overview-en.png)
 
@@ -15,18 +15,28 @@ It has two reporting lanes:
 - **Member radar:** promotions, transfer bonuses, statement credits, status matches, award availability, lounges, bugs, clawbacks, and risk datapoints.
 - **Ecosystem radar:** devaluations, partner-contract changes, reimbursement conflicts, benefit-capacity pressure, regulation, loyalty economics, and consumer backlash across the global loyalty industry.
 
-Loyalty Radar does not verify every item against an official program page. It reports what public sources say, labels the evidence quality, and preserves links for review.
+Loyalty Radar does not verify every item against an official program page. It reports what public sources say, labels the evidence quality, and preserves links for review. The [public report archive](https://lonelydoctor.github.io/loyalty-radar/en/) only publishes reviewed, sanitized reports; until the first report is approved, it shows a truthful empty state.
 
 ## 30-second quick start
 
-Choose one installation form. All three use the same Skill and Python implementation.
+Choose one installation form. Every option uses the same Skill and Python implementation.
+
+### Agent Skills — one command
+
+The shortest tested installation path for compatible agents is:
+
+```bash
+npx skills add lonelydoctor/loyalty-radar -g
+```
+
+After installation, ask the agent to run a two-week loyalty intelligence report.
 
 ### Codex Skill-only Plugin
 
 Install the tagged public Marketplace:
 
 ```bash
-codex plugin marketplace add lonelydoctor/loyalty-radar --ref v0.1.1
+codex plugin marketplace add lonelydoctor/loyalty-radar --ref v0.1.2
 codex plugin add loyalty-radar@loyalty-radar
 ```
 
@@ -38,7 +48,7 @@ Run my two-week loyalty intelligence report in English.
 
 For local development, run `codex plugin marketplace add "$PWD"` from this checkout before the same `codex plugin add` command.
 
-### Agent Skills / Claude-compatible Skill
+### Agent Skills / Claude-compatible Skill — manual installation
 
 The portable Skill lives at:
 
@@ -77,7 +87,7 @@ loyalty-radar run --mode daily --locale en
 The package requires Python 3.11 or newer. A published tag can later be installed directly from Git:
 
 ```bash
-uv tool install "git+https://github.com/lonelydoctor/loyalty-radar.git@v0.1.1"
+uv tool install "git+https://github.com/lonelydoctor/loyalty-radar.git@v0.1.2"
 ```
 
 ## Common commands
@@ -101,6 +111,13 @@ loyalty-radar sources validate path/to/source-pack.yaml
 
 # Re-render an existing audit JSON without recollecting sources
 loyalty-radar render --input-json path/to/report.json --locale en
+
+# Run the neutral bilingual 14-day public editorial preset
+loyalty-radar run --preset public-weekly --no-image --output-dir path/to/private-output
+
+# Export the allowlisted public projection and a privacy-safe install receipt
+loyalty-radar audit --input-json path/to/private-output/report.json --policy public --output path/to/report-public.json
+loyalty-radar doctor --share
 ```
 
 The default evidence window is the previous 14 days. Explicit future dates mentioned in those items are tracked for the following 60 days.
@@ -131,14 +148,14 @@ Visible reports never silently fall back to the wrong language. Translation fail
 | Translation providers | `google-public`, `openai-compatible`, and `none` |
 | Rendering | HTML, PNG, Markdown, and schema-versioned JSON; Pillow fallback when Playwright is unavailable |
 | Personalization | User-owned profile, membership, card, region, topic, and source-pack configuration |
-| Scheduling and delivery | Not included in v0.1.x; runs are started manually by an agent or user |
+| End-user scheduling and delivery | Not included in v0.1.x; personal reports are started manually by an agent or user |
 | Hosted service and telemetry | Not included |
 
 ## 59-source catalog
 
 The catalog contains 59 configured source entries at the v0.1.0 baseline. An entry is not a promise that a site will always be reachable: every run records success, failure, skip, browser-assisted status, and row counts instead of silently dropping unavailable sources.
 
-The read-only weekly GitHub health workflow probes a bounded sample rather than scraping the full catalog. Its sample is balanced across script-eligible Source Packs and rotates each ISO week so lower-priority and industry sources are not permanently hidden behind a P0-heavy prefix. Endpoint failures remain evidence about availability, not claims that a source published no news.
+The weekly GitHub health workflow probes a bounded sample rather than scraping the full catalog. Its sample is balanced across script-eligible Source Packs and rotates each ISO week so lower-priority and industry sources are not permanently hidden behind a P0-heavy prefix. It stores metadata only and opens a deduplicated source-health Issue after two observed P0 failures. Endpoint failures remain evidence about availability, not claims that a source published no news.
 
 | Source pack | Default | Typical coverage | Notes |
 | --- | --- | --- | --- |
@@ -172,9 +189,10 @@ Repository data assets are limited to:
 - empty or generic configuration templates;
 - source metadata and public URLs;
 - visual assets generated from that committed source metadata;
+- approved public-report JSON sanitized to `loyalty-radar-public-report/v1`;
 - clearly isolated, non-production fixtures under `tests/`, which runtime and public-site code never load.
 
-No news, offer, datapoint, or report snapshot is published in the repository or on GitHub Pages. Real reports remain local to the user who runs them.
+Private audit JSON, source bodies, personal profiles, card holdings, and translation caches remain local. GitHub Pages can publish only a reviewed public projection containing localized event text, source names, HTTP(S) links, publication times, labels, numeric anchors, and aggregate collection health. The site build rejects `original`, raw-content, private-profile, and full-health fields and never copies its input JSON into `docs/site`.
 
 See [Privacy](PRIVACY.md) for the full data-flow and retention model.
 
@@ -192,9 +210,11 @@ Collectors use declared methods, source-specific limits, a recognizable User-Age
 
 You are responsible for reviewing source terms and applicable law in your jurisdiction before enabling a source pack.
 
-## Public source catalog
+## Public Pages and source catalog
 
-GitHub Pages publishes a bilingual Source Catalog Explorer generated directly from the committed 59-source configuration. It shows source names, public URLs, pack membership, priority, language, region, and declared fetch method. It does not publish generated loyalty intelligence or claim that a source is currently healthy.
+The root, [`/en/`](https://lonelydoctor.github.io/loyalty-radar/en/), and [`/zh-CN/`](https://lonelydoctor.github.io/loyalty-radar/zh-CN/) are report-first landing and archive pages. They render only approved files from `public-briefs/<ISO-WEEK>/report.json` whose schema is `loyalty-radar-public-report/v1`; an absent approved report produces an explicit empty state rather than invented news.
+
+The bilingual Source Catalog Explorer now lives at `/en/sources/` and `/zh-CN/sources/`, with `/sources/` as a direct English catalog route. It is rebuilt offline from the committed 59-source configuration and shows source names, public URLs, pack membership, priority, language, region, and declared fetch method. Catalog membership is not a claim that a source is currently healthy or published news today.
 
 Release assets use stable paths:
 
@@ -204,7 +224,16 @@ Release assets use stable paths:
 - `docs/assets/report-mobile-en.png`
 - `docs/assets/catalog-en.gif`
 
-The `/en/` and `/zh-CN/` Pages routes expose the same source configuration in different interface languages. Current news and personalized prioritization are generated only by a local run.
+Regenerate the factual 1280 x 640 social preview and rebuild its Pages copy with:
+
+```bash
+uv run --frozen python .github/scripts/build_public_site.py \
+  --render-social-preview docs/assets/social-preview.png
+```
+
+The preview uses only stable product facts: the 59-source catalog, 14-day evidence window, member and ecosystem lanes, and Plugin / Agent Skill / Python CLI packaging. It never reads report events.
+
+Visible public report pages show only their target locale and never fall back to original-language content. Each published report includes its generation time, exact 14-day evidence window, future-60-day horizon, collection health, member and ecosystem lanes, full event titles, source times and links, and action, risk, and confidence labels. Raw source bodies are never rendered.
 
 ## Architecture
 

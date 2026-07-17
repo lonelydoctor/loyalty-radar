@@ -19,6 +19,12 @@ PROFILE_KEYWORDS = {
     "Hyatt": ["Hyatt", "凯悦", "World of Hyatt"],
     "Hilton": ["Hilton", "希尔顿"],
     "IHG": ["IHG", "洲际", "优悦会"],
+    "Japan Airlines": ["Japan Airlines", "JAL", "JAL Mileage Bank"],
+    "Air Canada": ["Air Canada", "Aeroplan"],
+    "Avianca LifeMiles": ["Avianca", "LifeMiles"],
+    "Hawaiian Airlines": ["Hawaiian Airlines", "HawaiianMiles"],
+    "United": ["United", "MileagePlus"],
+    "US Bank": ["U.S. Bank", "US Bank"],
     "Chase": ["Chase", "Ultimate Rewards", "Sapphire", "Ink"],
     "American Express": ["American Express", "Amex", "Membership Rewards", "MR"],
     "Capital One": ["Capital One", "Venture X"],
@@ -62,6 +68,24 @@ class ParserTests(unittest.TestCase):
         self.assertIn("国航白金卡", rows[0]["title"])
         self.assertEqual(rows[1]["title"], "万豪旅享家 Q3 活动讨论")
         self.assertTrue(rows[0]["url"].startswith("https://www.flyert.com/"))
+
+    def test_flyert_forum_parser_extracts_thread_timestamp(self) -> None:
+        html = """
+        <html><body><table>
+          <tbody id="normalthread_4851001">
+            <tr>
+              <th><a href="forum.php?mod=viewthread&tid=4851001">国航里程兑换规则变化</a></th>
+              <td class="by"><em><span title="2026-07-16 09:35">昨天 09:35</span></em></td>
+            </tr>
+          </tbody>
+        </table></body></html>
+        """
+        rows = run_digest.parse_flyert_forum(
+            html,
+            {"url": "https://www.flyert.com/forum.php?mod=forumdisplay&fid=68", "name": "飞客测试"},
+            10,
+        )
+        self.assertEqual(rows[0]["published_at"], "2026-07-16T01:35:00+00:00")
 
     def test_rss_parser_extracts_flyertalk_and_doc_comment_fields(self) -> None:
         xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -131,6 +155,165 @@ class ClassifierTests(unittest.TestCase):
         self.assertEqual(item.topic_type, "offer")
         self.assertEqual(run_digest.loyalty_relevance_reason(item), "non_travel_finance")
 
+    def test_ending_soon_welcome_bonus_remains_offer(self) -> None:
+        item = self.classify(
+            "Chase Sapphire Preferred 100K Bonus Points Offer Ending Soon: Apply Now",
+            "The limited-time welcome offer is available to eligible applicants.",
+        )
+        self.assertEqual(item.topic_type, "offer")
+        self.assertEqual(item.ecosystem_signal_type, [])
+
+    def test_points_with_spend_welcome_bonus_is_offer(self) -> None:
+        item = self.classify(
+            "Chase World Of Hyatt Business Card: 70,000 Points With $7,000 Spend",
+            "New cardmembers can earn the bonus after meeting the spending requirement.",
+        )
+        self.assertEqual(item.topic_type, "offer")
+
+    def test_signup_bonus_with_clawback_clause_keeps_offer_topic_and_risk(self) -> None:
+        item = self.classify(
+            "OCBC Rewards Card extends 26,000 miles sign-up bonus",
+            "Earn the bonus after S$600 spend, but note the new clawback clause.",
+        )
+        self.assertEqual(item.topic_type, "offer")
+        self.assertEqual(item.risk_label, "可能 clawback")
+        self.assertEqual(item.action_label, "高风险勿操作")
+
+    def test_explicit_clawed_back_update_is_a_clawback(self) -> None:
+        item = self.classify(
+            "AAdvantage Business Loyalty Account: 25,000 Miles (Update: Miles Mostly Clawed Back)",
+            "The original signup promotion awarded miles after joining.",
+        )
+        self.assertEqual(item.topic_type, "clawback")
+        self.assertEqual(item.risk_label, "可能 clawback")
+
+    def test_broad_feed_verticals_do_not_admit_unrelated_offer(self) -> None:
+        source = {
+            "id": "broad-blog",
+            "name": "Broad Blog",
+            "site": "Broad Blog",
+            "priority": "P1",
+            "source_type": "rss",
+            "programs": [],
+            "verticals": ["credit_card", "hotel", "airline"],
+        }
+        item = run_digest.classify_row(
+            {
+                "title": "Google Fi Offering 75% Off Unlimited Plans for 12 Months",
+                "url": "https://example.com/google-fi",
+                "published_at": "2026-07-16T00:00:00+00:00",
+                "summary": "A limited-time mobile plan discount includes international benefits.",
+                "raw_tags": [],
+                "source_type": "rss",
+            },
+            source,
+            PROFILE_KEYWORDS,
+            CARD_KEYWORDS,
+        )
+        self.assertEqual(item.vertical, [])
+        self.assertEqual(run_digest.loyalty_relevance_reason(item), "non_loyalty")
+
+    def test_mileage_word_does_not_turn_motorcycle_news_into_loyalty_signal(self) -> None:
+        item = self.classify(
+            "Here Are 10 Japanese Motorcycle Owners Riding Past 200,000 Miles",
+            "Owners describe long-distance motorcycle maintenance.",
+        )
+        self.assertNotIn("airline", item.vertical)
+        self.assertEqual(run_digest.loyalty_relevance_reason(item), "non_loyalty_ecosystem")
+
+    def test_lifemiles_title_has_airline_program_context(self) -> None:
+        profile = run_digest.flatten_profile_keywords(run_digest.load_yaml(run_digest.REFERENCES_DIR / "profile.yaml"))
+        item = run_digest.classify_row(
+            {
+                "title": "Buy Avianca LifeMiles with a 130% Bonus",
+                "url": "https://example.com/lifemiles",
+                "published_at": "2026-07-16T00:00:00+00:00",
+                "summary": "The loyalty-program sale is available for a limited time.",
+                "raw_tags": [],
+                "source_type": "rss",
+            },
+            {"id": "blog", "name": "Blog", "priority": "P1", "source_type": "rss"},
+            profile,
+            CARD_KEYWORDS,
+        )
+        self.assertIn("Avianca LifeMiles", item.program)
+        self.assertIn("airline", item.vertical)
+
+    def test_devaluation_is_observation_not_ready_to_use(self) -> None:
+        item = self.classify(
+            "Marriott points devaluation according to OMAAT",
+            "Marriott award prices increased at popular hotels.",
+        )
+        self.assertEqual(item.topic_type, "devaluation")
+        self.assertEqual(item.action_label, "只观察")
+        self.assertEqual(item.consumer_impact, "可能贬值")
+
+    def test_negative_value_transfer_bonus_is_watch_only(self) -> None:
+        item = self.classify(
+            "Chase offers a 70% transfer bonus to IHG: Give it a miss",
+            "The transfer produces poor value compared with other redemptions.",
+        )
+        self.assertEqual(item.topic_type, "transfer_bonus")
+        self.assertEqual(item.action_label, "只观察")
+        self.assertEqual(item.consumer_impact, "长期观察")
+
+    def test_transfer_points_with_bonus_wording_is_transfer_bonus(self) -> None:
+        item = self.classify(
+            "Transfer Chase points to IHG with a best-ever 100% bonus: still not worth it",
+            "The limited conversion window ends this month.",
+        )
+        self.assertEqual(item.topic_type, "transfer_bonus")
+        self.assertEqual(item.action_label, "只观察")
+
+    def test_structural_card_conversion_is_observation(self) -> None:
+        item = self.classify(
+            "U.S. Bank is converting Kroger credit cards to Smartly Visa",
+            "The issuer partnership is ending and cardholders will receive a replacement card.",
+        )
+        self.assertIn("partner_contract_shift", item.ecosystem_signal_type)
+        self.assertEqual(item.action_label, "只观察")
+
+    def test_dollar_express_bug_is_rental_car_signal(self) -> None:
+        profile = run_digest.flatten_profile_keywords(run_digest.load_yaml(run_digest.REFERENCES_DIR / "profile.yaml"))
+        item = run_digest.classify_row(
+            {
+                "title": "Signing up for a Dollar Express account is not working",
+                "url": "https://example.com/dollar-express",
+                "published_at": "2026-07-13T00:00:00+00:00",
+                "summary": "Members report an account-registration error.",
+                "raw_tags": [],
+                "source_type": "rss",
+            },
+            {"id": "rental", "name": "Rental", "priority": "P1", "source_type": "rss"},
+            profile,
+            CARD_KEYWORDS,
+        )
+        self.assertIn("Dollar", item.program)
+        self.assertIn("rental_car", item.vertical)
+
+    def test_offer_verticals_are_anchored_to_title_and_programs(self) -> None:
+        item = self.classify(
+            "Chase World Of Hyatt Business Card: 70,000 Points With $7,000 Spend",
+            "The article also compares airline tickets and a rental car benefit.",
+        )
+        self.assertEqual(item.topic_type, "offer")
+        self.assertEqual(set(item.vertical), {"hotel", "credit_card"})
+
+    def test_devaluation_title_does_not_add_incidental_comparison_program(self) -> None:
+        item = self.classify(
+            "Marriott points devaluation according to OMAAT",
+            "Marriott award prices jumped; a reader compares the change with Hilton.",
+        )
+        event = run_digest.event_from_items([item])
+        self.assertEqual(event.program, ["Marriott"])
+
+    def test_shopping_portal_stack_is_not_transfer_bonus(self) -> None:
+        item = self.classify(
+            "Get 23X on StubHub purchases by stacking Rakuten and card offers",
+            "Rakuten points can later be converted at the usual 1:1 rate.",
+        )
+        self.assertEqual(item.topic_type, "portal_stack")
+
     def test_generic_ceo_failure_language_is_not_a_loyalty_bug(self) -> None:
         item = self.classify(
             "SAS CEO exits to become CEO of Air Canada",
@@ -184,6 +367,18 @@ class ClassifierTests(unittest.TestCase):
         )
         self.assertEqual(run_digest.loyalty_relevance_reason(item), "low_signal_forum")
 
+    def test_generic_forum_benefit_questions_are_low_signal(self) -> None:
+        item = self.classify("2026 Elite Benefit Questions", "Members discuss routine annual benefits.")
+        item.source_id = "ft-aeroplan"
+        self.assertEqual(run_digest.loyalty_relevance_reason(item), "low_signal_forum")
+
+    def test_award_sweet_spots_guide_is_low_signal(self) -> None:
+        item = self.classify(
+            "Oneworld Alliance Award Sweet Spots and Transfer Partners",
+            "A general guide to partner redemptions.",
+        )
+        self.assertEqual(run_digest.loyalty_relevance_reason(item), "low_signal_roundup")
+
     def test_chase_hotel_credit_clawback_is_risk_item(self) -> None:
         item = self.classify(
             "Chase Clawing Back Hotel Credits For Cancelled Reservations On New Sapphire Preferred Credit",
@@ -214,6 +409,65 @@ class ClassifierTests(unittest.TestCase):
         self.assertIn("55%", item.metric_snippets)
         self.assertEqual(item.action_label, "需报名")
         self.assertEqual(item.consumer_impact, "直接可用")
+
+    def test_metric_extraction_rejects_truncated_billion_and_clock_times(self) -> None:
+        metrics = run_digest.extract_metric_snippets(
+            "Earn 100,000 b... by 11:59pm; get $100 Back, reported value $1B and a 50% bonus."
+        )
+
+        self.assertNotIn("100,000 b", metrics)
+        self.assertNotIn("11:59", metrics)
+        self.assertIn("$100", metrics)
+        self.assertNotIn("$100 B", metrics)
+        self.assertIn("$1B", metrics)
+        self.assertIn("50%", metrics)
+
+    def test_metric_extraction_supports_loyalty_specific_units(self) -> None:
+        metrics = run_digest.extract_metric_snippets(
+            "Earn 1,000 Avios, 2 Bonus SQCs, 12,000 Bonus IHG Points, 23X, or 7,500 per stay."
+        )
+
+        self.assertIn("1,000 Avios", metrics)
+        self.assertIn("2 Bonus SQCs", metrics)
+        self.assertIn("12,000 Bonus IHG Points", metrics)
+        self.assertIn("23X", metrics)
+        self.assertIn("7,500 per stay", metrics)
+
+    def test_all_in_award_pricing_transparency_is_not_a_devaluation(self) -> None:
+        item = self.classify(
+            "Marriott Finally Showing All-In Award Pricing",
+            "After getting sued for failing to show all-in pricing on awards, Marriott now displays resort fees instead of hiding them.",
+        )
+
+        self.assertEqual(item.topic_type, "industry_signal")
+        self.assertIn("regulatory_or_legal_pressure", item.ecosystem_signal_type)
+
+    def test_conversion_partner_change_is_an_ecosystem_signal(self) -> None:
+        item = self.classify(
+            "ALL Accor new conversion partners and changes",
+            "The program added conversion partners in Canada and Hong Kong.",
+        )
+
+        self.assertIn("partner_contract_shift", item.ecosystem_signal_type)
+
+    def test_plain_award_chart_reference_is_not_a_devaluation(self) -> None:
+        item = self.classify(
+            "Hyatt publishes a searchable award chart",
+            "The page explains the program's current redemption categories.",
+        )
+
+        self.assertNotEqual(item.topic_type, "devaluation")
+        self.assertNotIn("devaluation_or_inflation", item.ecosystem_signal_type)
+
+    def test_hawaiian_airlines_card_offer_has_airline_program(self) -> None:
+        item = self.classify(
+            "Hawaiian Airlines Bank of Hawaii card: Increased 70K welcome offer",
+            "Earn 70,000 HawaiianMiles after qualifying spend.",
+        )
+
+        self.assertIn("Hawaiian Airlines", item.program)
+        self.assertIn("airline", item.vertical)
+        self.assertIn("credit_card", item.vertical)
 
     def test_marriott_owner_protest_enters_ecosystem_radar(self) -> None:
         item = self.classify(
@@ -393,6 +647,33 @@ class ClassifierTests(unittest.TestCase):
         )
         self.assertEqual(item.topic_type, "offer")
 
+    def test_comment_boilerplate_does_not_pollute_parent_programs(self) -> None:
+        item = run_digest.classify_row(
+            {
+                "title": "评论 DP: Chase World of Hyatt Business Card 70K welcome offer",
+                "url": "https://example.com/hyatt-offer#comment-2",
+                "published_at": "2026-07-10T01:15:12+00:00",
+                "summary": "I also compared an Amex Hilton card and a Bilt transfer last month.",
+                "raw_tags": [],
+                "source_type": "blog_comment",
+            },
+            {
+                "id": "doctor-of-credit-cards",
+                "name": "Doctor of Credit",
+                "site": "Doctor of Credit",
+                "priority": "P0",
+                "source_type": "rss",
+                "programs": [],
+            },
+            PROFILE_KEYWORDS,
+            CARD_KEYWORDS,
+        )
+        self.assertIn("Chase", item.program)
+        self.assertIn("Hyatt", item.program)
+        self.assertNotIn("American Express", item.program)
+        self.assertNotIn("Hilton", item.program)
+        self.assertNotIn("Bilt", item.program)
+
     def test_non_comment_summary_can_surface_clawback_risk(self) -> None:
         item = run_digest.classify_row(
             {
@@ -563,6 +844,35 @@ class EventQualityTests(unittest.TestCase):
         )
         self.assertEqual(run_digest.qualification_reason(item, strict_dates=False), "noise")
 
+    def test_forum_question_without_change_evidence_is_low_signal(self) -> None:
+        item = self.make_item(
+            "Booking through AmexTravel, will I receive my hotel status benefits still?",
+            "ft-hyatt",
+            "https://example.com/amextravel-question",
+            "A member asks whether elite benefits apply to an OTA booking.",
+            priority="P0",
+        )
+        self.assertEqual(run_digest.qualification_reason(item, strict_dates=False), "low_signal_forum")
+
+    def test_forum_award_availability_question_is_low_signal(self) -> None:
+        item = self.make_item(
+            "No award flights to HKG in April - why?",
+            "ft-star-alliance",
+            "https://example.com/hkg-question",
+            "A traveler asks why no award seats appear for a future trip.",
+            priority="P0",
+        )
+        self.assertEqual(run_digest.qualification_reason(item, strict_dates=False), "low_signal_forum")
+
+    def test_evergreen_card_review_is_low_signal_roundup(self) -> None:
+        item = self.make_item(
+            "Should You Get The World of Hyatt Credit Card? 6 Reasons It's Worth It",
+            "card-review",
+            "https://example.com/hyatt-card-review",
+            "A general overview of the card's standard benefits.",
+        )
+        self.assertEqual(run_digest.qualification_reason(item, strict_dates=False), "low_signal_roundup")
+
     def test_noise_matching_does_not_reject_show_to_members_phrase(self) -> None:
         item = self.make_item(
             "Show to members how benefits changed",
@@ -603,6 +913,228 @@ class EventQualityTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(len(events[0].evidence), 4)
         self.assertEqual(events[0].confidence_label, "多源证实")
+
+    def test_marriott_devaluation_forum_and_article_form_one_event(self) -> None:
+        first = self.make_item(
+            "Marriott Bonvoy hit with another points devaluation",
+            "blog",
+            "https://example.com/marriott-devaluation",
+            "Award prices increased 5% to 10% at many properties.",
+        )
+        second = self.make_item(
+            "Bonvoy award nights cost more at popular hotels",
+            "ft-marriott",
+            "https://example.com/forum-marriott-pricing",
+            "Members report widespread higher redemption costs.",
+        )
+        events = run_digest.cluster_items([first, second])
+        self.assertEqual(len(events), 1)
+
+    def test_devalued_awards_wording_matches_points_devaluation(self) -> None:
+        first = self.make_item(
+            "Marriott points devaluation according to OMAAT",
+            "forum",
+            "https://example.com/marriott-forum",
+            "Members noticed award prices jumped at several properties.",
+        )
+        second = self.make_item(
+            "Marriott reportedly devalued awards at some properties, but is that really the case?",
+            "article",
+            "https://example.com/marriott-review",
+            "A review examines reported 5%-10% increases in Bonvoy award pricing.",
+        )
+        self.assertEqual(len(run_digest.cluster_items([first, second])), 1)
+
+    def test_chase_ihg_transfer_bonus_variants_form_one_event(self) -> None:
+        first = self.make_item(
+            "Chase launches 70% transfer bonus to IHG One Rewards",
+            "source-a",
+            "https://example.com/chase-ihg-70",
+            "Transfer 1,000 Ultimate Rewards points and receive 1,700 IHG points.",
+        )
+        second = self.make_item(
+            "Get 100 IHG points for every 70 Chase Ultimate Rewards points",
+            "source-b",
+            "https://example.com/ihg-chase-ratio",
+            "The limited transfer bonus is equivalent to 70% through July 31.",
+        )
+        first.program = ["Chase", "IHG"]
+        second.program = ["Chase", "IHG"]
+        first.metric_snippets = ["70%", "100", "70"]
+        second.metric_snippets = ["70%", "100", "70"]
+        events = run_digest.cluster_items([first, second])
+        self.assertEqual(len(events), 1)
+
+    def test_ending_soon_csp_offer_variants_form_one_event(self) -> None:
+        items = [
+            self.make_item(
+                "Chase Sapphire Preferred 100K Bonus Points Offer Ending Soon: Apply Now",
+                "source-a",
+                "https://example.com/csp-ending",
+                "The 100,000 point welcome offer ends soon.",
+            ),
+            self.make_item(
+                "[Ends Soon] Chase Sapphire Preferred 100,000 Points Offer",
+                "source-b",
+                "https://example.com/csp-100k",
+                "Apply for the CSP before the limited offer expires.",
+            ),
+            self.make_item(
+                "ENDING SOON: Best Ever 100,000 Point Offer On The Sapphire Preferred",
+                "source-c",
+                "https://example.com/sapphire-best-ever",
+                "Chase will end the elevated welcome bonus shortly.",
+            ),
+        ]
+        self.assertTrue(all(item.topic_type == "offer" for item in items))
+        self.assertEqual(len(run_digest.cluster_items(items)), 1)
+
+    def test_air_canada_montreal_sqc_headline_variants_form_one_event(self) -> None:
+        first = self.make_item(
+            "Air Canada Offers 50% Bonus SQC on Montreal Flights Until July 22",
+            "source-a",
+            "https://example.com/air-canada-bonus-sqc-montreal",
+        )
+        second = self.make_item(
+            "Air Canada 2 Bonus SQCs On Domestic YUL Trips Through September 15, 2026 (Book By July 22)",
+            "source-b",
+            "https://example.com/air-canada-yul-sqc",
+        )
+        for item in (first, second):
+            item.program = ["Air Canada"]
+            item.topic_type = "offer"
+            item.metric_snippets = ["50%", "$1"]
+            item.future_event_dates = ["2026-07-22", "2026-09-15"]
+
+        events = run_digest.cluster_items([first, second])
+
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0].confidence_label, "多源证实")
+
+    def test_real_offer_titles_with_normalized_metrics_form_one_event(self) -> None:
+        pairs = [
+            (
+                "Buy Aeroplan Points with up to a 110% Bonus (Ends July 19)",
+                "Act Fast: Buy Air Canada Aeroplan Points With up to a 110% Bonus (1.27 Cents Each)",
+            ),
+            (
+                "Chase World Of Hyatt Business Card: 70,000 Points With $7,000 Spend",
+                "Chase Raises World Of Hyatt Business Card Bonus Offer To 70,000 Points",
+            ),
+            (
+                "Avianca Is Selling LifeMiles With Up to a 130% Bonus - But Should You Buy?",
+                "Buy Avianca LifeMiles with a 130% Bonus",
+            ),
+        ]
+        for index, (left_title, right_title) in enumerate(pairs):
+            with self.subTest(left_title=left_title):
+                left = self.make_item(left_title, f"source-{index}-a", f"https://example.com/{index}/a")
+                right = self.make_item(right_title, f"source-{index}-b", f"https://example.com/{index}/b")
+                self.assertEqual(
+                    len(run_digest.cluster_items([left, right])),
+                    1,
+                    f"pair {index} did not cluster: {left_title} / {right_title}",
+                )
+
+    def test_same_dated_united_mile_play_reports_form_one_event(self) -> None:
+        first = self.make_item(
+            "New United Mile Play Offers: See If You're Targeted For Bonus Miles",
+            "source-a",
+            "https://example.com/united-mile-play-a",
+            "Targeted flights must be completed by August 28.",
+        )
+        second = self.make_item(
+            "New United Mile Play Promo for Flights Through August 28, Check Your Offer and Register Now",
+            "source-b",
+            "https://example.com/united-mile-play-b",
+            "Registration is required for the targeted promotion.",
+        )
+        first.future_event_dates = ["2026-08-28"]
+        second.future_event_dates = ["2026-08-28"]
+        self.assertEqual(len(run_digest.cluster_items([first, second])), 1)
+
+    def test_cross_language_aa_clawback_reports_form_one_event(self) -> None:
+        first = self.make_item(
+            "注册AA商业账号，白拿25k AA里程！更新：之前发的里程被追回",
+            "source-zh",
+            "https://example.com/aa-zh",
+        )
+        second = self.make_item(
+            "AAdvantage Business Loyalty Account 25,000 Miles Update: Miles Mostly Clawed Back",
+            "source-en",
+            "https://example.com/aa-en",
+        )
+        first.program = ["American Airlines"]
+        second.program = ["American Airlines"]
+        first.metric_snippets = ["25k"]
+        second.metric_snippets = ["25,000 Miles"]
+        self.assertEqual(len(run_digest.cluster_items([first, second])), 1)
+
+    def test_parent_offer_cluster_absorbs_its_comment_datapoint(self) -> None:
+        parent = self.make_item(
+            "[Ends Soon] Chase Sapphire Preferred 100,000 Points Offer",
+            "doctor-of-credit",
+            "https://example.com/chase-sapphire-100k/",
+            "The elevated offer ends soon.",
+        )
+        corroboration = self.make_item(
+            "Chase Sapphire Preferred 100K offer ending soon",
+            "miles-blog",
+            "https://example.net/csp-ending-soon",
+            "The same public welcome offer is scheduled to end.",
+        )
+        comment = dataclasses.replace(
+            parent,
+            source_type="blog_comment",
+            title="评论 DP: [Ends Soon] Chase Sapphire Preferred 100,000 Points Offer",
+            url="https://example.com/chase-sapphire-100k/#comment-7",
+            author="reader-seven",
+        )
+
+        events = run_digest.cluster_items([parent, corroboration, comment])
+
+        self.assertEqual(len(events), 1)
+        self.assertEqual(len(events[0].evidence), 3)
+        self.assertEqual(len({event.event_id for event in events}), len(events))
+
+    def test_event_taxonomy_ignores_incidental_comment_entities(self) -> None:
+        parent = self.make_item(
+            "Chase World of Hyatt Business Card 70K welcome offer",
+            "doc",
+            "https://example.com/hyatt-business",
+            "Earn 70,000 Hyatt points after eligible spend.",
+            priority="P0",
+        )
+        comment = dataclasses.replace(
+            parent,
+            source_type="blog_comment",
+            url="https://example.com/hyatt-business#comment-1",
+            summary="A commenter mentions Amex, Bilt and Hilton in an unrelated comparison.",
+            program=["Chase", "Hyatt", "American Express", "Bilt", "Hilton"],
+            card_family=["Hyatt", "Hilton"],
+            ecosystem_signal_type=["devaluation_or_inflation"],
+        )
+        event = run_digest.event_from_items([parent, comment])
+        self.assertEqual(event.program, parent.program)
+        self.assertEqual(event.card_family, parent.card_family)
+        self.assertEqual(event.ecosystem_signal_type, parent.ecosystem_signal_type)
+
+    def test_jal_marriott_partnership_variants_form_one_event(self) -> None:
+        first = self.make_item(
+            "Marriott Bonvoy and Japan Airlines launch reciprocal status partnership",
+            "source-a",
+            "https://example.com/marriott-jal-status",
+            "The new partnership adds reciprocal benefits for eligible members.",
+        )
+        second = self.make_item(
+            "JAL expands partnership with Marriott Bonvoy",
+            "source-b",
+            "https://example.com/jal-marriott-partnership",
+            "Japan Airlines and Marriott announced new member benefits.",
+        )
+        self.assertIn("Japan Airlines", first.program)
+        self.assertIn("Japan Airlines", second.program)
+        self.assertEqual(len(run_digest.cluster_items([first, second])), 1)
 
     def test_unrelated_same_program_offers_remain_separate(self) -> None:
         events = run_digest.cluster_items(

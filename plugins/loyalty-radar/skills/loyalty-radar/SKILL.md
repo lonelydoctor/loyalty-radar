@@ -25,6 +25,8 @@ The evidence window defaults to the past 14 days (`336` hours). Extract explicit
 - Do not provide steps for evading bank, airline, hotel, rental-car, merchant, or forum controls.
 - Treat bugs, clawbacks, and risky plays as evidence and warnings, not exploitation instructions.
 - Do not claim completeness beyond configured, publicly crawlable sources.
+- Never publish the private audit JSON, fetched body text, personal profile, or test fixture as a public report.
+- Public Pages may contain only real source-linked events that pass `audit --policy public`; an honest empty state is preferable to filler.
 
 ## Locale Rules
 
@@ -72,6 +74,8 @@ Never write personal profile or card data into the Skill or repository directory
 - `只看 bug`, `只看异常`, `clawback`: add `--focus bug`
 - `更新源库`, `检查来源`: use `sources list`, `sources check`, and `sources validate`
 - `重新渲染`: use `render --input-json ...` and do not recollect
+- `公开周报`, `public weekly brief`: use `run --preset public-weekly`, then `audit --policy public`
+- `安装回执`, `installation receipt`: use `doctor --share`; sharing remains voluntary
 
 ## Normal Run
 
@@ -95,6 +99,28 @@ PYTHONPATH=scripts python3 -m loyalty_radar run \
 ```
 
 `daily` and `weekly` both use a rolling 14-day evidence window by default; the mode changes presentation and user intent, not the evidence cutoff. Use `--hours` only when the user explicitly asks for another range.
+
+For a repository-owned public weekly candidate, use the fixed neutral preset:
+
+```bash
+PYTHONPATH=scripts python3 -m loyalty_radar run \
+  --preset public-weekly \
+  --translation-provider google-public \
+  --output-dir /absolute/private/candidate-directory
+```
+
+The preset fixes weekly/all, 336 hours, UTC, an empty membership/card profile, and the `core`, `industry`, `forums-global`, and `forums-cn` packs. It disables undated fallback and defaults to English plus Simplified Chinese. Personal profile, card, broadening, and forum-body options are rejected.
+
+Gate and sanitize the resulting private JSON before any public use:
+
+```bash
+PYTHONPATH=scripts python3 -m loyalty_radar audit \
+  --input-json /absolute/private/candidate-directory/report.json \
+  --policy public \
+  --output /absolute/private/candidate-directory/public-report.json
+```
+
+The public audit requires at least 70% script-source success, 80% P0 success, valid time and HTTP(S) links for the Top 20, complete bilingual titles, no more than 10% remaining duplicates, and no private-original, path, profile, or mock markers. It has no minimum event count.
 
 ## Required Workflow
 
@@ -141,6 +167,8 @@ Each normal run produces:
 - `*-<locale>.md`: locale-specific text report
 - `*.json`: shared schema `1.0` audit data with original and localized content
 
+`audit --policy public` creates a separate `loyalty-radar-public-report/v1` JSON. It contains allowlisted real titles, links, times, taxonomy, metrics, deterministic rule-generated summaries, and aggregate health only. It never copies private `original` text, fetched summaries, authors, cards/profile configuration, or local paths.
+
 The full HTML must include search, C-end/industry lane filter, vertical filter, priority filter, sorting, future-60-day timeline, expandable evidence, original links, and source-health funnel.
 
 Never truncate or line-clamp event titles. The overview may show fewer than 12 events when full localized text needs more room. The complete HTML remains the authoritative human-readable report.
@@ -169,6 +197,16 @@ PYTHONPATH=scripts python3 -m loyalty_radar sources check --max-sources 10 --jso
 ```
 
 Do not reinterpret `403`, Cloudflare, or browser-only status as zero news. Report it as an unavailable evidence lane.
+
+## Shareable Installation Receipt
+
+Generate the opt-in receipt with:
+
+```bash
+PYTHONPATH=scripts python3 -m loyalty_radar doctor --share
+```
+
+The JSON contains only product version, Python major/minor, OS family, and coarse Skill/Plugin/source-catalog/render capability states. It contains no username, hostname, absolute path, card or membership profile, cookie, IP address, report content, or tracking identifier. Do not post it unless the user explicitly chooses to confirm an external installation.
 
 ## Translation Providers
 

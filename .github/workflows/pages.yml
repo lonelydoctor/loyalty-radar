@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - "docs/site/**"
+      - "public-briefs/**"
+      - "docs/assets/icon-128.png"
+      - "docs/assets/social-preview.png"
+      - "plugins/loyalty-radar/skills/loyalty-radar/references/source-packs/**"
+      - ".github/scripts/build_public_site.py"
       - ".github/scripts/validate_pages.py"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -19,7 +24,7 @@ concurrency:
 
 jobs:
   build:
-    name: Validate and package public source catalog
+    name: Build and validate bilingual public reports
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -33,8 +38,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate bilingual source catalog
+      - name: Build report-first site offline
+        run: python .github/scripts/build_public_site.py
+
+      - name: Validate bilingual reports and source catalog
         run: python .github/scripts/validate_pages.py docs/site
+
+      - name: Verify committed Pages output is current
+        run: git diff --exit-code -- docs/site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
