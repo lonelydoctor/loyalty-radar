@@ -76,6 +76,7 @@
         "p0_script_sources": {"type": "integer", "minimum": 0},
         "p0_ok_sources": {"type": "integer", "minimum": 0},
         "p0_ok_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "fallback_sources": {"type": "integer", "minimum": 0},
         "status_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
         "events_checked": {"type": "integer", "minimum": 0},
         "duplicate_events": {"type": "integer", "minimum": 0},

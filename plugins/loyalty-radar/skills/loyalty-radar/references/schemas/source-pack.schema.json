@@ -24,6 +24,7 @@
           "name": {"type": "string"},
           "priority": {"enum": ["P0", "P1", "P2"]},
           "fetch_method": {"enum": ["rss", "flyert_forum", "html_keyword", "browser_only"]},
+          "fallback_provider": {"enum": ["feedly-public"]},
           "url": {"type": "string", "format": "uri"},
           "default_limit": {"type": "integer", "minimum": 1},
           "rate_limit_seconds": {"type": "number", "minimum": 0}

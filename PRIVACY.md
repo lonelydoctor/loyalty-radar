@@ -50,6 +50,8 @@ Running collection sends normal HTTP requests to the public URLs enabled in the 
 
 Collectors must not send account cookies, login credentials, private profile data, or authorization headers to content sources.
 
+When an RSS source explicitly declares `fallback_provider: feedly-public`, a failed direct request may be retried through Feedly's public stream endpoint. This sends the public RSS URL, request metadata, and no personal profile, report text, cookie, or credential to Feedly. The resulting items retain their original source links, and source health records the fallback separately. Removing the declaration disables this behavior.
+
 ### Translation providers
 
 Translation runs only after ranking and should send only the selected title and summary text needed for a target locale.

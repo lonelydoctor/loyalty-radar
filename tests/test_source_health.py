@@ -87,6 +87,44 @@ def test_committed_catalog_keeps_all_health_states_explicit() -> None:
     assert len(disabled) == 1
     assert {row["status"] for row in browser_assisted} == {"skipped"}
     assert {row["fetch_method"] for row in browser_assisted} == {"browser_only"}
+    flyer_talk = [row for row in candidates["forums-global"] if row.get("site") == "FlyerTalk"]
+    assert len(flyer_talk) == 16
+    assert {row.get("fallback_provider") for row in flyer_talk} == {"feedly-public"}
+
+
+def test_feedly_fallback_probe_records_direct_failure_without_retaining_body(monkeypatch) -> None:
+    source_url = "https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410"
+
+    class Response:
+        status_code = 200
+        headers = {"Content-Type": "application/json"}
+        url = "https://cloud.feedly.com/v3/streams/contents"
+        content = b'{"metadata":"only"}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def json(self):
+            return {"id": f"feed/{source_url}", "items": [{"id": "public-entry"}]}
+
+    monkeypatch.setattr(health.requests, "get", lambda *_args, **_kwargs: Response())
+    result = {"status": "http_error", "status_code": 403}
+
+    health.apply_feedly_public_fallback(
+        {"url": source_url, "fallback_provider": "feedly-public"},
+        result,
+        {},
+    )
+
+    assert result["status"] == "ok"
+    assert result["fallback_used"] is True
+    assert result["fallback_provider"] == "feedly-public"
+    assert result["direct_status"] == "http_error"
+    assert result["direct_status_code"] == 403
+    assert "items" not in result
 
 
 def test_explicit_probe_keeps_browser_sources_skipped() -> None:
@@ -196,3 +234,24 @@ def test_dashboard_marker_round_trips_machine_state() -> None:
     assert parsed == state
     marker_json = body.split("<!-- loyalty-radar-source-health-state:v1\n", 1)[1].split("\n-->", 1)[0]
     assert json.loads(marker_json)["schema"] == escalation.STATE_SCHEMA
+
+
+def test_dashboard_discloses_successful_public_cache_fallback() -> None:
+    report = health_report("ok")
+    report["results"][0].update(
+        {
+            "fallback_provider": "feedly-public",
+            "fallback_used": True,
+            "direct_status": "http_error",
+            "direct_status_code": 403,
+        }
+    )
+    state, actions = escalation.update_streaks(
+        report, {"schema": escalation.STATE_SCHEMA, "sources": {}}
+    )
+
+    body = escalation.render_dashboard(state, report)
+
+    assert actions == []
+    assert "ok via feedly-public" in body
+    assert state["sources"]["doctor-of-credit"]["failure_streak"] == 0

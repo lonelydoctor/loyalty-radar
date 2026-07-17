@@ -126,7 +126,7 @@ The public audit requires at least 70% script-source success, 80% P0 success, va
 
 1. Resolve user configuration outside the Skill directory. With no user config, use the blank public profile and default English locale.
 2. Load selected Source Packs from `references/source-packs/` and reject duplicate source IDs or invalid packs.
-3. Collect configured public sources once. Do not silently omit browser-only or failed sources.
+3. Collect configured public sources once. Do not silently omit browser-only or failed sources. A declared `feedly-public` fallback may run only after direct RSS failure; preserve original links and record fallback use in source health.
 4. Apply the hard quality gate before ranking: remove ads, contests, irrelevant travel news, stale rows, invalid future-dated rows, and low-signal forum noise.
 5. Classify program, card family, vertical, topic, action, risk, ecosystem signal, stakeholder, metric snippets, and future dates.
 6. Cluster only evidence describing the same narrow event. Shared program names alone are not sufficient.

@@ -190,6 +190,13 @@ def _health_aggregates(
     p0_ok = sum(status(source) == "ok" for source in scope.p0_script_eligible)
     p0_total = len(scope.p0_script_eligible)
     p0_rate = p0_ok / p0_total if p0_total else 0.0
+    fallback_sources = sum(
+        status(source) == "ok"
+        and _text(source.get("fallback_provider")) == "feedly-public"
+        and _text(health_by_id.get(str(source.get("id")), {}).get("fallback_provider"))
+        == "feedly-public"
+        for source in scope.script_eligible
+    )
     if script_rate < SCRIPT_OK_THRESHOLD:
         issues.append(
             f"script-eligible source ok rate {script_rate:.1%} is below {SCRIPT_OK_THRESHOLD:.0%}"
@@ -206,6 +213,7 @@ def _health_aggregates(
         "p0_script_sources": p0_total,
         "p0_ok_sources": p0_ok,
         "p0_ok_rate": round(p0_rate, 4),
+        "fallback_sources": fallback_sources,
         "status_counts": dict(sorted(statuses.items())),
     }
 

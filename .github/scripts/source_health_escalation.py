@@ -54,6 +54,10 @@ def _status_metadata(row: dict[str, Any]) -> dict[str, Any]:
         "status": str(row.get("status") or "unknown").casefold(),
         "status_code": row.get("status_code"),
         "error_type": str(row.get("error_type") or ""),
+        "fallback_provider": str(row.get("fallback_provider") or ""),
+        "fallback_used": bool(row.get("fallback_used")),
+        "direct_status": str(row.get("direct_status") or ""),
+        "direct_status_code": row.get("direct_status_code"),
     }
 
 
@@ -144,8 +148,11 @@ def render_dashboard(state: dict[str, Any], current: dict[str, Any]) -> str:
     table = ["| Source | Priority | Last status | Failure streak | Issue |", "|---|---:|---|---:|---|"]
     for row in rows:
         issue = f"#{row['issue_number']}" if row.get("issue_number") else "—"
+        status = str(row.get("status") or "unknown")
+        if row.get("fallback_used"):
+            status += f" via {row.get('fallback_provider') or 'fallback'}"
         table.append(
-            f"| `{row.get('source_id','')}` | {row.get('priority','')} | {row.get('status','unknown')} | {int(row.get('failure_streak') or 0)} | {issue} |"
+            f"| `{row.get('source_id','')}` | {row.get('priority','')} | {status} | {int(row.get('failure_streak') or 0)} | {issue} |"
         )
     machine = json.dumps(state, ensure_ascii=True, separators=(",", ":"))
     return "\n".join(

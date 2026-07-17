@@ -88,6 +88,7 @@ Use ISO 3166-1 alpha-2 region codes where a source has a regional scope. Use BCP
 | `priority` | Collection priority: `P0`, `P1`, or `P2`; this is not an event priority |
 | `source_type` | Evidence category such as `rss`, `forum`, `blog_comment`, or `news_index` |
 | `fetch_method` | A registered collector method |
+| `fallback_provider` | Optional reviewed fallback; v0.1.x permits only `feedly-public` on RSS sources |
 | `url` | Public HTTP or HTTPS endpoint |
 | `region` | Intended geographic coverage |
 | `language` | Expected source language |
@@ -109,6 +110,8 @@ The initial catalog includes these collector classes:
 | `browser_only` | Valuable public source not reliably retrievable by the normal client | Report status only; do not add bypass logic |
 
 Adding a new `fetch_method` requires a separate implementation review covering redirects, response limits, timeouts, encoding, HTML escaping, failure states, and deterministic fixtures.
+
+`feedly-public` is a direct-failure fallback, not a replacement source. A contribution must prove that the returned stream ID matches the configured RSS URL, at least one usable cached item is present, items keep original HTTP(S) links and publication times, fallback use is visible in health output, and no account credential or private text is sent.
 
 ## Query design for industry signals
 

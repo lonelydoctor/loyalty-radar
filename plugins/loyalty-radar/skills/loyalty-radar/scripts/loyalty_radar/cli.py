@@ -320,6 +320,7 @@ def command_audit(args: argparse.Namespace) -> int:
         "Quality gate: "
         f"sources {health['script_ok_rate']:.1%}, "
         f"P0 {health['p0_ok_rate']:.1%}, "
+        f"fallbacks {health.get('fallback_sources', 0)}, "
         f"duplicates {health['duplicate_rate']:.1%}"
     )
     return 0

@@ -113,6 +113,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=390
     programs: [Chase, American Express]
     default_limit: 20
@@ -123,6 +124,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410
     programs: [American Express]
     program_fallback: true
@@ -134,6 +136,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=722
     programs: [Chase, Hyatt, Marriott, IHG]
     program_fallback: true
@@ -145,6 +148,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=763
     programs: [Chase, American Express, Star Alliance]
     default_limit: 15
@@ -155,6 +159,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=766
     programs: [Marriott]
     program_fallback: true
@@ -166,6 +171,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=418
     programs: [Hyatt]
     program_fallback: true
@@ -177,6 +183,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=417
     programs: [Hilton]
     program_fallback: true
@@ -188,6 +195,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=426
     programs: [IHG]
     program_fallback: true
@@ -199,6 +207,7 @@ sources:
     priority: P0
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=413
     programs: [Star Alliance]
     program_fallback: true
@@ -210,6 +219,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=681
     programs: [United, Star Alliance]
     program_fallback: true
@@ -221,6 +231,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=375
     programs: [Air Canada, Star Alliance]
     program_fallback: true
@@ -232,6 +243,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=443
     programs: [ANA, Star Alliance]
     program_fallback: true
@@ -243,6 +255,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=500
     programs: [Singapore Airlines, Star Alliance]
     program_fallback: true
@@ -254,6 +267,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=495
     programs: [Lufthansa, Star Alliance]
     program_fallback: true
@@ -265,6 +279,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=614
     programs: [Asiana, Star Alliance]
     program_fallback: true
@@ -276,6 +291,7 @@ sources:
     priority: P1
     source_type: rss
     fetch_method: rss
+    fallback_provider: feedly-public
     url: https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=745
     programs: [Hertz, Avis, Budget, National, Enterprise, Alamo, Sixt, Europcar]
     verticals: [rental_car]

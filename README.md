@@ -157,6 +157,8 @@ The catalog contains 59 configured source entries at the v0.1.0 baseline. An ent
 
 The weekly GitHub health workflow probes a bounded sample rather than scraping the full catalog. Its sample is balanced across script-eligible Source Packs and rotates each ISO week so lower-priority and industry sources are not permanently hidden behind a P0-heavy prefix. It stores metadata only and opens a deduplicated source-health Issue after two observed P0 failures. Endpoint failures remain evidence about availability, not claims that a source published no news.
 
+FlyerTalk feeds are fetched directly first. If a direct request fails and the source declares `fallback_provider: feedly-public`, Loyalty Radar can read Feedly's public cached stream, while preserving the original thread URL and publication time. Reports count these fallback successes separately. The fallback sends only the already-public RSS URL to Feedly; remove the field in a custom Source Pack to disable it.
+
 | Source pack | Default | Typical coverage | Notes |
 | --- | --- | --- | --- |
 | `core` | Enabled | High-signal loyalty and travel-card RSS sources | Stable starting set for most users |

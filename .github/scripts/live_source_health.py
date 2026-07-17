@@ -11,7 +11,7 @@ from collections import Counter, defaultdict, deque
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 import requests
 import yaml
@@ -19,6 +19,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 PACK_DIR = ROOT / "plugins" / "loyalty-radar" / "skills" / "loyalty-radar" / "references" / "source-packs"
 USER_AGENT = "Loyalty-Radar-Health/0.1 (+https://github.com/lonelydoctor/loyalty-radar)"
+FEEDLY_PUBLIC_STREAM_URL = "https://cloud.feedly.com/v3/streams/contents"
 
 
 def bounded_limit(value: str) -> int:
@@ -203,10 +204,74 @@ def check_source(source: dict[str, Any], last_request: dict[str, float]) -> dict
                 "error": str(exc).replace("\n", " ")[:240],
             }
         )
-    finally:
-        last_request[host] = time.monotonic()
-        result["elapsed_ms"] = round((time.monotonic() - started) * 1000)
+    last_request[host] = time.monotonic()
+    if result.get("status") != "ok" and source.get("fallback_provider") == "feedly-public":
+        apply_feedly_public_fallback(source, result, last_request)
+    result["elapsed_ms"] = round((time.monotonic() - started) * 1000)
     return result
+
+
+def feedly_public_url(source_url: str) -> str:
+    query = urlencode({"streamId": f"feed/{source_url}", "count": 1})
+    return f"{FEEDLY_PUBLIC_STREAM_URL}?{query}"
+
+
+def apply_feedly_public_fallback(
+    source: dict[str, Any], result: dict[str, Any], last_request: dict[str, float]
+) -> None:
+    source_url = str(source["url"])
+    result["direct_status"] = result.get("status")
+    result["direct_status_code"] = result.get("status_code")
+    if result.get("error_type"):
+        result["direct_error_type"] = result.pop("error_type")
+    if result.get("error"):
+        result["direct_error"] = result.pop("error")
+    result["fallback_provider"] = "feedly-public"
+    result["fallback_used"] = False
+
+    fallback_url = feedly_public_url(source_url)
+    fallback_host = urlparse(fallback_url).netloc.lower()
+    wait_seconds = last_request.get(fallback_host, 0.0) + 0.25 - time.monotonic()
+    if wait_seconds > 0:
+        time.sleep(wait_seconds)
+    try:
+        with requests.get(
+            fallback_url,
+            headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+            timeout=(6, 18),
+            allow_redirects=True,
+        ) as response:
+            result["fallback_status_code"] = response.status_code
+            if response.status_code >= 400:
+                result["fallback_error"] = f"HTTP {response.status_code}"
+                return
+            payload = response.json()
+            expected_id = f"feed/{source_url}"
+            if not isinstance(payload, dict) or payload.get("id") != expected_id:
+                result["fallback_error"] = "unexpected stream"
+                return
+            items = payload.get("items")
+            if not isinstance(items, list):
+                result["fallback_error"] = "missing items"
+                return
+            if not items:
+                result["fallback_error"] = "no cached items"
+                return
+            result.update(
+                {
+                    "status": "ok",
+                    "status_code": response.status_code,
+                    "content_type": response.headers.get("Content-Type", "").split(";", 1)[0],
+                    "final_host": urlparse(response.url).netloc.lower(),
+                    "sampled_bytes": len(response.content),
+                    "fallback_used": True,
+                }
+            )
+    except (requests.RequestException, ValueError, TypeError) as exc:
+        result["fallback_error_type"] = type(exc).__name__
+        result["fallback_error"] = str(exc).replace("\n", " ")[:240]
+    finally:
+        last_request[fallback_host] = time.monotonic()
 
 
 def write_summary(path: Path, report: dict[str, Any]) -> None:
@@ -219,6 +284,7 @@ def write_summary(path: Path, report: dict[str, Any]) -> None:
         f"- OK: {counts.get('ok', 0)}",
         f"- HTTP errors: {counts.get('http_error', 0)}",
         f"- Network errors: {counts.get('network_error', 0)}",
+        f"- Public-cache fallbacks used: {sum(bool(row.get('fallback_used')) for row in report['results'])}",
         f"- Browser-assisted sources skipped: {len(report['browser_assisted_sources'])}",
         f"- Catalog-disabled sources skipped: {len(report['disabled_sources'])}",
         "",

@@ -15,6 +15,7 @@ from .paths import SOURCE_PACKS_DIR
 
 ALLOWED_METHODS = {"rss", "flyert_forum", "html_keyword", "browser_only"}
 ALLOWED_PRIORITIES = {"P0", "P1", "P2"}
+ALLOWED_FALLBACK_PROVIDERS = {"feedly-public"}
 
 
 @dataclass(frozen=True)
@@ -127,6 +128,11 @@ def validate_pack_data(payload: Any, path: Path | None = None) -> list[str]:
         seen_urls.add(url)
         if source.get("fetch_method") not in ALLOWED_METHODS:
             errors.append(f"{prefix}.fetch_method is unsupported")
+        fallback_provider = str(source.get("fallback_provider") or "").strip()
+        if fallback_provider and fallback_provider not in ALLOWED_FALLBACK_PROVIDERS:
+            errors.append(f"{prefix}.fallback_provider is unsupported")
+        if fallback_provider and source.get("fetch_method") != "rss":
+            errors.append(f"{prefix}.fallback_provider requires fetch_method=rss")
         if source.get("priority") not in ALLOWED_PRIORITIES:
             errors.append(f"{prefix}.priority must be P0, P1, or P2")
         try:

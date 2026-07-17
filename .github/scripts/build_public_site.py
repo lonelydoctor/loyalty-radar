@@ -133,6 +133,7 @@ HEALTH_KEYS = {
     "duplicate_rate",
     "top_events_checked",
 }
+HEALTH_OPTIONAL_KEYS = {"fallback_sources"}
 ISO_WEEK_RE = re.compile(r"\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])")
 
 
@@ -177,6 +178,7 @@ TEXT = {
         "duplicate_rate": "Duplicate rate",
         "top_checked": "Top events checked",
         "success_rate": "Script-source success",
+        "fallbacks": "Public-cache fallbacks",
         "c_end": "Member action radar",
         "c_end_desc": "Promotions, transfer bonuses, credits, status, redemption, bugs, clawbacks, and operational datapoints.",
         "ecosystem": "Loyalty ecosystem radar",
@@ -207,6 +209,7 @@ TEXT = {
         "pack": "Source pack",
         "priority": "Priority",
         "method": "Collection method",
+        "fallback": "Fallback",
         "region": "Region",
         "programs": "Programs",
         "status": "Default state",
@@ -256,6 +259,7 @@ TEXT = {
         "duplicate_rate": "重复率",
         "top_checked": "已核查重点事件",
         "success_rate": "脚本来源成功率",
+        "fallbacks": "公开缓存回退",
         "c_end": "C 端玩法雷达",
         "c_end_desc": "促销、转点奖励、抵扣、会籍、兑换、系统异常、追回与履约实测。",
         "ecosystem": "忠诚计划生态雷达",
@@ -286,6 +290,7 @@ TEXT = {
         "pack": "来源包",
         "priority": "优先级",
         "method": "采集方式",
+        "fallback": "回退方式",
         "region": "地区",
         "programs": "项目",
         "status": "默认状态",
@@ -718,14 +723,19 @@ def normalize_event(
 def validate_health(value: Any, path: str, event_count: int) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{path} must be an object")
-    require_known_keys(value, HEALTH_KEYS, path)
+    require_known_keys(value, HEALTH_KEYS | HEALTH_OPTIONAL_KEYS, path)
     missing = sorted(HEALTH_KEYS - set(value))
     if missing:
         raise ValueError(f"{path}: missing field(s): {', '.join(missing)}")
-    integer_keys = HEALTH_KEYS - {"script_ok_rate", "p0_ok_rate", "duplicate_rate", "status_counts"}
+    integer_keys = (HEALTH_KEYS | HEALTH_OPTIONAL_KEYS) - {
+        "script_ok_rate",
+        "p0_ok_rate",
+        "duplicate_rate",
+        "status_counts",
+    }
     clean: dict[str, Any] = {}
     for key in integer_keys:
-        number = value[key]
+        number = value.get(key, 0)
         if isinstance(number, bool) or not isinstance(number, int) or number < 0:
             raise ValueError(f"{path}.{key} must be a non-negative integer")
         clean[key] = number
@@ -939,6 +949,7 @@ def health_metrics(report: PublicReport, locale: str) -> str:
         ("script_eligible_sources", "eligible", eligible),
         ("script_ok_sources", "script_ok", f"{successful} / {eligible}"),
         ("script_ok_rate", "success_rate", f"{health['script_ok_rate']:.1%}"),
+        ("fallback_sources", "fallbacks", health.get("fallback_sources", 0)),
         ("p0_ok_sources", "p0_ok", f"{p0_ok} / {p0_total}"),
         ("events_checked", "events_checked", health["events_checked"]),
         ("duplicate_events", "duplicates", health["duplicate_events"]),
@@ -1055,6 +1066,7 @@ def source_card(source: dict[str, Any], locale: str) -> str:
         (text["pack"], source.get("pack_id")),
         (text["priority"], source.get("priority")),
         (text["method"], method),
+        (text["fallback"], source.get("fallback_provider") or "—"),
         (text["region"], source.get("region")),
         (text["programs"], programs),
         (text["status"], text["enabled"] if enabled else text["disabled"]),

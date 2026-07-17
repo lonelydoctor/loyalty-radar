@@ -291,6 +291,29 @@ class SourcePackAndConfigTests(unittest.TestCase):
         self.assertTrue(any("duplicates" in error for error in errors))
         self.assertTrue(any("unsupported" in error for error in errors))
 
+    def test_source_pack_validator_allows_only_declared_rss_fallback(self) -> None:
+        source = {
+            "id": "example",
+            "name": "Example",
+            "url": "https://example.com/feed",
+            "priority": "P0",
+            "fetch_method": "rss",
+            "fallback_provider": "feedly-public",
+            "default_limit": 5,
+            "rate_limit_seconds": 1,
+        }
+        payload = {
+            "pack": {"id": "example", "name": "Example", "default_enabled": False},
+            "sources": [source],
+        }
+
+        self.assertEqual(validate_pack_data(payload), [])
+        payload["sources"][0]["fallback_provider"] = "unknown-proxy"
+        self.assertTrue(any("fallback_provider is unsupported" in row for row in validate_pack_data(payload)))
+        payload["sources"][0]["fallback_provider"] = "feedly-public"
+        payload["sources"][0]["fetch_method"] = "html_keyword"
+        self.assertTrue(any("requires fetch_method=rss" in row for row in validate_pack_data(payload)))
+
     def test_init_writes_only_to_requested_user_config_directory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             exit_code = cli.main(["init", "--non-interactive", "--config-dir", directory, "--locale", "zh-CN", "--membership", "Atlas Rewards=Gold", "--issuer", "Chase", "--card", "Synthetic Card"])
