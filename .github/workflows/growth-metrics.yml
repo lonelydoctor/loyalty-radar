@@ -28,7 +28,6 @@ jobs:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       INSTALL_DISCUSSION_NUMBER: ${{ vars.INSTALL_CONFIRMATION_DISCUSSION_NUMBER }}
       GROWTH_MILESTONE_NUMBER: ${{ vars.GROWTH_MILESTONE_NUMBER }}
-      OUTPUT_DIR: ${{ runner.temp }}/loyalty-radar-growth
     steps:
       - name: Set up Python without checking out the repository
         uses: actions/setup-python@v6
@@ -38,6 +37,8 @@ jobs:
       - name: Fetch the versioned metrics script through the Contents API
         shell: bash
         run: |
+          echo "OUTPUT_DIR=${RUNNER_TEMP}/loyalty-radar-growth" >> "${GITHUB_ENV}"
+          OUTPUT_DIR="${RUNNER_TEMP}/loyalty-radar-growth"
           mkdir -p "${OUTPUT_DIR}"
           gh api --method GET \
             "repos/${GITHUB_REPOSITORY}/contents/.github/scripts/growth_metrics.py?ref=${DEFAULT_BRANCH}" \
