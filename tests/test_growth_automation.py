@@ -387,6 +387,20 @@ def workflow(name: str) -> str:
     return (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
 
 
+def test_job_environment_does_not_use_runner_context() -> None:
+    for path in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines):
+            if line != "    env:":
+                continue
+            block: list[str] = []
+            for candidate in lines[index + 1 :]:
+                if candidate and not candidate.startswith("      "):
+                    break
+                block.append(candidate)
+            assert "${{ runner." not in "\n".join(block), path.name
+
+
 def test_weekly_public_brief_workflow_has_audited_dry_run_and_no_auto_merge() -> None:
     text = workflow("weekly-public-brief.yml")
 

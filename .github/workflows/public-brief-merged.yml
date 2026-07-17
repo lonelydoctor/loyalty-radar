@@ -25,7 +25,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ github.token }}
       HEAD_REF: ${{ github.event.pull_request.head.ref }}
-      OUTREACH_DIR: ${{ runner.temp }}/loyalty-radar-outreach
     steps:
       - name: Check out the approved merge without persisted credentials
         uses: actions/checkout@v7
@@ -41,6 +40,7 @@ jobs:
       - name: Generate deterministic drafts and publish one Announcement
         shell: bash
         run: |
+          OUTREACH_DIR="${RUNNER_TEMP}/loyalty-radar-outreach"
           WEEK="${HEAD_REF#bot/brief-}"
           INPUT="public-briefs/${WEEK}/report.json"
           test -f "${INPUT}"
