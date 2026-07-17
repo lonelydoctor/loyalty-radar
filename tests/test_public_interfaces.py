@@ -276,6 +276,7 @@ class PublicAuditTests(unittest.TestCase):
         self.assertEqual(first["publication"]["locales"], ["en", "zh-CN"])
         self.assertEqual(first["health"]["script_ok_rate"], 1.0)
         self.assertEqual(first["health"]["p0_ok_rate"], 1.0)
+        self.assertEqual(first["health"]["fallback_sources"], 0)
         self.assertEqual(first["health"]["duplicate_rate"], 0.0)
         self.assertEqual(first["items"][0]["lane"], "c-end")
         self.assertEqual(first["items"][0]["priority"], "P0")
@@ -294,6 +295,29 @@ class PublicAuditTests(unittest.TestCase):
             set(first["items"][0]["source_refs"][0]),
             {"source_id", "source", "source_type", "url", "published_at"},
         )
+
+    def test_public_health_counts_only_declared_successful_fallbacks(self) -> None:
+        report = fixture_report()
+        report["source_packs"] = ["forums-global"]
+        report["source_filter"] = ["ft-amex-mr"]
+        report["items"] = []
+        report["health"] = [
+            {
+                "source_id": "ft-amex-mr",
+                "source": "FlyerTalk - American Express Membership Rewards",
+                "status": "ok",
+                "items": 3,
+                "detail": "parsed via feedly-public fallback",
+                "url": "https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410",
+                "fallback_provider": "feedly-public",
+            }
+        ]
+
+        result = audit_public_report(report, audited_at=AUDITED_AT)
+
+        self.assertEqual(result["health"]["fallback_sources"], 1)
+        self.assertEqual(result["health"]["script_ok_rate"], 1.0)
+        self.assertEqual(result["health"]["p0_ok_rate"], 1.0)
 
     def test_public_policy_has_no_minimum_event_count(self) -> None:
         report = fixture_report()

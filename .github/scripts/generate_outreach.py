@@ -157,9 +157,18 @@ def health_lines(report: dict[str, Any]) -> tuple[str, str]:
     script_total = int(health.get("script_eligible_sources") or 0)
     p0_ok = int(health.get("p0_ok_sources") or 0)
     p0_total = int(health.get("p0_script_sources") or 0)
+    fallback_sources = int(health.get("fallback_sources") or 0)
     duplicate_rate = float(health.get("duplicate_rate") or 0.0)
-    en = f"The audited run passed {script_ok}/{script_total} script sources and {p0_ok}/{p0_total} P0 sources; duplicate rate {duplicate_rate:.1%}."
-    zh = f"本次审计中，脚本来源成功 {script_ok}/{script_total}，P0 来源成功 {p0_ok}/{p0_total}，重复率 {duplicate_rate:.1%}。"
+    en = (
+        f"The audited run passed {script_ok}/{script_total} script sources and "
+        f"{p0_ok}/{p0_total} P0 sources; {fallback_sources} used a declared public-cache "
+        f"fallback; duplicate rate {duplicate_rate:.1%}."
+    )
+    zh = (
+        f"本次审计中，脚本来源成功 {script_ok}/{script_total}，P0 来源成功 "
+        f"{p0_ok}/{p0_total}，其中 {fallback_sources} 个使用已声明的公开缓存回退，"
+        f"重复率 {duplicate_rate:.1%}。"
+    )
     return en, zh
 
 
@@ -177,6 +186,7 @@ def review_summary(report: dict[str, Any], week: str) -> str:
             f"- Events: {publication.get('event_count', 0)}",
             f"- Script source OK rate: {float(health.get('script_ok_rate') or 0):.1%}",
             f"- P0 source OK rate: {float(health.get('p0_ok_rate') or 0):.1%}",
+            f"- Declared public-cache fallbacks: {int(health.get('fallback_sources') or 0)}",
             f"- Duplicate rate: {float(health.get('duplicate_rate') or 0):.1%}",
             "",
             "This summary is read from the sanitized `schema_id` report produced by `loyalty-radar audit --policy public`.",

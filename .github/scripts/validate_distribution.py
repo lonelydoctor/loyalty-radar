@@ -213,6 +213,15 @@ def validate_source_packs(validation: Validation) -> None:
             source_urls[raw_url] = path
             validation.require(source.get("priority") in {"P0", "P1", "P2"}, f"{label}.priority is invalid")
             validation.require(source.get("fetch_method") in allowed_methods, f"{label}.fetch_method is invalid")
+            fallback_provider = str(source.get("fallback_provider") or "")
+            validation.require(
+                not fallback_provider or fallback_provider == "feedly-public",
+                f"{label}.fallback_provider is invalid",
+            )
+            validation.require(
+                not fallback_provider or source.get("fetch_method") == "rss",
+                f"{label}.fallback_provider requires RSS",
+            )
             validation.require(bool(str(source.get("region") or "").strip()), f"{label}.region is required")
             validation.require(bool(str(source.get("language") or "").strip()), f"{label}.language is required")
             try:

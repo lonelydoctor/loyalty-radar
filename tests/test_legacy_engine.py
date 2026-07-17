@@ -9,6 +9,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import run_digest
 
@@ -111,6 +112,92 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]["comment_rss"], "https://example.com/thread/feed/")
         self.assertIn("Hyatt transfer ratio", rows[0]["summary"])
+
+    def test_feedly_public_parser_preserves_original_link_and_time(self) -> None:
+        feed_url = "https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410"
+        payload = json.dumps(
+            {
+                "id": f"feed/{feed_url}",
+                "items": [
+                    {
+                        "title": "Amex transfer bonus datapoint",
+                        "published": 1784157333000,
+                        "alternate": [
+                            {
+                                "href": "https://www.flyertalk.com/forum/example-thread.html",
+                                "type": "text/html",
+                            }
+                        ],
+                        "content": {"content": "<p>Original public forum summary.</p>"},
+                        "author": "public-user",
+                        "keywords": ["Membership Rewards"],
+                    }
+                ],
+            }
+        )
+
+        rows = run_digest.parse_feedly_public_stream(
+            payload,
+            {"source_type": "rss"},
+            5,
+            expected_feed_url=feed_url,
+        )
+
+        self.assertEqual(rows[0]["url"], "https://www.flyertalk.com/forum/example-thread.html")
+        self.assertEqual(rows[0]["published_at"], "2026-07-15T23:15:33+00:00")
+        self.assertEqual(rows[0]["summary"], "Original public forum summary.")
+
+    def test_rss_collection_uses_declared_feedly_fallback_only_after_direct_failure(self) -> None:
+        feed_url = "https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=410"
+        payload = json.dumps(
+            {
+                "id": f"feed/{feed_url}",
+                "items": [
+                    {
+                        "title": "Amex MR transfer bonus is live",
+                        "published": 1784157333000,
+                        "alternate": [
+                            {
+                                "href": "https://www.flyertalk.com/forum/example-thread.html",
+                                "type": "text/html",
+                            }
+                        ],
+                        "summary": {"content": "A public user datapoint."},
+                    }
+                ],
+            }
+        )
+        source = {
+            "id": "ft-amex-mr",
+            "name": "FlyerTalk - American Express Membership Rewards",
+            "site": "FlyerTalk",
+            "priority": "P0",
+            "source_type": "rss",
+            "fetch_method": "rss",
+            "fallback_provider": "feedly-public",
+            "url": feed_url,
+            "programs": ["American Express"],
+            "default_limit": 5,
+            "enabled": True,
+        }
+        args = run_digest.build_parser().parse_args([])
+        with mock.patch(
+            "loyalty_radar.engine.http_get",
+            side_effect=[run_digest.FetchError("HTTP 403"), payload],
+        ) as fetch:
+            items, health = run_digest.collect_source(
+                source,
+                PROFILE_KEYWORDS,
+                CARD_KEYWORDS,
+                args,
+            )
+
+        self.assertEqual(fetch.call_count, 2)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(health.status, "ok")
+        self.assertEqual(health.fallback_provider, "feedly-public")
+        self.assertEqual(health.direct_error, "HTTP 403")
+        self.assertIn("feedly-public fallback", health.detail)
 
 
 class ClassifierTests(unittest.TestCase):

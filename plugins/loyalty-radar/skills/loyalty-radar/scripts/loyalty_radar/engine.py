@@ -66,6 +66,7 @@ DEFAULT_TRANSLATION_CACHE = Path(
     )
 )
 GOOGLE_TRANSLATE_URL = "https://translate.googleapis.com/translate_a/single"
+FEEDLY_PUBLIC_STREAM_URL = "https://cloud.feedly.com/v3/streams/contents"
 TRANSLATION_FAILURE_TEXT = "翻译失败，请通过原文链接核对。"
 NON_TEXT_SUMMARY = "原文摘要仅包含图片链接，请打开来源查看详情。"
 USER_AGENT = (
@@ -322,6 +323,8 @@ class SourceHealth:
     rejected: int = 0
     duplicate: int = 0
     selected: int = 0
+    fallback_provider: str = ""
+    direct_error: str = ""
 
 
 @dataclasses.dataclass
@@ -735,6 +738,82 @@ def parse_rss_feed(xml_text: str, source_cfg: dict[str, Any], limit: int) -> lis
                 "author": clean_text(rss_item_text(item, "dc:creator", ns), max_len=100),
                 "raw_tags": categories,
                 "comment_rss": rss_item_text(item, "wfw:commentRss", ns),
+                "source_type": source_cfg.get("source_type", "rss"),
+            }
+        )
+    return [row for row in rows if row["title"] and row["url"]]
+
+
+def feedly_public_stream_url(feed_url: str, limit: int) -> str:
+    query = urllib.parse.urlencode(
+        {
+            "streamId": f"feed/{feed_url}",
+            "count": max(1, min(int(limit), 100)),
+        }
+    )
+    return f"{FEEDLY_PUBLIC_STREAM_URL}?{query}"
+
+
+def _feedly_content(value: Any) -> str:
+    if isinstance(value, dict):
+        return str(value.get("content") or "")
+    return str(value or "")
+
+
+def _feedly_timestamp(value: Any) -> str | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    try:
+        return iso_or_none(dt.datetime.fromtimestamp(float(value) / 1000, tz=dt.UTC))
+    except (OverflowError, OSError, ValueError):
+        return None
+
+
+def parse_feedly_public_stream(
+    json_text: str,
+    source_cfg: dict[str, Any],
+    limit: int,
+    *,
+    expected_feed_url: str,
+) -> list[dict[str, Any]]:
+    try:
+        payload = json.loads(json_text)
+    except json.JSONDecodeError as exc:
+        raise FetchError("feedly-public returned invalid JSON") from exc
+    expected_stream_id = f"feed/{expected_feed_url}"
+    if not isinstance(payload, dict) or payload.get("id") != expected_stream_id:
+        raise FetchError("feedly-public returned an unexpected stream")
+    items = payload.get("items")
+    if not isinstance(items, list):
+        raise FetchError("feedly-public response is missing items")
+
+    rows: list[dict[str, Any]] = []
+    for item in items[:limit]:
+        if not isinstance(item, dict):
+            continue
+        alternates = item.get("alternate") if isinstance(item.get("alternate"), list) else []
+        url = next(
+            (
+                str(link.get("href") or "")
+                for link in alternates
+                if isinstance(link, dict)
+                and link.get("type") == "text/html"
+                and str(link.get("href") or "").startswith(("http://", "https://"))
+            ),
+            str(item.get("canonicalUrl") or ""),
+        )
+        summary = _feedly_content(item.get("content")) or _feedly_content(item.get("summary"))
+        keywords = item.get("keywords") if isinstance(item.get("keywords"), list) else []
+        author = item.get("author")
+        rows.append(
+            {
+                "title": clean_text(str(item.get("title") or ""), max_len=260),
+                "url": url,
+                "published_at": _feedly_timestamp(item.get("published") or item.get("updated")),
+                "summary": clean_text(summary),
+                "author": clean_text(str(author or ""), max_len=100),
+                "raw_tags": [clean_text(str(value), max_len=100) for value in keywords if value],
+                "comment_rss": "",
                 "source_type": source_cfg.get("source_type", "rss"),
             }
         )
@@ -3434,6 +3513,8 @@ def collect_source(
         return [], SourceHealth(source_id, source_name, "skipped", 0, source_cfg.get("note", "browser-only source"), url)
 
     limit = min(args.per_source_limit or source_cfg.get("default_limit", 15), source_cfg.get("default_limit", 15))
+    fallback_provider = ""
+    direct_error = ""
     try:
         body = http_get(url, encoding=source_cfg.get("encoding"))
         if method == "rss":
@@ -3457,7 +3538,23 @@ def collect_source(
         else:
             return [], SourceHealth(source_id, source_name, "failed", 0, f"unsupported fetch_method={method}", url)
     except Exception as exc:  # noqa: BLE001
-        return [], SourceHealth(source_id, source_name, "failed", 0, str(exc), url)
+        configured_fallback = str(source_cfg.get("fallback_provider") or "")
+        if method != "rss" or configured_fallback != "feedly-public":
+            return [], SourceHealth(source_id, source_name, "failed", 0, str(exc), url)
+        direct_error = str(exc)
+        try:
+            fallback_url = feedly_public_stream_url(url, limit)
+            fallback_body = http_get(fallback_url)
+            rows = parse_feedly_public_stream(
+                fallback_body,
+                source_cfg,
+                limit,
+                expected_feed_url=url,
+            )
+            fallback_provider = configured_fallback
+        except Exception as fallback_exc:  # noqa: BLE001
+            detail = f"direct failed: {direct_error}; {configured_fallback} failed: {fallback_exc}"
+            return [], SourceHealth(source_id, source_name, "failed", 0, detail, url)
 
     rows = filter_rows_by_source_keywords(rows, source_cfg)
     items = [
@@ -3470,15 +3567,20 @@ def collect_source(
         items.extend(comment_items)
 
     dated = sum(1 for item in items if parse_datetime(item.published_at) is not None)
+    detail = "parsed"
+    if fallback_provider:
+        detail = f"parsed via {fallback_provider} fallback; direct failed: {direct_error}"
     return items, SourceHealth(
         source_id,
         source_name,
         "ok",
         len(items),
-        "parsed",
+        detail,
         url,
         fetched=len(items),
         dated=dated,
+        fallback_provider=fallback_provider,
+        direct_error=direct_error,
     )
 
 
