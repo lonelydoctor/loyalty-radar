@@ -439,6 +439,27 @@ def test_discussion_feedback_query_stays_below_github_node_budget() -> None:
     assert "discussions(first:100" not in query
 
 
+def test_stargazer_collection_degrades_to_the_current_count_baseline() -> None:
+    class Client:
+        repository = "lonelydoctor/loyalty-radar"
+
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def paginate(self, _path: str, **kwargs):
+            self.calls += 1
+            raise growth.GitHubAPIError("token cannot list stargazers")
+
+    client = Client()
+    warnings: list[str] = []
+
+    rows = growth.collect_stargazers(client, warnings)
+
+    assert rows == []
+    assert client.calls == 1
+    assert "current public star count" in warnings[0]
+
+
 def test_approved_merge_workflow_only_posts_inside_github_and_uploads_drafts() -> None:
     text = workflow("public-brief-merged.yml")
 
