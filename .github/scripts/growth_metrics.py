@@ -305,7 +305,13 @@ class GitHubClient:
     def rest(self, method: str, path: str, payload: dict[str, Any] | None = None, *, accept: str = "application/vnd.github+json") -> Any:
         return self._request(method, path, payload=payload, accept=accept)[0]
 
-    def paginate(self, path: str, *, accept: str = "application/vnd.github+json", maximum_pages: int = 20) -> list[Any]:
+    def paginate(
+        self,
+        path: str,
+        *,
+        accept: str = "application/vnd.github+json",
+        maximum_pages: int = 20,
+    ) -> list[Any]:
         separator = "&" if "?" in path else "?"
         url = f"{path}{separator}per_page=100"
         rows: list[Any] = []
@@ -373,14 +379,27 @@ def _flatten_discussion_comments(nodes: Iterable[dict[str, Any]]) -> list[dict[s
     return rows
 
 
+def collect_stargazers(
+    client: GitHubClient, warnings: list[str]
+) -> list[dict[str, Any]]:
+    path = f"/repos/{client.repository}/stargazers"
+    accept = "application/vnd.github.star+json"
+    try:
+        return client.paginate(path, accept=accept)
+    except GitHubAPIError as error:
+        warnings.append(
+            "Stargazer timestamps unavailable to GITHUB_TOKEN; the first "
+            "post-release run will use the repository's current public star count "
+            f"as its baseline: {error}"
+        )
+        return []
+
+
 def collect_api_payload(client: GitHubClient, discussion_number: int | None) -> tuple[dict[str, Any], list[str]]:
     warnings: list[str] = []
     repository = client.rest("GET", f"/repos/{client.repository}")
     releases = client.paginate(f"/repos/{client.repository}/releases")
-    stargazers = client.paginate(
-        f"/repos/{client.repository}/stargazers",
-        accept="application/vnd.github.star+json",
-    )
+    stargazers = collect_stargazers(client, warnings)
     contributors = client.paginate(f"/repos/{client.repository}/contributors?anon=0", maximum_pages=10)
     milestones = client.paginate(f"/repos/{client.repository}/milestones?state=all", maximum_pages=3)
 
