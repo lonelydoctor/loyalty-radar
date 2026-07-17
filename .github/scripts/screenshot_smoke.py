@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the bilingual public Source Catalog and reject obvious layout failures."""
+"""Render report and catalog Pages at required viewports and reject layout failures."""
 
 from __future__ import annotations
 
@@ -28,7 +28,13 @@ VIEWPORTS = {
     "mobile": {"width": 390, "height": 844},
     "overview": {"width": 2400, "height": 1800},
 }
-LOCALES = ("en", "zh-CN")
+PAGES = {
+    "root": {"path": "/", "locale": "en", "kind": "report"},
+    "en-report": {"path": "/en/", "locale": "en", "kind": "report"},
+    "zh-CN-report": {"path": "/zh-CN/", "locale": "zh-CN", "kind": "report"},
+    "en-sources": {"path": "/en/sources/", "locale": "en", "kind": "catalog"},
+    "zh-CN-sources": {"path": "/zh-CN/sources/", "locale": "zh-CN", "kind": "catalog"},
+}
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -36,10 +42,10 @@ class QuietHandler(SimpleHTTPRequestHandler):
         return
 
 
-def inspect_layout(page: Page) -> dict[str, Any]:
+def inspect_layout(page: Page, expected_locale: str, kind: str) -> dict[str, Any]:
     return page.evaluate(
         """
-        () => {
+        ([expectedLocale, kind]) => {
           const root = document.documentElement;
           const heading = document.querySelector('h1');
           const visible = (element) => {
@@ -47,43 +53,63 @@ def inspect_layout(page: Page) -> dict[str, Any]:
             const rect = element.getBoundingClientRect();
             return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 1 && rect.height > 1;
           };
-          const clipped = [...document.querySelectorAll('h1, h2, h3, button, [data-critical-text]')]
-            .filter(visible)
+          const critical = [...document.querySelectorAll('h1, h2, h3, .button, button, [data-critical-text]')]
+            .filter(visible);
+          const clipped = critical
             .filter((element) => element.scrollWidth > element.clientWidth + 2 || element.scrollHeight > element.clientHeight + 2)
             .map((element) => ({
               tag: element.tagName,
-              text: (element.textContent || element.tagName).trim().slice(0, 100),
+              text: (element.textContent || element.tagName).trim().slice(0, 140),
               scrollWidth: element.scrollWidth,
               clientWidth: element.clientWidth,
               scrollHeight: element.scrollHeight,
               clientHeight: element.clientHeight,
             }));
-          const candidates = [...document.querySelectorAll('[data-layout-check], main > section, main > article')]
+          const truncation = critical
+            .filter((element) => {
+              const style = getComputedStyle(element);
+              return style.textOverflow === 'ellipsis' ||
+                !['', 'none', '0'].includes(style.getPropertyValue('-webkit-line-clamp'));
+            })
+            .map((element) => (element.textContent || element.tagName).trim().slice(0, 140));
+          const candidates = [...document.querySelectorAll('[data-layout-check]')]
             .filter(visible)
             .filter((element) => !['absolute', 'fixed'].includes(getComputedStyle(element).position));
           const overlaps = [];
           for (let left = 0; left < candidates.length; left += 1) {
-            const a = candidates[left].getBoundingClientRect();
             for (let right = left + 1; right < candidates.length; right += 1) {
-              const b = candidates[right].getBoundingClientRect();
+              const leftElement = candidates[left];
+              const rightElement = candidates[right];
+              if (leftElement.contains(rightElement) || rightElement.contains(leftElement)) continue;
+              const a = leftElement.getBoundingClientRect();
+              const b = rightElement.getBoundingClientRect();
               const width = Math.min(a.right, b.right) - Math.max(a.left, b.left);
               const height = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-              if (width > 4 && height > 4) {
-                overlaps.push(`${candidates[left].tagName}:${candidates[right].tagName}`);
-              }
+              if (width > 4 && height > 4) overlaps.push(`${leftElement.tagName}:${rightElement.tagName}`);
             }
           }
           const headingRect = heading ? heading.getBoundingClientRect() : null;
+          const eventLocaleMismatch = [...document.querySelectorAll('[data-event-locale]')]
+            .filter((element) => element.dataset.eventLocale !== expectedLocale).length;
+          const reportState = document.querySelector('[data-report-state]')?.dataset.reportState || '';
+          const sourceCards = document.querySelectorAll('.source-card').length;
           return {
             bodyTextLength: (document.body.innerText || '').trim().length,
+            documentLocale: document.documentElement.lang,
             horizontalOverflow: root.scrollWidth - root.clientWidth,
             hasHeading: Boolean(heading),
-            headingInViewport: Boolean(headingRect && headingRect.left >= -1 && headingRect.right <= innerWidth + 1 && headingRect.top >= -1),
+            headingInViewport: Boolean(headingRect && headingRect.left >= -1 && headingRect.right <= innerWidth + 1 && headingRect.top >= -1 && headingRect.top <= innerHeight),
             clipped,
+            truncation,
             overlaps,
+            eventLocaleMismatch,
+            reportState,
+            sourceCards,
+            kind,
           };
         }
-        """
+        """,
+        [expected_locale, kind],
     )
 
 
@@ -100,7 +126,15 @@ def assert_nonblank(path: Path) -> None:
             raise AssertionError(f"Screenshot has too little visible content: {path}")
 
 
-def test_page(browser: Browser, base_url: str, locale: str, name: str, viewport: dict[str, int], output: Path) -> dict[str, Any]:
+def test_page(
+    browser: Browser,
+    base_url: str,
+    page_name: str,
+    page_spec: dict[str, str],
+    viewport_name: str,
+    viewport: dict[str, int],
+    output: Path,
+) -> dict[str, Any]:
     context = browser.new_context(viewport=viewport, device_scale_factor=1, reduced_motion="reduce")
     page = context.new_page()
     console_errors: list[str] = []
@@ -116,18 +150,21 @@ def test_page(browser: Browser, base_url: str, locale: str, name: str, viewport:
             route.abort()
 
     context.route("**/*", route_request)
-    response = page.goto(f"{base_url}/{locale}/", wait_until="networkidle", timeout=20_000)
+    response = page.goto(f"{base_url}{page_spec['path']}", wait_until="networkidle", timeout=20_000)
     if response is None or response.status >= 400:
-        raise AssertionError(f"{locale}/{name}: page did not load successfully")
-    page.evaluate("document.fonts && document.fonts.ready")
-    layout = inspect_layout(page)
-    screenshot = output / f"{locale}-{name}.png"
+        raise AssertionError(f"{page_name}/{viewport_name}: page did not load successfully")
+    page.evaluate("async () => { if (document.fonts) await document.fonts.ready; }")
+    layout = inspect_layout(page, page_spec["locale"], page_spec["kind"])
+    screenshot = output / f"{page_name}-{viewport_name}.png"
     page.screenshot(path=str(screenshot), full_page=True, animations="disabled")
     context.close()
 
     failures: list[str] = []
-    if layout["bodyTextLength"] < 300:
-        failures.append("less than 300 visible text characters")
+    minimum_text = 250 if page_spec["kind"] == "report" else 2_000
+    if layout["bodyTextLength"] < minimum_text:
+        failures.append(f"less than {minimum_text} visible text characters")
+    if layout["documentLocale"] != page_spec["locale"]:
+        failures.append(f"document locale is {layout['documentLocale']!r}")
     if layout["horizontalOverflow"] > 2:
         failures.append(f"horizontal overflow of {layout['horizontalOverflow']}px")
     if not layout["hasHeading"]:
@@ -136,16 +173,24 @@ def test_page(browser: Browser, base_url: str, locale: str, name: str, viewport:
         failures.append("h1 is clipped or outside the first viewport")
     if layout["clipped"]:
         failures.append(f"clipped critical text: {layout['clipped'][:5]}")
+    if layout["truncation"]:
+        failures.append(f"line clamp or ellipsis detected: {layout['truncation'][:5]}")
     if layout["overlaps"]:
         failures.append(f"overlapping layout blocks: {layout['overlaps'][:5]}")
+    if layout["eventLocaleMismatch"]:
+        failures.append(f"{layout['eventLocaleMismatch']} event locale mismatch(es)")
+    if page_spec["kind"] == "report" and layout["reportState"] not in {"empty", "published"}:
+        failures.append("missing report state")
+    if page_spec["kind"] == "catalog" and layout["sourceCards"] != 59:
+        failures.append(f"expected 59 source cards, found {layout['sourceCards']}")
     if console_errors:
         failures.append(f"console errors: {console_errors[:3]}")
     if blocked_requests:
         failures.append(f"external runtime requests: {blocked_requests[:3]}")
     assert_nonblank(screenshot)
     if failures:
-        raise AssertionError(f"{locale}/{name}: " + "; ".join(failures))
-    return {"locale": locale, "viewport": name, "screenshot": screenshot.name, "layout": layout}
+        raise AssertionError(f"{page_name}/{viewport_name}: " + "; ".join(failures))
+    return {"page": page_name, "viewport": viewport_name, "screenshot": screenshot.name, "layout": layout}
 
 
 def main() -> int:
@@ -172,10 +217,10 @@ def main() -> int:
                 launch_args["executable_path"] = chrome_path
             browser = playwright.chromium.launch(**launch_args)
             try:
-                for locale in LOCALES:
-                    for name, viewport in VIEWPORTS.items():
+                for page_name, page_spec in PAGES.items():
+                    for viewport_name, viewport in VIEWPORTS.items():
                         try:
-                            results.append(test_page(browser, base_url, locale, name, viewport, output))
+                            results.append(test_page(browser, base_url, page_name, page_spec, viewport_name, viewport, output))
                         except Exception as exc:  # Preserve all viewport evidence before failing.
                             errors.append(str(exc))
             finally:
@@ -190,7 +235,7 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    print(f"Validated {len(results)} locale/viewport combinations.")
+    print(f"Validated {len(results)} report/catalog viewport combinations.")
     return 0
 
 

@@ -36,6 +36,12 @@ Loyalty Radar may create:
 
 Users choose the output directory and control retention.
 
+### Shareable diagnostics
+
+`loyalty-radar doctor --share` is an explicit, opt-in installation receipt. It reports only the Loyalty Radar version, Python major/minor version, operating-system family, and boolean or enumerated capability checks for the Skill, source catalog, and renderer. It must not include usernames, hostnames, absolute paths, membership/card configuration, cookies, IP addresses, report content, or a generated tracking identifier.
+
+Users may paste this output into the repository's installation-confirmation Discussion. The GitHub account and comment are then public under GitHub's policies. Maintainer automation counts unique external accounts, excluding the repository owner, bots, and duplicate confirmations; Loyalty Radar itself sends no installation receipt.
+
 ## Network destinations
 
 ### Configured sources
@@ -68,11 +74,15 @@ Real configuration, caches, and reports stay on the user's machine unless the us
 
 Loyalty Radar does not automatically delete reports because audit retention needs vary. Users can remove configuration, output directories, and translation caches with normal filesystem tools. Uninstalling the CLI or Skill may not remove those user-created files.
 
-The project does not intentionally collect usage metrics. GitHub may provide aggregate repository traffic and release-download statistics under GitHub's policies; those are not embedded product telemetry.
+The project does not intentionally collect in-product usage metrics. Maintainer workflows may read public GitHub stars, releases, issues, discussions, pull requests, contributors, and repository traffic available to the owner. They also count opt-in installation confirmations from the public Discussion. These repository-level metrics are stored as GitHub Actions artifacts and are not embedded product telemetry.
 
 ## Public website and visuals
 
-The public website and release visuals contain source-catalog metadata read from committed Source Packs. They do not contain report events, offers, user datapoints, fetched article bodies, personal membership/card data, browser tabs, absolute user paths, or identifying image metadata. Real reports stay local and are not used as public screenshots.
+The public website contains the committed source catalog and, after maintainer review, a sanitized weekly report generated from real public-source scans. The public report may contain source-linked titles, URLs, publication and generation times, metrics, classifications, conservative rule-generated summaries, source-health aggregates, and localized text.
+
+The public report format must not contain the private `original` payload, fetched article or forum bodies, public author handles, comments, evidence summaries, absolute paths, personal membership/card configuration, cookies, IP addresses, or translation caches. A private full audit report may be uploaded by the weekly workflow as a maintainer-only GitHub Actions artifact with a 14-day retention period. It is not committed to the repository or deployed to Pages.
+
+Public report pull requests require automated policy validation and a human Top 10 review before merge. A week with insufficient high-confidence events may publish an explicit empty state; the project must not add invented or low-quality events to fill the layout. Test fixtures may use synthetic content only inside the excluded test tree, and release/Public Pages validation rejects mock markers in distributed or deployed files.
 
 ## Collection boundaries
 

@@ -1,0 +1,60 @@
+name: Approved public brief operations
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: read
+  discussions: write
+
+concurrency:
+  group: approved-public-brief-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  announcement-and-drafts:
+    name: Publish one GitHub Announcement and build manual outreach drafts
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'bot/brief-') &&
+      contains(github.event.pull_request.labels.*.name, 'public-report')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      OUTREACH_DIR: ${{ runner.temp }}/loyalty-radar-outreach
+    steps:
+      - name: Check out the approved merge without persisted credentials
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Generate deterministic drafts and publish one Announcement
+        shell: bash
+        run: |
+          WEEK="${HEAD_REF#bot/brief-}"
+          INPUT="public-briefs/${WEEK}/report.json"
+          test -f "${INPUT}"
+          python .github/scripts/generate_outreach.py \
+            --input "${INPUT}" \
+            --output-dir "${OUTREACH_DIR}" \
+            --week "${WEEK}" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --publish-announcement
+
+      - name: Upload drafts for manual external posting
+        uses: actions/upload-artifact@v7
+        with:
+          name: approved-public-brief-outreach-${{ github.event.pull_request.number }}
+          path: ${{ runner.temp }}/loyalty-radar-outreach/
+          if-no-files-found: error
+          retention-days: 30

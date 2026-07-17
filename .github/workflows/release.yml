@@ -45,6 +45,12 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           uv run --frozen python .github/scripts/validate_distribution.py --expected-version "${VERSION}"
 
+      - name: Rebuild and validate publication-safe Pages
+        run: |
+          uv run --frozen python .github/scripts/build_public_site.py
+          uv run --frozen python .github/scripts/validate_pages.py docs/site
+          git diff --exit-code -- docs/site
+
       - name: Run fixture-only release tests
         env:
           LOYALTY_RADAR_TEST_MODE: fixture
@@ -58,6 +64,30 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           uv run --frozen python .github/scripts/package_release.py --version "${VERSION}" --dist dist
+
+      - name: Smoke-test clean uv tool, Skill ZIP, and Plugin ZIP surfaces
+        shell: bash
+        env:
+          UV_TOOL_DIR: ${{ runner.temp }}/uv-tools
+          UV_TOOL_BIN_DIR: ${{ runner.temp }}/uv-tool-bin
+        run: |
+          WHEEL="$(find dist -maxdepth 1 -type f -name '*.whl' | head -1)"
+          uv tool install --python 3.12 --force "${WHEEL}"
+          "${UV_TOOL_BIN_DIR}/loyalty-radar" --help
+          "${UV_TOOL_BIN_DIR}/loyalty-radar" doctor --share
+          unzip -t dist/loyalty-radar-skill-*.zip
+          unzip -t dist/loyalty-radar-plugin-*.zip
+          unzip -p dist/loyalty-radar-skill-*.zip loyalty-radar/SKILL.md | grep -q '^---'
+          unzip -p dist/loyalty-radar-plugin-*.zip loyalty-radar/.codex-plugin/plugin.json | python -m json.tool >/dev/null
+
+      - name: Set up Node for the best-effort ecosystem check
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Verify remote npx skills discovery
+        continue-on-error: true
+        run: npx --yes skills add "${GITHUB_REPOSITORY}" --list
 
       - name: Upload immutable release bundle
         uses: actions/upload-artifact@v7

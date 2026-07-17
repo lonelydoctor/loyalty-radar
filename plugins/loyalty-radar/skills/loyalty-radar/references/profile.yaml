@@ -33,7 +33,7 @@ ecosystem_signal_types:
   - consumer_backlash
 global_verticals:
   hotel: [Marriott, Hyatt, Hilton, IHG, Accor, Wyndham, Choice, Best Western, GHA, Radisson]
-  airline: [Star Alliance, oneworld, SkyTeam, United, Delta, American Airlines, Air Canada, ANA, Singapore Airlines, Lufthansa, Turkish Airlines, Avios, Flying Blue, Emirates, Qatar, Cathay, Qantas]
+  airline: [Star Alliance, oneworld, SkyTeam, United, Delta, American Airlines, Air Canada, ANA, Japan Airlines, Singapore Airlines, Lufthansa, Turkish Airlines, Avios, Flying Blue, Emirates, Qatar, Cathay, Qantas]
   credit_card: [Chase, American Express, Citi, Capital One, Bilt, Wells Fargo, Bank of America, Barclays, HSBC, US Bank]
   rental_car: [Hertz, Avis, Budget, National, Enterprise, Alamo, Sixt, Europcar]
 safe_collection:

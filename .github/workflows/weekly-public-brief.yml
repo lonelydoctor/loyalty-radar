@@ -1,0 +1,262 @@
+name: Weekly public brief
+
+on:
+  schedule:
+    - cron: "27 1 * * 2"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Generate and audit artifacts without creating Issues, branches, or PRs
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: weekly-public-brief
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    name: Collect, audit, and propose a public weekly brief
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      FULL_DIR: ${{ runner.temp }}/loyalty-radar-full
+      PUBLIC_DIR: ${{ runner.temp }}/loyalty-radar-public
+    steps:
+      - name: Check out repository without persisted credentials
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked runtime
+        run: uv sync --frozen --no-editable
+
+      - name: Run the authoritative real public-weekly preset
+        id: collect
+        continue-on-error: true
+        run: >-
+          uv run --frozen loyalty-radar run
+          --preset public-weekly
+          --translation-provider google-public
+          --translation-delay 0.2
+          --no-image
+          --output-dir "${FULL_DIR}"
+
+      - name: Resolve deterministic run paths
+        id: paths
+        if: always()
+        shell: bash
+        run: |
+          WEEK="$(date -u +%G-W%V)"
+          REPORT_JSON="$(find "${FULL_DIR}" -maxdepth 1 -type f -name '*.json' 2>/dev/null | sort | tail -1)"
+          echo "week=${WEEK}" >> "${GITHUB_OUTPUT}"
+          echo "report_json=${REPORT_JSON}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare an isolated public-report directory
+        if: steps.collect.outcome == 'success' && steps.paths.outputs.report_json != ''
+        shell: bash
+        run: |
+          mkdir -p "${PUBLIC_DIR}/reports/${{ steps.paths.outputs.week }}" "${PUBLIC_DIR}/outreach"
+          if [[ -d public-briefs ]]; then
+            cp -R public-briefs/. "${PUBLIC_DIR}/reports/"
+          fi
+
+      - name: Run the authoritative public policy audit
+        id: audit
+        if: steps.collect.outcome == 'success' && steps.paths.outputs.report_json != ''
+        continue-on-error: true
+        shell: bash
+        run: |
+          uv run --frozen loyalty-radar audit \
+            --input-json "${{ steps.paths.outputs.report_json }}" \
+            --policy public \
+            --output "${PUBLIC_DIR}/reports/${{ steps.paths.outputs.week }}/report.json" \
+            > "${PUBLIC_DIR}/audit-output.txt" \
+            2> "${PUBLIC_DIR}/audit-errors.txt"
+
+      - name: Build the candidate site from the sanitized public JSON
+        id: site
+        if: steps.audit.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          uv run --frozen python .github/scripts/build_public_site.py \
+            --site "${PUBLIC_DIR}/site" \
+            --reports "${PUBLIC_DIR}/reports" \
+            --source-packs plugins/loyalty-radar/skills/loyalty-radar/references/source-packs \
+            > "${PUBLIC_DIR}/site-output.txt" \
+            2> "${PUBLIC_DIR}/site-errors.txt"
+
+      - name: Generate deterministic manual outreach drafts
+        id: outreach
+        if: steps.audit.outcome == 'success'
+        continue-on-error: true
+        run: >-
+          uv run --frozen python .github/scripts/generate_outreach.py
+          --input "${PUBLIC_DIR}/reports/${{ steps.paths.outputs.week }}/report.json"
+          --output-dir "${PUBLIC_DIR}/outreach"
+          --week "${{ steps.paths.outputs.week }}"
+
+      - name: Upload the full private audit JSON for 14 days
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: weekly-public-brief-full-${{ github.run_id }}
+          path: ${{ steps.paths.outputs.report_json }}
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload sanitized report, site, and outreach candidate
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: weekly-public-brief-sanitized-${{ github.run_id }}
+          path: ${{ runner.temp }}/loyalty-radar-public/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Create or update the blocked public-brief Issue
+        if: >-
+          always() &&
+          env.DRY_RUN != 'true' &&
+          (steps.collect.outcome != 'success' || steps.audit.outcome != 'success' ||
+          steps.site.outcome != 'success' || steps.outreach.outcome != 'success')
+        shell: bash
+        env:
+          WEEK: ${{ steps.paths.outputs.week }}
+        run: |
+          gh label create launch-blocker --color b60205 --description "Blocks a public launch or brief" --force
+          gh label create public-report --color 0e8a16 --description "Public weekly report automation" --force
+          TITLE="Public brief blocked: ${WEEK}"
+          BODY="${RUNNER_TEMP}/blocked-brief.md"
+          printf '## Public weekly brief gate\n\n- Result: **BLOCKED**\n- Collection: `%s`\n- Public audit: `%s`\n- Site build: `%s`\n- Outreach: `%s`\n- Run: %s/actions/runs/%s\n' \
+            "${{ steps.collect.outcome }}" "${{ steps.audit.outcome }}" \
+            "${{ steps.site.outcome }}" "${{ steps.outreach.outcome }}" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" "${GITHUB_RUN_ID}" > "${BODY}"
+          for LOG in audit-errors.txt site-errors.txt; do
+            if [[ -s "${PUBLIC_DIR}/${LOG}" ]]; then
+              printf '\n### %s\n\n```text\n' "${LOG}" >> "${BODY}"
+              head -80 "${PUBLIC_DIR}/${LOG}" >> "${BODY}"
+              printf '\n```\n' >> "${BODY}"
+            fi
+          done
+          printf '\nThe Issue is updated in place. Full collection data remains in the 14-day Actions artifact.\n' >> "${BODY}"
+          NUMBER="$(gh issue list --state all --search "${TITLE} in:title" --json number,title --jq ".[] | select(.title == \"${TITLE}\") | .number" | head -1)"
+          if [[ -n "${NUMBER}" ]]; then
+            gh issue edit "${NUMBER}" --body-file "${BODY}" --add-label launch-blocker --add-label public-report
+            gh issue reopen "${NUMBER}" >/dev/null 2>&1 || true
+          else
+            gh issue create --title "${TITLE}" --body-file "${BODY}" --label launch-blocker --label public-report
+          fi
+
+      - name: Stop after a failed gate
+        if: >-
+          always() &&
+          (steps.collect.outcome != 'success' || steps.audit.outcome != 'success' ||
+          steps.site.outcome != 'success' || steps.outreach.outcome != 'success')
+        run: exit 1
+
+      - name: Dry-run summary
+        if: env.DRY_RUN == 'true'
+        run: cat "${PUBLIC_DIR}/outreach/review-summary.md" >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Prepare deterministic report branch
+        if: env.DRY_RUN != 'true'
+        id: branch
+        shell: bash
+        env:
+          WEEK: ${{ steps.paths.outputs.week }}
+        run: |
+          BRANCH="bot/brief-${WEEK}"
+          gh auth setup-git
+          REMOTE_SHA="$(git ls-remote --heads origin "refs/heads/${BRANCH}" | cut -f1)"
+          git fetch origin "${DEFAULT_BRANCH}"
+          if [[ -n "${REMOTE_SHA}" ]]; then
+            git fetch origin "refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}"
+          fi
+          git checkout -B "${BRANCH}" "origin/${DEFAULT_BRANCH}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r --ignore-unmatch docs/site "public-briefs/${WEEK}"
+          mkdir -p docs/site "public-briefs/${WEEK}"
+          cp -R "${PUBLIC_DIR}/site/." docs/site/
+          cp "${PUBLIC_DIR}/reports/${WEEK}/report.json" "public-briefs/${WEEK}/report.json"
+          git add -- docs/site "public-briefs/${WEEK}/report.json"
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+          else
+            git commit -m "report: publish ${WEEK} public brief"
+            if [[ -n "${REMOTE_SHA}" ]]; then
+              git push --set-upstream origin "${BRANCH}" \
+                --force-with-lease="refs/heads/${BRANCH}:${REMOTE_SHA}"
+            else
+              git push --set-upstream origin "${BRANCH}"
+            fi
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+          fi
+          echo "name=${BRANCH}" >> "${GITHUB_OUTPUT}"
+
+      - name: Open or update the report PR without merging
+        if: env.DRY_RUN != 'true'
+        shell: bash
+        env:
+          WEEK: ${{ steps.paths.outputs.week }}
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          gh label create public-report --color 0e8a16 --description "Public weekly report automation" --force
+          BODY="${RUNNER_TEMP}/public-report-pr.md"
+          cat "${PUBLIC_DIR}/outreach/review-summary.md" > "${BODY}"
+          cat >> "${BODY}" <<'EOF'
+
+          ## Required human review (Top 10)
+
+          - [ ] Every source link opens and matches the event
+          - [ ] Published dates are inside the 14-day window
+          - [ ] Event classifications and ordering are correct
+          - [ ] No material duplicate event remains
+          - [ ] English and Simplified Chinese text are complete
+          - [ ] Action and risk labels are conservative
+          - [ ] No fetched body text, personal profile, path, or credential is present
+          - [ ] The empty-state is honest if no event passed
+          - [ ] Source health and P0 rates match the authoritative public report
+          - [ ] The report must be merged manually; do not enable auto-merge
+          EOF
+          NUMBER="$(gh pr list --state open --head "${BRANCH}" --json number --jq '.[0].number // empty')"
+          if [[ -n "${NUMBER}" ]]; then
+            gh pr edit "${NUMBER}" --title "Public weekly brief: ${WEEK}" --body-file "${BODY}" --add-label public-report
+          elif [[ "${{ steps.branch.outputs.changed }}" == "true" ]]; then
+            gh pr create --base "${DEFAULT_BRANCH}" --head "${BRANCH}" --title "Public weekly brief: ${WEEK}" --body-file "${BODY}" --label public-report
+          fi
+
+      - name: Close a stale blocked Issue after a passing gate
+        if: env.DRY_RUN != 'true'
+        shell: bash
+        env:
+          WEEK: ${{ steps.paths.outputs.week }}
+        run: |
+          TITLE="Public brief blocked: ${WEEK}"
+          NUMBER="$(gh issue list --state open --search "${TITLE} in:title" --json number,title --jq ".[] | select(.title == \"${TITLE}\") | .number" | head -1)"
+          if [[ -n "${NUMBER}" ]]; then
+            gh issue close "${NUMBER}" --comment "The authoritative public-policy gate now passes. Review remains in the report PR."
+          fi

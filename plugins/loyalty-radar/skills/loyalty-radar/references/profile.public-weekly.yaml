@@ -1,0 +1,63 @@
+profile_name: public-weekly-editorial
+language: en
+timezone: UTC
+region: global
+default_modes:
+  daily_hours: 336
+  weekly_hours: 336
+loyalty_profile:
+  airline: []
+  hotel: []
+priority_topics:
+  - industry_signal
+  - policy_change
+  - clawback
+  - bug
+  - transfer_bonus
+  - statement_credit
+  - portal_stack
+  - status_match
+  - lounge
+  - offer
+  - datapoint
+ecosystem_signal_types:
+  - revenue_shift
+  - cost_reimbursement_conflict
+  - benefit_capacity_pressure
+  - devaluation_or_inflation
+  - qualification_gatekeeping
+  - partner_contract_shift
+  - regulatory_or_legal_pressure
+  - operational_reliability
+  - supply_demand_stress
+  - consumer_backlash
+safe_collection:
+  official_verification_required: false
+  use_private_accounts: false
+  bypass_login_or_captcha: false
+  summarize_only: true
+ranking:
+  strict_dates: true
+  allow_undated_fallback: false
+  max_undated: 0
+  direct_programs: []
+  direct_issuers: []
+  direct_cards: []
+  weights:
+    direct_profile: 42
+    direct_card: 34
+    urgency: 24
+    value: 16
+    risk: 22
+    confidence: 16
+    novelty: 8
+    ecosystem: 12
+    undated_penalty: 55
+  diversity_quotas:
+    c_end: 4
+    risk: 2
+    ecosystem: 2
+    hotel: 1
+    airline: 1
+    credit_card: 1
+    rental_car: 1

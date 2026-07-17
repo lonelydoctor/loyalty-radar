@@ -14,16 +14,21 @@ from typing import Any
 
 from . import __version__, engine
 from .config import (
+    PUBLIC_WEEKLY_SOURCE_PACKS,
     initialize,
     load_settings,
     load_yaml,
     migrate_legacy_profile,
     resolve_cards,
     resolve_profile,
+    resolve_public_weekly_cards,
+    resolve_public_weekly_profile,
 )
+from .doctor import share_receipt_json
 from .health import check_sources, localized_health_detail
 from .i18n import load_catalog, normalize_locale
 from .paths import SOURCE_PACKS_DIR, output_dir, translation_cache_path
+from .public_audit import PublicAuditError, audit_public_report, write_public_report
 from .rendering import RenderedArtifacts, render_locale
 from .schema import build_report, read_report, write_report
 from .sources import (
@@ -36,6 +41,7 @@ from .sources import (
 from .translation import create_provider, localize_report
 
 FOCUS_CHOICES = ("all", "credit-card", "air-china", "hotel", "bug")
+PUBLIC_WEEKLY_PRESET = "public-weekly"
 
 
 def _csv(value: str) -> list[str]:
@@ -129,11 +135,64 @@ def _run_namespace(
         fetch_details=args.fetch_details,
         source_delay=args.source_delay,
         detail_delay=args.detail_delay,
+        quiet=args.quiet,
         profile=str(profile),
         cards=str(cards),
         sources=str(sources_registry),
         reference_date=generated_at,
     )
+
+
+def _effective_run_args(args: argparse.Namespace) -> argparse.Namespace:
+    """Resolve defaults and enforce the non-personal public-weekly preset."""
+
+    effective = argparse.Namespace(**vars(args))
+    if args.preset != PUBLIC_WEEKLY_PRESET:
+        effective.mode = args.mode or "daily"
+        effective.focus = args.focus or "all"
+        return effective
+
+    conflicts: list[str] = []
+    if args.mode not in {None, "weekly"}:
+        conflicts.append("--mode must be weekly")
+    if args.focus not in {None, "all"}:
+        conflicts.append("--focus must be all")
+    if args.hours not in {None, 336}:
+        conflicts.append("--hours must be 336")
+    if args.source_pack:
+        conflicts.append("--source-pack cannot replace the four preset packs")
+    if args.profile:
+        conflicts.append("--profile cannot replace the neutral public profile")
+    if args.cards:
+        conflicts.append("--cards cannot replace the empty public card profile")
+    if args.timezone:
+        conflicts.append("--timezone cannot replace UTC")
+    if args.include_p2:
+        conflicts.append("--include-p2 broadens the preset")
+    if args.fetch_details:
+        conflicts.append("--fetch-details can copy forum body text into the private audit report")
+    if args.max_items < 0 or args.max_items > 40:
+        conflicts.append("--max-items must be between 0 and 40")
+    if args.max_sources is not None and args.max_sources <= 0:
+        conflicts.append("--max-sources must be positive")
+    if args.per_source_limit is not None and args.per_source_limit <= 0:
+        conflicts.append("--per-source-limit must be positive")
+    if conflicts:
+        raise ValueError(
+            "public-weekly accepts only safe narrowing and output options: " + "; ".join(conflicts)
+        )
+
+    effective.mode = "weekly"
+    effective.focus = "all"
+    effective.hours = 336
+    effective.locale = args.locale or ["en", "zh-CN"]
+    effective.source_pack = list(PUBLIC_WEEKLY_SOURCE_PACKS)
+    effective.profile = str(resolve_public_weekly_profile())
+    effective.cards = str(resolve_public_weekly_cards())
+    effective.timezone = "UTC"
+    effective.include_p2 = False
+    effective.fetch_details = False
+    return effective
 
 
 def _stem(mode: str, focus: str, generated_at: dt.datetime) -> str:
@@ -153,14 +212,24 @@ def _render_and_print(
     translation_delay: float,
     translation_batch_size: int,
 ) -> tuple[Path, list[RenderedArtifacts]]:
-    for locale in locales:
-        localize_report(
+    for locale_index, locale in enumerate(locales, start=1):
+        print(f"[translate {locale_index}/{len(locales)}] {locale}: preparing", file=sys.stderr)
+        health = localize_report(
             payload,
             locale,
             provider,
             cache_path=cache,
             batch_size=translation_batch_size,
             delay=translation_delay,
+            progress=lambda current, total, target=locale: print(
+                f"[translate {target}] batch {current}/{total}",
+                file=sys.stderr,
+            ),
+        )
+        print(
+            f"[translate {locale_index}/{len(locales)}] {locale}: "
+            f"{health.translated} translated, {health.cache_hits} cached, {health.failed} failed",
+            file=sys.stderr,
         )
     json_path = write_report(payload, target_dir / f"{stem}.json")
     artifacts = [render_locale(payload, locale, target_dir, stem, locales, image=image) for locale in locales]
@@ -176,6 +245,7 @@ def _render_and_print(
 
 
 def command_run(args: argparse.Namespace) -> int:
+    args = _effective_run_args(args)
     config_directory = Path(args.config_dir).expanduser() if args.config_dir else None
     settings = load_settings(config_directory)
     locales = _locales(args.locale, settings)
@@ -206,6 +276,12 @@ def command_run(args: argparse.Namespace) -> int:
         timezone=str(timezone),
         source_packs=[pack.pack_id for pack in packs],
     )
+    if args.preset == PUBLIC_WEEKLY_PRESET:
+        payload["preset"] = PUBLIC_WEEKLY_PRESET
+        if args.source_id:
+            payload["source_filter"] = list(dict.fromkeys(args.source_id))
+        if args.max_sources is not None:
+            payload["source_limit"] = args.max_sources
     provider = _provider(args, settings)
     cache = Path(args.translation_cache).expanduser() if args.translation_cache else translation_cache_path()
     _render_and_print(
@@ -219,6 +295,38 @@ def command_run(args: argparse.Namespace) -> int:
         translation_delay=args.translation_delay,
         translation_batch_size=args.translation_batch_size,
     )
+    return 0
+
+
+def command_audit(args: argparse.Namespace) -> int:
+    input_path = Path(args.input_json).expanduser()
+    payload = json.loads(input_path.read_text(encoding="utf-8"))
+    try:
+        public_report = audit_public_report(payload)
+    except PublicAuditError as exc:
+        print("Public audit failed:", file=sys.stderr)
+        for issue in exc.issues:
+            print(f"- {issue}", file=sys.stderr)
+        return 2
+    output_path = (
+        Path(args.output).expanduser()
+        if args.output
+        else input_path.with_name(f"{input_path.stem}-public.json")
+    )
+    write_public_report(public_report, output_path)
+    health = public_report["health"]
+    print(f"Public report: {output_path}")
+    print(
+        "Quality gate: "
+        f"sources {health['script_ok_rate']:.1%}, "
+        f"P0 {health['p0_ok_rate']:.1%}, "
+        f"duplicates {health['duplicate_rate']:.1%}"
+    )
+    return 0
+
+
+def command_doctor(args: argparse.Namespace) -> int:
+    print(share_receipt_json())
     return 0
 
 
@@ -334,10 +442,31 @@ def build_parser() -> argparse.ArgumentParser:
     init_parser.add_argument("--force", action="store_true")
     init_parser.set_defaults(func=command_init)
 
-    run_parser = subparsers.add_parser("run", help="Collect once and render one or more locales.")
-    run_parser.add_argument("--mode", choices=["daily", "weekly"], default="daily")
-    run_parser.add_argument("--focus", choices=FOCUS_CHOICES, default="all")
-    run_parser.add_argument("--locale", action="append", choices=["en", "zh-CN"])
+    run_parser = subparsers.add_parser(
+        "run",
+        help="Collect once and render one or more locales.",
+        epilog=(
+            "public-weekly precedence: weekly/all, 336 hours, UTC, the repository neutral "
+            "profile, and core/industry/forums-global/forums-cn are fixed. --locale, "
+            "--source-id, --max-sources, --per-source-limit, --max-items, --output-dir, "
+            "and --no-image may narrow or redirect artifacts. A one-locale run is not "
+            "eligible for the bilingual public audit. Conflicting broadening or personal "
+            "profile options are rejected."
+        ),
+    )
+    run_parser.add_argument(
+        "--preset",
+        choices=[PUBLIC_WEEKLY_PRESET],
+        help="Use the non-personal bilingual weekly editorial collection policy.",
+    )
+    run_parser.add_argument("--mode", choices=["daily", "weekly"])
+    run_parser.add_argument("--focus", choices=FOCUS_CHOICES)
+    run_parser.add_argument(
+        "--locale",
+        action="append",
+        choices=["en", "zh-CN"],
+        help="Repeat for multiple locales; public-weekly defaults to en and zh-CN.",
+    )
     run_parser.add_argument("--hours", type=int)
     run_parser.add_argument("--max-items", type=int, default=40)
     run_parser.add_argument("--per-source-limit", type=int)
@@ -348,6 +477,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--fetch-details", action="store_true")
     run_parser.add_argument("--source-delay", type=float, default=0.8)
     run_parser.add_argument("--detail-delay", type=float, default=1.5)
+    run_parser.add_argument("--quiet", action="store_true", help="Suppress per-source collection progress.")
     run_parser.add_argument("--profile")
     run_parser.add_argument("--cards")
     run_parser.add_argument("--config-dir")
@@ -356,6 +486,25 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--no-image", action="store_true")
     add_translation_options(run_parser)
     run_parser.set_defaults(func=command_run)
+
+    audit_parser = subparsers.add_parser(
+        "audit", help="Gate a full local report and export a publication-safe JSON report."
+    )
+    audit_parser.add_argument("--input-json", required=True)
+    audit_parser.add_argument("--policy", choices=["public"], required=True)
+    audit_parser.add_argument("--output", help="Output path; defaults beside the input with -public.json.")
+    audit_parser.set_defaults(func=command_audit)
+
+    doctor_parser = subparsers.add_parser(
+        "doctor", help="Create a privacy-safe local capability receipt."
+    )
+    doctor_parser.add_argument(
+        "--share",
+        action="store_true",
+        required=True,
+        help="Print stable JSON without paths, profile data, identifiers, or network access.",
+    )
+    doctor_parser.set_defaults(func=command_doctor)
 
     render_parser = subparsers.add_parser("render", help="Localize and render an existing report JSON.")
     render_parser.add_argument("--input-json", required=True)

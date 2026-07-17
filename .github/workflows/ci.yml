@@ -101,6 +101,24 @@ jobs:
           uv pip install --python "${RUNNER_TEMP}/loyalty-radar-smoke/bin/python" dist/*.whl
           "${RUNNER_TEMP}/loyalty-radar-smoke/bin/loyalty-radar" --help
 
+      - name: Install the CLI through the clean uv tool surface
+        shell: bash
+        env:
+          UV_TOOL_DIR: ${{ runner.temp }}/uv-tools
+          UV_TOOL_BIN_DIR: ${{ runner.temp }}/uv-tool-bin
+        run: |
+          WHEEL="$(find dist -maxdepth 1 -type f -name '*.whl' | head -1)"
+          uv tool install --python 3.12 --force "${WHEEL}"
+          "${UV_TOOL_BIN_DIR}/loyalty-radar" --help
+
+      - name: Smoke-test standalone Skill and Plugin archives
+        shell: bash
+        run: |
+          unzip -t dist/loyalty-radar-skill-*.zip
+          unzip -t dist/loyalty-radar-plugin-*.zip
+          unzip -p dist/loyalty-radar-skill-*.zip loyalty-radar/SKILL.md | grep -q '^---'
+          unzip -p dist/loyalty-radar-plugin-*.zip loyalty-radar/.codex-plugin/plugin.json | python -m json.tool >/dev/null
+
       - name: Upload Python distributions
         uses: actions/upload-artifact@v7
         with:
@@ -137,7 +155,10 @@ jobs:
         run: uv run --frozen playwright install --with-deps chromium
 
       - name: Validate static Pages payload
-        run: uv run --frozen python .github/scripts/validate_pages.py docs/site
+        run: |
+          uv run --frozen python .github/scripts/build_public_site.py
+          uv run --frozen python .github/scripts/validate_pages.py docs/site
+          git diff --exit-code -- docs/site
 
       - name: Check 1440px, 390px, and 2400x1800 layouts
         run: >-

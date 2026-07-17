@@ -20,6 +20,8 @@ DEFAULT_SETTINGS = {
     "translation": {"provider": "google-public", "model": ""},
 }
 
+PUBLIC_WEEKLY_SOURCE_PACKS = ("core", "industry", "forums-global", "forums-cn")
+
 AIRLINE_HINTS = {
     "air china",
     "united",
@@ -85,6 +87,18 @@ def resolve_cards(directory: Path | None = None) -> Path:
     if candidate.exists() and load_yaml(candidate).get("issuers"):
         return candidate
     return REFERENCES_DIR / "cards.yaml"
+
+
+def resolve_public_weekly_profile() -> Path:
+    """Return the repository-owned profile used for public editorial runs."""
+
+    return REFERENCES_DIR / "profile.public-weekly.yaml"
+
+
+def resolve_public_weekly_cards() -> Path:
+    """Return the empty card-preference file used for public editorial runs."""
+
+    return REFERENCES_DIR / "cards.public-weekly.yaml"
 
 
 def initialize(

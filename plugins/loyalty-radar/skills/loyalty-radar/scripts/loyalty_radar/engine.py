@@ -741,6 +741,59 @@ def parse_rss_feed(xml_text: str, source_cfg: dict[str, Any], limit: int) -> lis
     return [row for row in rows if row["title"] and row["url"]]
 
 
+def parse_flyert_local_datetime(value: str) -> dt.datetime | None:
+    cleaned = clean_text(value, max_len=80)
+    if not cleaned:
+        return None
+    if re.fullmatch(r"\d{10}(?:\d{3})?", cleaned):
+        timestamp = int(cleaned[:10])
+        try:
+            return dt.datetime.fromtimestamp(timestamp, tz=dt.UTC)
+        except (OverflowError, OSError, ValueError):
+            return None
+    match = re.search(
+        r"(?P<year>20\d{2})[-/.年](?P<month>\d{1,2})[-/.月](?P<day>\d{1,2})(?:日)?"
+        r"(?:[ T]+(?P<hour>\d{1,2}):(?P<minute>\d{2})(?::(?P<second>\d{2}))?)?",
+        cleaned,
+    )
+    if not match:
+        return None
+    try:
+        local_value = dt.datetime(
+            int(match.group("year")),
+            int(match.group("month")),
+            int(match.group("day")),
+            int(match.group("hour") or 0),
+            int(match.group("minute") or 0),
+            int(match.group("second") or 0),
+            tzinfo=ZoneInfo("Asia/Shanghai"),
+        )
+    except ValueError:
+        return None
+    return local_value.astimezone(dt.UTC)
+
+
+def flyert_thread_datetime(anchor: Any) -> str | None:
+    container = anchor.find_parent(id=re.compile(r"^normalthread_")) or anchor.find_parent("tr")
+    if container is None:
+        return None
+    attribute_names = ("datetime", "title", "data-time", "data-timestamp", "data-dateline")
+    candidates: list[str] = []
+    for node in [container, *container.find_all(["time", "span", "em", "td"])]:
+        for attribute in attribute_names:
+            value = node.get(attribute)
+            if value:
+                candidates.append(str(value))
+        text_value = node.get_text(" ", strip=True)
+        if text_value:
+            candidates.append(text_value)
+    for candidate in candidates:
+        parsed = parse_flyert_local_datetime(candidate)
+        if parsed:
+            return iso_or_none(parsed)
+    return None
+
+
 def parse_flyert_forum(html_text: str, source_cfg: dict[str, Any], limit: int) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
@@ -775,7 +828,7 @@ def parse_flyert_forum(html_text: str, source_cfg: dict[str, Any], limit: int) -
                 {
                     "title": title,
                     "url": normalize_url(href, base),
-                    "published_at": None,
+                    "published_at": flyert_thread_datetime(anchor),
                     "summary": title,
                     "author": "",
                     "raw_tags": [source_cfg.get("name", "")],
@@ -909,9 +962,10 @@ GLOBAL_PROGRAM_KEYWORDS: dict[str, list[str]] = {
     "Radisson": ["Radisson Rewards"],
     "United": ["United", "MileagePlus"],
     "Delta": ["Delta", "SkyMiles"],
-    "American Airlines": ["American Airlines", "AAdvantage"],
+    "American Airlines": ["American Airlines", "AAdvantage", "AA miles", "AA business", "AA里程", "AA商业"],
     "Air Canada": ["Air Canada", "Aeroplan"],
     "ANA": ["ANA", "All Nippon"],
+    "Japan Airlines": ["Japan Airlines", "JAL", "JMB", "JAL Mileage Bank"],
     "Singapore Airlines": ["Singapore Airlines", "KrisFlyer", "SQ"],
     "Lufthansa": ["Lufthansa", "Miles & More"],
     "Turkish Airlines": ["Turkish Airlines", "Miles&Smiles"],
@@ -920,6 +974,15 @@ GLOBAL_PROGRAM_KEYWORDS: dict[str, list[str]] = {
     "Emirates": ["Emirates", "Skywards"],
     "Cathay": ["Cathay", "Asia Miles", "国泰"],
     "Qantas": ["Qantas"],
+    "Avianca LifeMiles": ["Avianca", "LifeMiles"],
+    "Aegean Miles+Bonus": ["Aegean", "Miles+Bonus"],
+    "Alaska Mileage Plan": ["Alaska Airlines", "Mileage Plan"],
+    "Southwest Rapid Rewards": ["Southwest Airlines", "Rapid Rewards"],
+    "JetBlue TrueBlue": ["JetBlue", "TrueBlue"],
+    "Virgin Atlantic Flying Club": ["Virgin Atlantic", "Flying Club"],
+    "Etihad Guest": ["Etihad", "Etihad Guest"],
+    "Korean Air SKYPASS": ["Korean Air", "SKYPASS"],
+    "Hawaiian Airlines": ["Hawaiian Airlines", "HawaiianMiles"],
     "oneworld": ["oneworld", "寰宇一家"],
     "SkyTeam": ["SkyTeam", "天合联盟"],
     "Citi": ["Citi", "ThankYou"],
@@ -930,6 +993,7 @@ GLOBAL_PROGRAM_KEYWORDS: dict[str, list[str]] = {
     "Barclays": ["Barclays", "Barclaycard"],
     "HSBC": ["HSBC"],
     "US Bank": ["US Bank", "U.S. Bank", "Altitude Reserve"],
+    "OCBC": ["OCBC"],
     "Hertz": ["Hertz", "Gold Plus Rewards"],
     "Avis": ["Avis", "Avis Preferred"],
     "Budget": ["Budget Fastbreak"],
@@ -938,6 +1002,19 @@ GLOBAL_PROGRAM_KEYWORDS: dict[str, list[str]] = {
     "Alamo": ["Alamo Insiders"],
     "Sixt": ["Sixt"],
     "Europcar": ["Europcar"],
+    "Dollar": ["Dollar Express", "Dollar Rent A Car", "Dollar rental"],
+    "Thrifty": ["Thrifty Blue Chip", "Thrifty rental"],
+}
+
+EVENT_TITLE_PROGRAM_KEYWORDS: dict[str, list[str]] = {
+    "Chase": ["Chase", "Ultimate Rewards", "Sapphire", "Ink", "大通"],
+    "American Express": [
+        "American Express",
+        "Amex",
+        "Membership Rewards",
+        "美国运通",
+    ],
+    **GLOBAL_PROGRAM_KEYWORDS,
 }
 
 
@@ -967,7 +1044,6 @@ VERTICAL_KEYWORDS: dict[str, list[str]] = {
     "airline": [
         "airline",
         "flight",
-        "miles",
         "award ticket",
         "lounge",
         "airport",
@@ -979,6 +1055,8 @@ VERTICAL_KEYWORDS: dict[str, list[str]] = {
         "American Airlines",
         "Air Canada",
         "ANA",
+        "Japan Airlines",
+        "JAL",
         "Singapore",
         "Lufthansa",
         "Turkish",
@@ -988,6 +1066,23 @@ VERTICAL_KEYWORDS: dict[str, list[str]] = {
         "Qatar",
         "Cathay",
         "Qantas",
+        "Avianca",
+        "LifeMiles",
+        "Aegean",
+        "Miles+Bonus",
+        "Alaska Airlines",
+        "Mileage Plan",
+        "Southwest Airlines",
+        "Rapid Rewards",
+        "JetBlue",
+        "TrueBlue",
+        "Virgin Atlantic",
+        "Flying Club",
+        "Etihad",
+        "Korean Air",
+        "SKYPASS",
+        "Hawaiian Airlines",
+        "HawaiianMiles",
         "航司",
         "航班",
         "里程",
@@ -997,6 +1092,10 @@ VERTICAL_KEYWORDS: dict[str, list[str]] = {
     "credit_card": [
         "credit card",
         "credit-card",
+        "rewards card",
+        "business card",
+        "personal card",
+        "Bank of Hawaii card",
         "cardholder",
         "issuer",
         "interchange",
@@ -1035,6 +1134,9 @@ VERTICAL_KEYWORDS: dict[str, list[str]] = {
         "Alamo",
         "Sixt",
         "Europcar",
+        "Dollar Express",
+        "Dollar Rent A Car",
+        "Thrifty Blue Chip",
         "租车",
         "租車",
         "门店",
@@ -1043,23 +1145,23 @@ VERTICAL_KEYWORDS: dict[str, list[str]] = {
 
 
 TOPIC_KEYWORDS: list[tuple[str, list[str]]] = [
-    ("clawback", ["clawback", "claw back", "clawing back", "deducted", "扣回", "追回", "收回", "取消后", "cancelled reservation"]),
+    ("clawback", ["clawback", "claw back", "clawed back", "clawing back", "deducted", "扣回", "追回", "收回", "取消后", "cancelled reservation"]),
     ("bug", ["not working", "transfer failed", "redemption failed", "points failed to post", "bug", "glitch", "system error", "not posting", "missing points", "无法", "转点失败", "兑换失败", "系统错误", "系统异常", "不到账", "没到账", "不能用"]),
     ("status_match", ["status match", "status challenge", "match challenge", "elite match", "状态匹配", "会籍匹配", "会籍挑战"]),
     ("transfer_bonus", ["transfer bonus", "transfer bonuses", "转点 bonus", "转点", "转分", "transfer ratio", "4:3", "1:1", "bonus to", "bonuses to", "Membership Rewards to", "Ultimate Rewards to"]),
     ("portal_stack", ["portal stack", "Chase Travel", "Amex Travel", "The Edit", "Fine Hotels", "FHR", "hotel collection", "travel portal", "叠加", "门户"]),
     ("statement_credit", ["statement credit", "hotel credit", "airline credit", "travel credit", "resort credit", "dining credit", "报销"]),
     ("lounge", ["lounge", "Centurion", "Sapphire Lounge", "Priority Pass", "贵宾厅", "休息室", "候机楼"]),
-    ("devaluation", ["devaluation", "dynamic pricing", "award chart", "award pricing", "award prices", "award costs", "points inflation", "fewer miles", "贬值", "动态定价", "兑换成本"]),
+    ("devaluation", ["devaluation", "dynamic pricing", "points inflation", "fewer miles", "贬值", "动态定价", "兑换成本"]),
     ("policy_change", ["annual fee", "年费", "eligibility", "lifetime", "5/24", "benefit", "权益", "刷新", "改版", "changes", "changing", "no longer", "ending"]),
-    ("offer", ["offer", "bonus", "promo", "promotion", "Amex Offers", "Chase Offers", "优惠", "活动", "返现", "报名", "限时"]),
+    ("offer", ["offer", "bonus", "promo", "promotion", "sale", "discount", "bid on", "auction", "Amex Offers", "Chase Offers", "优惠", "活动", "返现", "报名", "限时"]),
     ("industry_signal", ["owner", "owners", "franchisee", "reimbursement", "regulator", "regulators", "DOT", "CFPB", "lawsuit", "scrutiny", "bait-and-switch", "ecosystem", "业主", "加盟商", "监管", "诉讼", "抗议"]),
     ("trip_report", ["master thread", "report", "review", "入住报告", "飞行报告", "体验", "stay report"]),
 ]
 
 RISK_KEYWORDS = {
     "高风控风险": ["shutdown", "financial review", "FR", "manufactured spend", "MS", "风控", "关卡", "封号", "高风险"],
-    "可能 clawback": ["clawback", "claw back", "扣回", "追回", "收回"],
+    "可能 clawback": ["clawback", "claw back", "clawed back", "扣回", "追回", "收回"],
     "YMMV": ["YMMV", "targeted", "定向", "DP", "data point", "可能", "疑似"],
 }
 
@@ -1128,12 +1230,21 @@ ECOSYSTEM_SIGNAL_KEYWORDS: list[tuple[str, list[str]]] = [
         [
             "devaluation",
             "dynamic pricing",
-            "award chart",
             "points inflation",
             "cost more",
             "fewer miles",
             "10% fewer",
             "higher award",
+            "raises points prices",
+            "raises prices",
+            "price increase",
+            "price increases",
+            "award chart increase",
+            "increases award pricing",
+            "increased award pricing",
+            "raises award prices",
+            "raised award prices",
+            "award prices increased",
             "贬值",
             "动态定价",
             "兑换成本上升",
@@ -1166,6 +1277,8 @@ ECOSYSTEM_SIGNAL_KEYWORDS: list[tuple[str, list[str]]] = [
             "partnership",
             "franchise agreement",
             "transfer partner",
+            "conversion partner",
+            "conversion partners",
             "removed partner",
             "alliance",
             "status reciprocal",
@@ -1190,6 +1303,8 @@ ECOSYSTEM_SIGNAL_KEYWORDS: list[tuple[str, list[str]]] = [
             "scrutiny",
             "investigation",
             "lawsuit",
+            "sued",
+            "suing",
             "court",
             "legal",
             "bait-and-switch",
@@ -1271,10 +1386,107 @@ C_END_TOPICS = {
     "policy_change",
     "devaluation",
 }
+TITLE_AUTHORITATIVE_TOPICS = {
+    "bug",
+    "clawback",
+    "offer",
+    "transfer_bonus",
+    "portal_stack",
+    "statement_credit",
+    "lounge",
+    "status_match",
+    "policy_change",
+    "devaluation",
+    "industry_signal",
+}
 RISK_TOPICS = {"bug", "clawback"}
+LOW_VALUE_ACTION_PHRASES = {
+    "give it a miss",
+    "skip this offer",
+    "poor value",
+    "not worth it",
+    "avoid this offer",
+    "不值得",
+    "不建议转",
+}
 NOISE_KEYWORDS = ["有奖征文", "回帖奖励", "广告", "飞米", "置顶", "灌水", "best cards", "best credit cards", "best business cards", "how to "]
 KNOWN_CROSS_BOARD_AD_PHRASES = ["兴业三款白金卡火热申办中"]
 LOW_SIGNAL_ROUNDUP_MARKERS = ["[roundup]", "daily roundup", "news roundup", "bits:"]
+LOW_SIGNAL_EVERGREEN_PATTERNS = [
+    r"^should you get\b",
+    r"\breasons (?:it(?:'s| is) )?worth it\b",
+    r"\bis .+ worth it\??$",
+    r"\bcomplete guide\b",
+    r"\beverything you need to know\b",
+    r"\bsweet spots?\b",
+]
+FRESH_EVENT_TITLE_TERMS = [
+    "new",
+    "increased",
+    "decreased",
+    "changed",
+    "changing",
+    "ending",
+    "ends",
+    "limited",
+    "targeted",
+    "devaluation",
+    "clawback",
+    "bug",
+    "failed",
+    "now",
+    "today",
+    "this week",
+    "新增",
+    "提高",
+    "降低",
+    "变化",
+    "即将结束",
+    "限时",
+    "定向",
+    "贬值",
+    "追回",
+    "异常",
+]
+FORUM_QUESTION_PATTERNS = [
+    r"\?$",
+    r"\bquestions?\s*$",
+    r"^(?:why|how|when|where|will|would|can|could|should|is|are|do|does|did)\b",
+    r"\b(?:why|how|will|would|can|could|should|does|did)\b[^?]*\?$",
+    r"^no .+ - why\??$",
+]
+FORUM_CHANGE_EVIDENCE_TERMS = [
+    "announced",
+    "announcement",
+    "changed",
+    "changing",
+    "new rule",
+    "new policy",
+    "no longer",
+    "ending",
+    "increased",
+    "decreased",
+    "devaluation",
+    "clawback",
+    "not working",
+    "failed",
+    "missing points",
+    "multiple users",
+    "many users",
+    "data points",
+    "dp thread",
+    "公告",
+    "规则变化",
+    "不再",
+    "即将结束",
+    "提高",
+    "降低",
+    "贬值",
+    "追回",
+    "失败",
+    "不到账",
+    "多用户",
+]
 FORUM_SIGNAL_TITLE_TERMS = [
     "points",
     "miles",
@@ -1495,6 +1707,8 @@ MAJOR_LOYALTY_BRAND_ANCHORS = [
     "Capital One",
     "Citi ThankYou",
     "Bilt Rewards",
+    "U.S. Bank",
+    "US Bank",
     # Rental cars
     "Hertz",
     "Avis",
@@ -1532,7 +1746,14 @@ REGULATORY_REWARDS_ANCHORS = [
     "里程价值",
 ]
 METRIC_PATTERN = re.compile(
-    r"(?i)(?:[$€£]\s?\d[\d,]*(?:\.\d+)?\s?(?:b|bn|m|k|million|billion)?|\b\d+(?:\.\d+)?\s?%|\b\d+\s?:\s?\d+\b|\b\d[\d,]*(?:\.\d+)?\s?(?:k|m|b|points|pts|miles|owners|users|nights|credits|fewer miles)\b)"
+    r"(?i)(?:"
+    r"[$€£]\s?\d[\d,]*(?:\.\d+)?(?:(?:\s?(?:bn|b|m|k)\b)|(?:\s+(?:million|billion)\b))?"
+    r"|\b\d[\d,]*(?:\.\d+)?(?:k|m)?\s+(?:bonus\s+)?"
+    r"(?:[a-z][a-z0-9+&.-]*\s+){0,2}(?:points?|pts|miles?|avios|sqcs?)\b"
+    r"|\b\d+(?:\.\d+)?\s?%"
+    r"|\b\d+\s?:\s?\d+\b"
+    r"|\b\d[\d,]*(?:\.\d+)?\s?(?:k|m|points|pts|miles|avios|sqcs?|x|owners|users|nights|credits|fewer miles|per\s+stay)\b"
+    r")"
 )
 MONTH_LOOKUP = {
     "jan": 1,
@@ -1595,15 +1816,189 @@ def detect_topic(text: str) -> str:
     return "datapoint"
 
 
+def title_has_offer_intent(title: str) -> bool:
+    lower = normalize_event_text(title)
+    has_offer_anchor = any(
+        keyword_matches(lower, keyword)
+        for keyword in [
+            "offer",
+            "bonus",
+            "welcome offer",
+            "welcome bonus",
+            "signup bonus",
+            "sign-up bonus",
+            "promotion",
+            "优惠",
+            "奖励",
+            "活动",
+        ]
+    )
+    numeric_reward_offer = bool(
+        re.search(r"\b\d[\d,]*(?:\.\d+)?\s*(?:k\s*)?(?:points?|miles?)\b", lower)
+        and any(
+            keyword_matches(lower, keyword)
+            for keyword in ["card", "spend", "apply", "open", "earn", "消费", "开卡"]
+        )
+    )
+    has_offer_anchor = has_offer_anchor or numeric_reward_offer
+    has_offer_timing = any(
+        keyword_matches(lower, keyword)
+        for keyword in [
+            "ending soon",
+            "ends soon",
+            "apply now",
+            "best ever",
+            "limited-time",
+            "limited time",
+            "限时",
+            "即将结束",
+        ]
+    )
+    structural_change = any(
+        keyword_matches(lower, keyword)
+        for keyword in [
+            "annual fee",
+            "benefits changing",
+            "benefit changes",
+            "eligibility rule",
+            "new eligibility",
+            "no longer eligible",
+            "refresh",
+            "revamp",
+            "年费",
+            "权益变化",
+            "资格规则",
+            "改版",
+        ]
+    )
+    return has_offer_anchor and (has_offer_timing or not structural_change)
+
+
+def title_has_strong_offer_intent(title: str) -> bool:
+    lower = normalize_event_text(title)
+    explicit = any(
+        keyword_matches(lower, keyword)
+        for keyword in [
+            "bonus",
+            "welcome offer",
+            "welcome bonus",
+            "signup bonus",
+            "sign-up bonus",
+            "promotion",
+            "ending soon",
+            "ends soon",
+            "apply now",
+            "best ever",
+            "开卡奖励",
+            "即将结束",
+            "限时",
+        ]
+    )
+    quantified = bool(
+        re.search(r"\b\d[\d,]*(?:\.\d+)?\s*(?:k\s*)?(?:points?|miles?)\b", lower)
+        and any(
+            keyword_matches(lower, keyword)
+            for keyword in ["card", "spend", "apply", "open", "earn", "消费", "开卡"]
+        )
+    )
+    return explicit or quantified
+
+
+def title_has_portal_stack_intent(title: str) -> bool:
+    lower = normalize_event_text(title)
+    stack_anchor = any(
+        keyword_matches(lower, keyword)
+        for keyword in ["stack", "stacking", "portal stack", "shopping portal", "rakuten", "叠加", "返利门户"]
+    )
+    commerce_anchor = any(
+        keyword_matches(lower, keyword)
+        for keyword in ["purchase", "purchases", "cashback", "cash back", "offer", "points", "返现", "消费"]
+    )
+    return stack_anchor and commerce_anchor
+
+
+def title_has_transfer_bonus_intent(title: str) -> bool:
+    lower = normalize_event_text(title)
+    has_transfer = any(
+        keyword_matches(lower, keyword)
+        for keyword in ["transfer", "convert", "转点", "转分"]
+    )
+    has_bonus = any(
+        keyword_matches(lower, keyword)
+        for keyword in ["bonus", "boost", "奖励", "加赠"]
+    )
+    has_loyalty_unit = any(
+        keyword_matches(lower, keyword)
+        for keyword in ["points", "miles", "rewards", "积分", "里程"]
+    )
+    return has_transfer and has_bonus and has_loyalty_unit
+
+
+def text_has_award_devaluation_intent(text: str) -> bool:
+    lower = normalize_event_text(text)
+    if any(
+        keyword_matches(lower, keyword)
+        for keyword in ["points devaluation", "miles devaluation", "积分贬值", "里程贬值"]
+    ):
+        return True
+    award_anchor = any(
+        keyword_matches(lower, keyword)
+        for keyword in ["award", "redemption", "redeem", "points price", "points cost", "兑换", "积分房"]
+    )
+    higher_cost = any(
+        keyword_matches(lower, keyword)
+        for keyword in [
+            "devaluation",
+            "devalued",
+            "cost more",
+            "higher cost",
+            "higher price",
+            "prices increased",
+            "pricing increased",
+            "raised prices",
+            "increased cost",
+            "widespread increase",
+            "raises points prices",
+            "raises prices",
+            "price increase",
+            "price increases",
+            "award chart increase",
+            "increases award pricing",
+            "increased award pricing",
+            "raises award prices",
+            "raised award prices",
+            "award prices increased",
+            "贬值",
+            "兑换成本上升",
+            "积分上涨",
+        ]
+    )
+    return award_anchor and higher_cost
+
+
 def detect_item_topic(title: str, summary: str, source_type: str = "rss") -> str:
     title_topic = detect_topic(title)
     combined_topic = detect_topic(" ".join([title, summary]))
+    if title_has_portal_stack_intent(title):
+        return "portal_stack"
+    if text_has_award_devaluation_intent(" ".join([title, summary])):
+        return "devaluation"
+    if title_topic in RISK_TOPICS:
+        return title_topic
+    if title_has_transfer_bonus_intent(title):
+        return "transfer_bonus"
+    if combined_topic in RISK_TOPICS and not title_has_strong_offer_intent(title):
+        return combined_topic
+    if title_topic in {"transfer_bonus", "status_match", "statement_credit", "lounge"}:
+        return title_topic
+    if title_has_offer_intent(title) and (
+        combined_topic not in RISK_TOPICS or title_has_strong_offer_intent(title)
+    ):
+        return "offer"
     if source_type == "blog_comment":
         if title_topic != "datapoint":
             return title_topic
         return detect_topic(summary)
-    if combined_topic in RISK_TOPICS:
-        return combined_topic
     if title_topic != "datapoint":
         return title_topic
     return combined_topic
@@ -1614,6 +2009,13 @@ def extract_metric_snippets(text: str) -> list[str]:
     for match in METRIC_PATTERN.finditer(text):
         snippet = re.sub(r"\s+", " ", match.group(0).strip())
         snippet = snippet.replace(" :", ":").replace(": ", ":")
+        if re.fullmatch(r"\d+:\d+", snippet):
+            before = text[max(0, match.start() - 16) : match.start()]
+            after = text[match.end() : match.end() + 12]
+            if re.search(r"\b(?:at|by|before|until)\s*$", before, re.I) or re.match(
+                r"\s*(?:a\.?m\.?|p\.?m\.?|ET|PT|UTC)\b", after, re.I
+            ):
+                continue
         if snippet and snippet not in snippets:
             snippets.append(snippet)
         if len(snippets) >= 8:
@@ -1735,9 +2137,22 @@ def detect_action_label(text: str, topic: str, risk: str, signals: list[str]) ->
         return "高风险勿操作"
     if topic == "bug":
         return "高风险勿操作"
-    if any(keyword in lower for keyword in ["register", "registration", "enroll", "activate", "报名", "激活", "领取"]):
+    if topic == "devaluation":
+        return "只观察"
+    if any(keyword_matches(lower, keyword) for keyword in LOW_VALUE_ACTION_PHRASES):
+        return "只观察"
+    if signals and topic not in {
+        "offer",
+        "transfer_bonus",
+        "statement_credit",
+        "portal_stack",
+        "status_match",
+        "lounge",
+    }:
+        return "只观察"
+    if any(keyword_matches(lower, keyword) for keyword in ["register", "registration", "enroll", "activate", "报名", "激活", "领取"]):
         return "需报名"
-    if any(keyword in lower for keyword in ["targeted", "ymmv", "your mileage may vary", "定向", "部分账户"]):
+    if any(keyword_matches(lower, keyword) for keyword in ["targeted", "ymmv", "your mileage may vary", "定向", "部分账户"]):
         return "定向/YMMV"
     if topic in C_END_TOPICS:
         return "可直接用"
@@ -1750,6 +2165,8 @@ def detect_consumer_impact(topic: str, risk: str, signals: list[str], action_lab
     if risk in {"可能 clawback", "高风控风险"} or topic in RISK_TOPICS:
         return "需避坑"
     if topic in {"transfer_bonus", "offer", "statement_credit", "portal_stack", "status_match"}:
+        if action_label == "只观察":
+            return "长期观察"
         return "直接可用"
     if "devaluation_or_inflation" in signals or topic == "devaluation":
         return "可能贬值"
@@ -1904,6 +2321,8 @@ def score_item(
     item_text_lower = f"{title} {summary}".lower()
     if any(keyword in item_text_lower for keyword in NOISE_KEYWORDS):
         score -= 25
+    if any(keyword_matches(item_text_lower, keyword) for keyword in LOW_VALUE_ACTION_PHRASES):
+        score -= 20
     return max(score, 0)
 
 
@@ -1914,16 +2333,36 @@ def classify_row(
     card_keywords: dict[str, list[str]],
     reference_date: dt.datetime | dt.date | None = None,
 ) -> IntelItem:
-    main_text = " ".join([row.get("title", ""), row.get("summary", "")])
+    title_text = row.get("title", "")
+    summary_text = row.get("summary", "")
+    main_text = " ".join([title_text, summary_text])
     text = " ".join([main_text, " ".join(row.get("raw_tags", []))])
     source_type = row.get("source_type") or source_cfg.get("source_type", "rss")
     fallback_programs = source_cfg.get("programs", []) if source_cfg.get("program_fallback") else []
-    programs = detect_values(text, profile_keywords, fallback=fallback_programs)
-    cards = detect_values(text, card_keywords)
-    topic = detect_item_topic(row.get("title", ""), row.get("summary", ""), source_type)
-    verticals = detect_verticals(text, programs, cards, source_cfg)
-    signals = detect_ecosystem_signals(main_text)
+    topic = detect_item_topic(title_text, summary_text, source_type)
+    title_programs = detect_values(title_text, profile_keywords)
+    title_cards = detect_values(title_text, card_keywords)
+    title_is_authoritative = source_type == "blog_comment" or topic in TITLE_AUTHORITATIVE_TOPICS
+    if title_is_authoritative:
+        programs = title_programs or list(fallback_programs)
+        cards = title_cards
+    else:
+        programs = detect_values(text, profile_keywords, fallback=fallback_programs)
+        cards = detect_values(text, card_keywords)
+    vertical_text = title_text if topic in TITLE_AUTHORITATIVE_TOPICS else text
+    vertical_source_cfg = source_cfg if source_cfg.get("program_fallback") else {**source_cfg, "verticals": []}
+    verticals = detect_verticals(vertical_text, programs, cards, vertical_source_cfg)
+    signal_text = title_text if topic in {
+        "offer",
+        "transfer_bonus",
+        "portal_stack",
+        "statement_credit",
+        "lounge",
+    } else main_text
+    signals = detect_ecosystem_signals(signal_text)
     if topic == "datapoint" and signals:
+        topic = "industry_signal"
+    elif topic == "policy_change" and "regulatory_or_legal_pressure" in signals:
         topic = "industry_signal"
     elif topic == "industry_signal" and not signals:
         topic = "datapoint"
@@ -2135,6 +2574,11 @@ def event_tokens(value: str) -> set[str]:
             "promo": "offer",
             "offers": "offer",
             "elites": "elite",
+            "flight": "trip",
+            "flights": "trip",
+            "trips": "trip",
+            "sqcs": "sqc",
+            "yul": "montreal",
         }
         tokens.add(aliases.get(token, token))
     return tokens
@@ -2142,6 +2586,27 @@ def event_tokens(value: str) -> set[str]:
 
 def normalized_values(values: list[str]) -> set[str]:
     return {normalize_event_text(value) for value in values if value}
+
+
+def normalized_metric_values(values: list[str]) -> set[str]:
+    normalized: set[str] = set()
+    for value in values:
+        compact = re.sub(r"[\s,]+", "", normalize_event_text(value))
+        if not compact:
+            continue
+        normalized.add(compact)
+        match = re.fullmatch(
+            r"[$€£]?([0-9]+(?:\.[0-9]+)?)([kmb])?"
+            r"(?:points?|pts|miles?|owners?|users?|nights?|credits?|%)?",
+            compact,
+        )
+        if not match:
+            continue
+        number = float(match.group(1))
+        multiplier = {"k": 1_000, "m": 1_000_000, "b": 1_000_000_000}.get(match.group(2), 1)
+        scaled = number * multiplier
+        normalized.add(f"number:{scaled:g}")
+    return normalized
 
 
 def items_represent_same_event(left: IntelItem, right: IntelItem) -> bool:
@@ -2161,6 +2626,10 @@ def items_represent_same_event(left: IntelItem, right: IntelItem) -> bool:
     left_title_tokens = event_tokens(left.title)
     right_title_tokens = event_tokens(right.title)
     shared_title_tokens = left_title_tokens & right_title_tokens
+    title_union = left_title_tokens | right_title_tokens
+    title_similarity = len(shared_title_tokens) / len(title_union) if title_union else 0.0
+    shared_metrics = normalized_metric_values(left.metric_snippets) & normalized_metric_values(right.metric_snippets)
+    shared_dates = set(left.future_event_dates) & set(right.future_event_dates)
     if "partner_contract_shift" in shared_signals and shared_programs:
         generic_partner_tokens = {
             "airline",
@@ -2182,16 +2651,61 @@ def items_represent_same_event(left: IntelItem, right: IntelItem) -> bool:
         distinctive_tokens = shared_title_tokens - generic_partner_tokens - program_tokens
         if any(len(token) >= 5 for token in distinctive_tokens):
             return True
+    if shared_programs and text_has_award_devaluation_intent(f"{left.title} {left.summary}") and text_has_award_devaluation_intent(
+        f"{right.title} {right.summary}"
+    ):
+        return True
+    topic_pair = {left.topic_type, right.topic_type}
+    if (
+        topic_pair == {"status_match", "industry_signal"}
+        and len(shared_programs) >= 2
+        and len(shared_title_tokens) >= 2
+    ):
+        return True
     if left.topic_type != right.topic_type:
         return False
     has_entity_anchor = bool(shared_programs or shared_cards or (shared_verticals and shared_signals))
     if not has_entity_anchor:
         return False
 
-    title_union = left_title_tokens | right_title_tokens
-    title_similarity = len(shared_title_tokens) / len(title_union) if title_union else 0.0
-    shared_metrics = set(left.metric_snippets) & set(right.metric_snippets)
-    shared_dates = set(left.future_event_dates) & set(right.future_event_dates)
+    if left.topic_type in RISK_TOPICS and shared_programs and shared_metrics:
+        return True
+
+    if left.topic_type == "offer":
+        product_variants = {
+            "schwab",
+            "morgan stanley",
+            "business",
+            "personal",
+            "preferred",
+            "reserve",
+            "resy",
+        }
+        left_variants = {value for value in product_variants if keyword_matches(left_title, value)}
+        right_variants = {value for value in product_variants if keyword_matches(right_title, value)}
+        if left_variants and right_variants and not (left_variants & right_variants):
+            return False
+
+        if shared_programs and (shared_metrics or shared_dates):
+            generic_offer_tokens = {
+                "bonus",
+                "buy",
+                "card",
+                "earn",
+                "ending",
+                "offer",
+                "points",
+                "soon",
+                "spend",
+                "with",
+            }
+            program_tokens = event_tokens(" ".join(shared_programs))
+            distinctive_tokens = shared_title_tokens - generic_offer_tokens - program_tokens
+            if len(distinctive_tokens) >= 2 and title_similarity >= 0.25:
+                return True
+
+    if left.topic_type == "transfer_bonus" and len(shared_programs) >= 2 and len(shared_metrics) >= 2:
+        return True
 
     if left.topic_type == "devaluation" and shared_programs:
         def has_award_price_signature(item: IntelItem) -> bool:
@@ -2212,6 +2726,14 @@ def items_represent_same_event(left: IntelItem, right: IntelItem) -> bool:
         and len(shared_programs) >= 2
         and len(shared_title_tokens) >= 3
         and title_similarity >= 0.22
+    ):
+        return True
+    if (
+        left.topic_type == "offer"
+        and shared_programs
+        and shared_cards
+        and len(shared_title_tokens) >= 4
+        and title_similarity >= 0.20
     ):
         return True
     if (
@@ -2270,8 +2792,57 @@ def event_confidence(items: list[IntelItem]) -> str:
     return "单帖线索"
 
 
+def event_fingerprint(items: list[IntelItem]) -> str:
+    representative = representative_item(items)
+    taxonomy_items = [item for item in items if item.source_type != "blog_comment"] or items
+    return "|".join(
+        [
+            canonical_event_url(representative.url)
+            or normalize_event_text(representative.title),
+            representative.topic_type,
+            *sorted(
+                normalized_values(
+                    merge_unique(
+                        [value for item in taxonomy_items for value in item.program]
+                    )
+                )
+            ),
+        ]
+    )
+
+
 def event_from_items(items: list[IntelItem]) -> IntelEvent:
     representative = representative_item(items)
+    taxonomy_items = [item for item in items if item.source_type != "blog_comment"] or items
+    merged_programs = merge_unique(
+        [value for item in taxonomy_items for value in item.program]
+    )
+    merged_cards = merge_unique(
+        [value for item in taxonomy_items for value in item.card_family]
+    )
+    merged_verticals = merge_unique(
+        [value for item in taxonomy_items for value in item.vertical]
+    )
+    title_text = " ".join(item.title for item in taxonomy_items)
+    title_programs = detect_values(title_text, EVENT_TITLE_PROGRAM_KEYWORDS)
+    if representative.topic_type in TITLE_AUTHORITATIVE_TOPICS or representative.ecosystem_signal_type:
+        title_program_set = set(title_programs)
+        event_programs = (
+            [value for value in merged_programs if value in title_program_set]
+            + [value for value in title_programs if value not in merged_programs]
+            if title_programs
+            else merged_programs
+        )
+        title_verticals = detect_verticals(
+            title_text,
+            event_programs,
+            merged_cards,
+            {"verticals": []},
+        )
+        event_verticals = title_verticals or merged_verticals
+    else:
+        event_programs = merged_programs
+        event_verticals = merged_verticals
     evidence = [evidence_from_item(item) for item in items]
     evidence.sort(
         key=lambda row: (
@@ -2282,13 +2853,7 @@ def event_from_items(items: list[IntelItem]) -> IntelEvent:
         )
     )
     sources = merge_unique([item.source for item in items])
-    fingerprint = "|".join(
-        [
-            canonical_event_url(representative.url) or normalize_event_text(representative.title),
-            representative.topic_type,
-            *sorted(normalized_values(merge_unique([value for item in items for value in item.program]))),
-        ]
-    )
+    fingerprint = event_fingerprint(items)
     return IntelEvent(
         title=representative.title,
         url=representative.url,
@@ -2296,8 +2861,8 @@ def event_from_items(items: list[IntelItem]) -> IntelEvent:
         source_id=representative.source_id,
         source_type=representative.source_type,
         priority=representative.priority,
-        program=merge_unique([value for item in items for value in item.program]),
-        card_family=merge_unique([value for item in items for value in item.card_family]),
+        program=event_programs,
+        card_family=merged_cards,
         topic_type=representative.topic_type,
         published_at=representative.published_at,
         summary=representative.summary,
@@ -2305,11 +2870,11 @@ def event_from_items(items: list[IntelItem]) -> IntelEvent:
         confidence_label=event_confidence(items),
         risk_label=representative.risk_label,
         score=max(item.score for item in items),
-        vertical=merge_unique([value for item in items for value in item.vertical]),
+        vertical=event_verticals,
         ecosystem_signal_type=merge_unique(
-            [value for item in items for value in item.ecosystem_signal_type]
+            [value for item in taxonomy_items for value in item.ecosystem_signal_type]
         ),
-        stakeholders=merge_unique([value for item in items for value in item.stakeholders]),
+        stakeholders=merge_unique([value for item in taxonomy_items for value in item.stakeholders]),
         consumer_impact=representative.consumer_impact,
         impact_horizon=representative.impact_horizon,
         action_label=representative.action_label,
@@ -2333,19 +2898,67 @@ def cluster_items(items: list[IntelItem]) -> list[IntelEvent]:
         ),
     )
     for item in ordered:
-        target = next(
-            (
-                cluster
-                for cluster in clusters
-                if all(items_represent_same_event(item, member) for member in cluster)
-            ),
-            None,
-        )
+        target = None
+        if item.source_type == "blog_comment":
+            comment_url = canonical_event_url(item.url)
+            comment_title = normalize_event_text(item.title)
+            target = next(
+                (
+                    cluster
+                    for cluster in clusters
+                    if any(
+                        (comment_url and comment_url == canonical_event_url(member.url))
+                        or (
+                            comment_title
+                            and comment_title == normalize_event_text(member.title)
+                        )
+                        for member in cluster
+                    )
+                ),
+                None,
+            )
+        if target is None:
+            target = next(
+                (
+                    cluster
+                    for cluster in clusters
+                    if all(items_represent_same_event(item, member) for member in cluster)
+                ),
+                None,
+            )
         if target is None:
             clusters.append([item])
         else:
             target.append(item)
-    return [event_from_items(cluster) for cluster in clusters]
+
+    # Cross-language evidence can split otherwise identical clusters under the all-members rule.
+    # Merge only when the two cluster representatives satisfy the same conservative matcher used
+    # by the public duplicate gate.
+    representative_merged: list[list[IntelItem]] = []
+    for cluster in clusters:
+        representative = representative_item(cluster)
+        target = next(
+            (
+                existing
+                for existing in representative_merged
+                if items_represent_same_event(representative, representative_item(existing))
+            ),
+            None,
+        )
+        if target is None:
+            representative_merged.append(cluster)
+        else:
+            target.extend(cluster)
+    clusters = representative_merged
+
+    # The all-members rule intentionally avoids transitive over-merges. Two clusters can
+    # still have the exact same canonical URL/topic/program fingerprint (most commonly a
+    # parent article and its comment feed); those are the same auditable event.
+    consolidated: dict[str, list[IntelItem]] = {}
+    for cluster in clusters:
+        fingerprint = event_fingerprint(cluster)
+        consolidated.setdefault(fingerprint, []).extend(cluster)
+    return [event_from_items(cluster) for cluster in consolidated.values()]
 
 
 def event_matches_config(event: IntelEvent, configured_values: list[str]) -> bool:
@@ -2625,15 +3238,62 @@ def within_window(
         return allow_undated
 
 
+def title_has_explicit_loyalty_context(item: IntelItem) -> bool:
+    """Require title-level evidence before accepting broad ecosystem query matches."""
+    if item.program or item.card_family or set(item.vertical) & {"hotel", "airline", "rental_car"}:
+        return True
+    title = normalize_event_text(item.title)
+    anchors = [
+        "loyalty program",
+        "rewards program",
+        "reward points",
+        "bonus points",
+        "airline miles",
+        "bonus miles",
+        "frequent flyer",
+        "award ticket",
+        "award travel",
+        "points redemption",
+        "redeem points",
+        "elite status",
+        "status match",
+        "status challenge",
+        "transfer bonus",
+        "transfer partner",
+        "credit card rewards",
+        "co-brand card",
+        "co-branded card",
+        "忠诚计划",
+        "奖励计划",
+        "积分兑换",
+        "奖励积分",
+        "航空里程",
+        "常旅客",
+        "会籍匹配",
+        "转点奖励",
+        "联名卡",
+    ]
+    return any(keyword_matches(title, anchor) for anchor in anchors)
+
+
 def loyalty_relevance_reason(item: IntelItem) -> str | None:
     title_lower = normalize_event_text(item.title)
     if any(marker in title_lower for marker in LOW_SIGNAL_ROUNDUP_MARKERS):
+        return "low_signal_roundup"
+    if any(re.search(pattern, title_lower) for pattern in LOW_SIGNAL_EVERGREEN_PATTERNS) and not any(
+        keyword_matches(title_lower, term) for term in FRESH_EVENT_TITLE_TERMS
+    ):
         return "low_signal_roundup"
     if any(re.search(pattern, title_lower) for pattern in GENERIC_TRAVEL_NEWS_TITLE_PATTERNS) and not any(
         keyword_matches(title_lower, term) for term in GENERIC_TRAVEL_NEWS_EXEMPT_TERMS
     ):
         return "generic_travel_news"
     is_forum_source = item.source_type == "forum" or item.source_id.startswith(("ft-", "flyert-"))
+    is_question = any(re.search(pattern, title_lower) for pattern in FORUM_QUESTION_PATTERNS)
+    if is_forum_source and is_question and not any(
+        keyword_matches(title_lower, term) for term in FORUM_CHANGE_EVIDENCE_TERMS
+    ):
+        return "low_signal_forum"
     if is_forum_source and set(item.vertical) & {"hotel", "airline"} and not any(
         keyword_matches(title_lower, term) for term in FORUM_SIGNAL_TITLE_TERMS
     ):
@@ -2642,7 +3302,9 @@ def loyalty_relevance_reason(item: IntelItem) -> str | None:
     if verticals & {"hotel", "airline", "rental_car"}:
         return None
     if item.ecosystem_signal_type:
-        return None
+        if title_has_explicit_loyalty_context(item):
+            return None
+        return "non_loyalty_ecosystem"
     lead_text = normalize_event_text(f"{item.title} {(item.summary or '')[:320]}")
     travel_card_families = {
         "sapphire",
@@ -2873,10 +3535,23 @@ def collect_all(args: argparse.Namespace) -> tuple[list[IntelEvent], list[Source
         all_sources = all_sources[: args.max_sources]
 
     items: list[IntelItem] = []
-    for source_cfg in all_sources:
+    quiet = bool(getattr(args, "quiet", False)) or os.environ.get("LOYALTY_RADAR_QUIET") == "1"
+    collection_started = time.monotonic()
+    if not quiet:
+        print(f"[collect 0/{len(all_sources)}] starting public-source scan", file=sys.stderr, flush=True)
+    for index, source_cfg in enumerate(all_sources, start=1):
+        source_started = time.monotonic()
         source_items, source_health = collect_source(source_cfg, profile_keywords, card_keywords, args)
         health.append(source_health)
         items.extend(source_items)
+        if not quiet:
+            print(
+                f"[collect {index}/{len(all_sources)}] {source_health.source}: "
+                f"{source_health.status}, {source_health.fetched} rows, "
+                f"{time.monotonic() - source_started:.1f}s",
+                file=sys.stderr,
+                flush=True,
+            )
         if source_health.status == "ok":
             time.sleep(max(float(args.source_delay), float(source_cfg.get("rate_limit_seconds", 0))))
 
@@ -2926,6 +3601,13 @@ def collect_all(args: argparse.Namespace) -> tuple[list[IntelEvent], list[Source
                 f"parsed; fetched {row.fetched}, dated {row.dated}, eligible {row.eligible}, "
                 f"rejected {row.rejected}, duplicate {row.duplicate}, selected {row.selected}"
             )
+    if not quiet:
+        print(
+            f"[collect done] {len(items)} rows -> {len(events)} events -> {len(selected)} selected "
+            f"in {time.monotonic() - collection_started:.1f}s",
+            file=sys.stderr,
+            flush=True,
+        )
     return selected, health
 
 
@@ -4110,6 +4792,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--fetch-details", action="store_true")
     parser.add_argument("--source-delay", type=float, default=0.8)
     parser.add_argument("--detail-delay", type=float, default=1.5)
+    parser.add_argument("--quiet", action="store_true", help="Suppress per-source collection progress on stderr.")
     parser.add_argument("--profile", default=str(REFERENCES_DIR / "profile.yaml"))
     parser.add_argument("--cards", default=str(REFERENCES_DIR / "cards.yaml"))
     parser.add_argument("--sources", default=str(REFERENCES_DIR / "sources.yaml"))

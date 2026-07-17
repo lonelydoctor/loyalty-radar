@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/lonelydoctor/loyalty-radar/blob/main/plugins/loyalty-radar/skills/loyalty-radar/references/schemas/public-report.schema.json",
+  "title": "Loyalty Radar publication-safe report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "publication", "items", "health"],
+  "properties": {
+    "schema_id": {"const": "loyalty-radar-public-report/v1"},
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "product", "generated_at", "audited_at", "mode", "focus", "hours", "future_watch_days", "timezone", "source_packs", "locales", "event_count"],
+      "properties": {
+        "policy": {"const": "public"},
+        "product": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": {
+            "name": {"const": "Loyalty Radar"},
+            "version": {"type": "string"}
+          }
+        },
+        "generated_at": {"type": "string"},
+        "audited_at": {"type": "string"},
+        "mode": {"type": "string"},
+        "focus": {"type": "string"},
+        "hours": {"type": "integer", "minimum": 0},
+        "future_watch_days": {"type": "integer", "minimum": 0},
+        "timezone": {"type": "string"},
+        "source_packs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "locales": {"const": ["en", "zh-CN"]},
+        "event_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "lane", "priority", "localized", "source_refs", "published_at", "future_event_dates", "taxonomy", "confidence_label", "risk_label", "action_label", "metric_snippets"],
+        "properties": {
+          "event_id": {"type": "string", "minLength": 1},
+          "lane": {"enum": ["c-end", "ecosystem"]},
+          "priority": {"enum": ["P0", "P1", "P2", "P3", "P4"]},
+          "localized": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["en", "zh-CN"],
+            "properties": {
+              "en": {"$ref": "#/$defs/visibleText"},
+              "zh-CN": {"$ref": "#/$defs/visibleText"}
+            }
+          },
+          "source_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceRef"}},
+          "published_at": {"type": ["string", "null"]},
+          "future_event_dates": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "taxonomy": {"$ref": "#/$defs/taxonomy"},
+          "confidence_label": {"type": "string"},
+          "risk_label": {"type": "string"},
+          "action_label": {"type": "string"},
+          "metric_snippets": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configured_sources", "script_eligible_sources", "script_ok_sources", "script_ok_rate", "p0_script_sources", "p0_ok_sources", "p0_ok_rate", "status_counts", "events_checked", "duplicate_events", "duplicate_rate", "top_events_checked"],
+      "properties": {
+        "configured_sources": {"type": "integer", "minimum": 0},
+        "script_eligible_sources": {"type": "integer", "minimum": 0},
+        "script_ok_sources": {"type": "integer", "minimum": 0},
+        "script_ok_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "p0_script_sources": {"type": "integer", "minimum": 0},
+        "p0_ok_sources": {"type": "integer", "minimum": 0},
+        "p0_ok_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "status_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+        "events_checked": {"type": "integer", "minimum": 0},
+        "duplicate_events": {"type": "integer", "minimum": 0},
+        "duplicate_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "top_events_checked": {"type": "integer", "minimum": 0, "maximum": 20}
+      }
+    }
+  },
+  "$defs": {
+    "visibleText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "summary", "why_it_matters"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "why_it_matters": {"type": "string", "minLength": 1}
+      }
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source", "source_type", "url", "published_at"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "minLength": 1},
+        "source_type": {"type": "string"},
+        "url": {"type": "string", "pattern": "^https?://"},
+        "published_at": {"type": ["string", "null"]}
+      }
+    },
+    "taxonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["programs", "card_families", "topic_type", "verticals", "ecosystem_signal_types", "stakeholders", "consumer_impact", "impact_horizon"],
+      "properties": {
+        "programs": {"type": "array", "items": {"type": "string"}},
+        "card_families": {"type": "array", "items": {"type": "string"}},
+        "topic_type": {"type": "string"},
+        "verticals": {"type": "array", "items": {"type": "string"}},
+        "ecosystem_signal_types": {"type": "array", "items": {"type": "string"}},
+        "stakeholders": {"type": "array", "items": {"type": "string"}},
+        "consumer_impact": {"type": "string"},
+        "impact_horizon": {"type": "string"}
+      }
+    }
+  }
+}

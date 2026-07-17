@@ -1,0 +1,28 @@
+name: Ecosystem install smoke
+
+on:
+  schedule:
+    - cron: "41 4 * * 3"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ecosystem-install-smoke
+  cancel-in-progress: true
+
+jobs:
+  skills-cli:
+    name: Best-effort npx skills discovery
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Discover the repository through the public skills CLI
+        run: npx --yes skills add "${GITHUB_REPOSITORY}" --list

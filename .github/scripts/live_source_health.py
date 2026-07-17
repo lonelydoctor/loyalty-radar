@@ -31,10 +31,10 @@ def bounded_limit(value: str) -> int:
 PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2}
 
 
-def load_candidates() -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, str]], list[dict[str, str]]]:
+def load_candidates() -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]], list[dict[str, Any]]]:
     by_pack: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    browser_only: list[dict[str, str]] = []
-    disabled: list[dict[str, str]] = []
+    browser_only: list[dict[str, Any]] = []
+    disabled: list[dict[str, Any]] = []
     for path in sorted(PACK_DIR.glob("*.yaml")):
         payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         pack = payload.get("pack") or {}
@@ -43,10 +43,30 @@ def load_candidates() -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, s
             if not isinstance(source, dict):
                 continue
             if not source.get("enabled", True):
-                disabled.append({"source_id": str(source.get("id") or ""), "pack_id": pack_id, "reason": "disabled_in_catalog"})
+                disabled.append(
+                    {
+                        "source_id": str(source.get("id") or ""),
+                        "pack_id": pack_id,
+                        "priority": str(source.get("priority") or "P2"),
+                        "fetch_method": str(source.get("fetch_method") or ""),
+                        "url": str(source.get("url") or ""),
+                        "status": "skipped",
+                        "reason": "disabled_in_catalog",
+                    }
+                )
                 continue
             if source.get("fetch_method") == "browser_only":
-                browser_only.append({"source_id": str(source.get("id") or ""), "pack_id": pack_id, "reason": "browser_assisted"})
+                browser_only.append(
+                    {
+                        "source_id": str(source.get("id") or ""),
+                        "pack_id": pack_id,
+                        "priority": str(source.get("priority") or "P2"),
+                        "fetch_method": "browser_only",
+                        "url": str(source.get("url") or ""),
+                        "status": "skipped",
+                        "reason": "browser_assisted",
+                    }
+                )
                 continue
             item = dict(source)
             item["pack_id"] = pack_id
@@ -111,6 +131,32 @@ def select_rotating_sample(
 def default_rotation() -> int:
     calendar = datetime.now(UTC).isocalendar()
     return calendar.year * 53 + calendar.week
+
+
+def select_explicit_sources(
+    candidates_by_pack: dict[str, list[dict[str, Any]]],
+    browser_only: list[dict[str, Any]],
+    disabled: list[dict[str, Any]],
+    requested_ids: list[str],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    requested = set(requested_ids)
+    all_rows = [row for rows in candidates_by_pack.values() for row in rows]
+    known_ids = {
+        str(row.get("id") or row.get("source_id") or "")
+        for row in [*all_rows, *browser_only, *disabled]
+    }
+    unknown = sorted(requested - known_ids)
+    if unknown:
+        raise ValueError("unknown source ID(s): " + ", ".join(unknown))
+    selected = sorted(
+        (row for row in all_rows if str(row.get("id") or "") in requested),
+        key=lambda row: requested_ids.index(str(row.get("id") or "")),
+    )
+    return (
+        selected,
+        [row for row in browser_only if row.get("source_id") in requested],
+        [row for row in disabled if row.get("source_id") in requested],
+    )
 
 
 def check_source(source: dict[str, Any], last_request: dict[str, float]) -> dict[str, Any]:
@@ -186,6 +232,11 @@ def write_summary(path: Path, report: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=bounded_limit, default=15)
+    parser.add_argument(
+        "--source-id",
+        action="append",
+        help="Probe only this configured source ID; repeat up to 25 times.",
+    )
     parser.add_argument("--rotation", type=int, help="Deterministic sample rotation; defaults to the current ISO week")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--summary", type=Path)
@@ -198,8 +249,19 @@ def main() -> int:
         return 2
 
     rotation = args.rotation if args.rotation is not None else default_rotation()
-    selected = select_rotating_sample(candidates_by_pack, args.limit, rotation)
     candidate_count = sum(len(rows) for rows in candidates_by_pack.values())
+    requested_ids = list(dict.fromkeys(args.source_id or []))
+    if len(requested_ids) > 25:
+        parser.error("--source-id may be repeated at most 25 times")
+    if requested_ids:
+        try:
+            selected, browser_only, disabled = select_explicit_sources(
+                candidates_by_pack, browser_only, disabled, requested_ids
+            )
+        except ValueError as exc:
+            parser.error(str(exc))
+    else:
+        selected = select_rotating_sample(candidates_by_pack, args.limit, rotation)
     last_request: dict[str, float] = {}
     results = [check_source(source, last_request) for source in selected]
     counts = dict(Counter(str(item["status"]) for item in results))
@@ -208,6 +270,7 @@ def main() -> int:
         "generated_at": datetime.now(UTC).isoformat(),
         "mode": "limited_source_health",
         "requested_limit": args.limit,
+        "requested_source_ids": requested_ids,
         "rotation": rotation,
         "catalog_sources": candidate_count + len(browser_only) + len(disabled),
         "script_eligible_sources": candidate_count,

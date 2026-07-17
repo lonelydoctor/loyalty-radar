@@ -6,7 +6,29 @@ The project follows [Semantic Versioning](https://semver.org/). The format is ba
 
 ## [Unreleased]
 
-No user-visible changes have been assigned after `v0.1.1`.
+No user-visible changes have been assigned after `v0.1.2`.
+
+## [0.1.2] - 2026-07-18
+
+Public-report quality and review-first growth automation release.
+
+### Added
+
+- A neutral `public-weekly` preset, deterministic public-report audit policy, and privacy-preserving `doctor --share` installation receipt.
+- Weekly real-report PR generation, daily growth metrics, source-health escalation, reviewed announcement drafts, and a public 30-day growth tracker.
+- Bilingual Pages report archive and source explorer built only from sanitized, source-linked public report data.
+
+### Changed
+
+- Public scans now expose per-source progress and apply stricter event clustering, source-time, question, and evergreen-content rules.
+- Release validation covers the Agent Skill installer, Plugin and Skill archives, clean-room CLI installation, and public-data hygiene.
+
+### Fixed
+
+- Elevated welcome offers are no longer misclassified as policy changes merely because they are ending soon.
+- Duplicate Chase-to-IHG transfer bonuses, Marriott award-price reports, and JAL partnership coverage now cluster consistently.
+- Blog comments no longer add incidental brands or ecosystem signals to the parent event, and Flyert board dates are retained when present.
+- CJK font discovery now includes common macOS, Linux, and Windows families for readable PNG output.
 
 ## [0.1.1] - 2026-07-15
 

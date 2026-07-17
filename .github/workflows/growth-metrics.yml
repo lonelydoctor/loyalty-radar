@@ -1,0 +1,71 @@
+name: Growth metrics
+
+on:
+  schedule:
+    - cron: "13 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  discussions: read
+  issues: write
+  pages: read
+  pull-requests: read
+
+concurrency:
+  group: growth-metrics
+  cancel-in-progress: false
+
+jobs:
+  metrics:
+    name: Update the one 30-day growth tracker
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      INSTALL_DISCUSSION_NUMBER: ${{ vars.INSTALL_CONFIRMATION_DISCUSSION_NUMBER }}
+      GROWTH_MILESTONE_NUMBER: ${{ vars.GROWTH_MILESTONE_NUMBER }}
+      OUTPUT_DIR: ${{ runner.temp }}/loyalty-radar-growth
+    steps:
+      - name: Set up Python without checking out the repository
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Fetch the versioned metrics script through the Contents API
+        shell: bash
+        run: |
+          mkdir -p "${OUTPUT_DIR}"
+          gh api --method GET \
+            "repos/${GITHUB_REPOSITORY}/contents/.github/scripts/growth_metrics.py?ref=${DEFAULT_BRANCH}" \
+            --jq .content > "${RUNNER_TEMP}/growth_metrics.py.b64"
+          base64 --decode "${RUNNER_TEMP}/growth_metrics.py.b64" > "${RUNNER_TEMP}/growth_metrics.py"
+
+      - name: Collect GitHub-native metrics and update the tracker
+        shell: bash
+        run: |
+          ARGS=(
+            --repository "${GITHUB_REPOSITORY}"
+            --output "${OUTPUT_DIR}/growth-metrics.json"
+            --summary "${GITHUB_STEP_SUMMARY}"
+            --apply
+          )
+          if [[ -n "${INSTALL_DISCUSSION_NUMBER}" ]]; then
+            ARGS+=(--discussion-number "${INSTALL_DISCUSSION_NUMBER}")
+          fi
+          if [[ -n "${GROWTH_MILESTONE_NUMBER}" ]]; then
+            ARGS+=(--milestone-number "${GROWTH_MILESTONE_NUMBER}")
+          fi
+          python "${RUNNER_TEMP}/growth_metrics.py" "${ARGS[@]}"
+
+      - name: Upload the 90-day GitHub-only history
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: growth-metrics-${{ github.run_id }}
+          path: ${{ runner.temp }}/loyalty-radar-growth/growth-metrics.json
+          if-no-files-found: error
+          retention-days: 90
