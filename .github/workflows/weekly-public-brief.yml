@@ -250,7 +250,23 @@ jobs:
           if [[ -n "${NUMBER}" ]]; then
             gh pr edit "${NUMBER}" --title "Public weekly brief: ${WEEK}" --body-file "${BODY}" --add-label public-report
           elif [[ "${{ steps.branch.outputs.changed }}" == "true" ]]; then
-            gh pr create --base "${DEFAULT_BRANCH}" --head "${BRANCH}" --title "Public weekly brief: ${WEEK}" --body-file "${BODY}" --label public-report
+            if ! gh pr create --base "${DEFAULT_BRANCH}" --head "${BRANCH}" --title "Public weekly brief: ${WEEK}" --body-file "${BODY}" --label public-report; then
+              gh label create launch-blocker --color b60205 --description "Blocks a public launch or brief" --force
+              BLOCK_TITLE="Public brief PR blocked: ${WEEK}"
+              BLOCK_BODY="${RUNNER_TEMP}/blocked-public-report-pr.md"
+              COMPARE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/${DEFAULT_BRANCH}...${BRANCH}?expand=1"
+              printf '## Public weekly brief PR creation\n\n- Result: **BLOCKED**\n- Audited branch: `%s`\n- Manual compare: %s\n- Run: %s/actions/runs/%s\n\nGitHub Actions could not open the review PR. Enable **Settings > Actions > General > Workflow permissions > Allow GitHub Actions to create and approve pull requests**, or open the compare link manually. Branch protection and human review still apply; this workflow never merges automatically.\n' \
+                "${BRANCH}" "${COMPARE_URL}" \
+                "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" "${GITHUB_RUN_ID}" > "${BLOCK_BODY}"
+              BLOCK_NUMBER="$(gh issue list --state all --search "${BLOCK_TITLE} in:title" --json number,title --jq ".[] | select(.title == \"${BLOCK_TITLE}\") | .number" | head -1)"
+              if [[ -n "${BLOCK_NUMBER}" ]]; then
+                gh issue edit "${BLOCK_NUMBER}" --body-file "${BLOCK_BODY}" --add-label launch-blocker --add-label public-report
+                gh issue reopen "${BLOCK_NUMBER}" >/dev/null 2>&1 || true
+              else
+                gh issue create --title "${BLOCK_TITLE}" --body-file "${BLOCK_BODY}" --label launch-blocker --label public-report
+              fi
+              exit 1
+            fi
           fi
 
       - name: Close a stale blocked Issue after a passing gate
@@ -259,8 +275,9 @@ jobs:
         env:
           WEEK: ${{ steps.paths.outputs.week }}
         run: |
-          TITLE="Public brief blocked: ${WEEK}"
-          NUMBER="$(gh issue list --state open --search "${TITLE} in:title" --json number,title --jq ".[] | select(.title == \"${TITLE}\") | .number" | head -1)"
-          if [[ -n "${NUMBER}" ]]; then
-            gh issue close "${NUMBER}" --comment "The authoritative public-policy gate now passes. Review remains in the report PR."
-          fi
+          for TITLE in "Public brief blocked: ${WEEK}" "Public brief PR blocked: ${WEEK}"; do
+            NUMBER="$(gh issue list --state open --search "${TITLE} in:title" --json number,title --jq ".[] | select(.title == \"${TITLE}\") | .number" | head -1)"
+            if [[ -n "${NUMBER}" ]]; then
+              gh issue close "${NUMBER}" --comment "The authoritative public-policy gate now passes and the review PR is available."
+            fi
+          done

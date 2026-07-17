@@ -10,6 +10,7 @@ The project follows [Semantic Versioning](https://semver.org/). The format is ba
 
 - Hosted scans now use a disclosed, direct-first Feedly public-cache fallback for FlyerTalk feeds that reject GitHub Actions runners; cached items retain their original thread URLs and publication times.
 - Public reports, source catalogs, and health diagnostics now show fallback usage separately from direct source success.
+- Weekly report automation now opens a deduplicated blocker Issue with a manual compare link when repository permissions prevent GitHub Actions from creating the review Pull Request.
 
 ### Changed
 
