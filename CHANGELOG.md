@@ -6,7 +6,18 @@ The project follows [Semantic Versioning](https://semver.org/). The format is ba
 
 ## [Unreleased]
 
-No user-visible changes have been assigned after `v0.1.2`.
+### Added
+
+- Hosted scans now use a disclosed, direct-first Feedly public-cache fallback for FlyerTalk feeds that reject GitHub Actions runners; cached items retain their original thread URLs and publication times.
+- Public reports, source catalogs, and health diagnostics now show fallback usage separately from direct source success.
+
+### Changed
+
+- Weekly public briefs and rotating source-health probes run on macOS hosted runners for more representative production connectivity.
+
+### Fixed
+
+- Empty or mismatched public-cache streams are rejected instead of being counted as successful source fetches.
 
 ## [0.1.2] - 2026-07-18
 
