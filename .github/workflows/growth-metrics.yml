@@ -30,7 +30,7 @@ jobs:
       GROWTH_MILESTONE_NUMBER: ${{ vars.GROWTH_MILESTONE_NUMBER }}
     steps:
       - name: Set up Python without checking out the repository
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
