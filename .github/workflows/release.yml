@@ -81,7 +81,7 @@ jobs:
           unzip -p dist/loyalty-radar-plugin-*.zip loyalty-radar/.codex-plugin/plugin.json | python -m json.tool >/dev/null
 
       - name: Set up Node for the best-effort ecosystem check
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
 
