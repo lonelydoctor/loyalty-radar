@@ -1,0 +1,2268 @@
+{
+  "schema_id": "loyalty-radar-public-report/v1",
+  "publication": {
+    "policy": "public",
+    "product": {
+      "name": "Loyalty Radar",
+      "version": "0.1.2"
+    },
+    "generated_at": "2026-08-11T03:13:51.833913+00:00",
+    "audited_at": "2026-08-11T03:18:02+00:00",
+    "mode": "weekly",
+    "focus": "all",
+    "hours": 336,
+    "future_watch_days": 60,
+    "timezone": "UTC",
+    "source_packs": [
+      "core",
+      "industry",
+      "forums-global",
+      "forums-cn"
+    ],
+    "locales": [
+      "en",
+      "zh-CN"
+    ],
+    "event_count": 40
+  },
+  "items": [
+    {
+      "event_id": "c2a89939cdbdef",
+      "lane": "ecosystem",
+      "priority": "P1",
+      "localized": {
+        "en": {
+          "title": "ALL Accor Is Now an Amex Membership Rewards Transfer Partner",
+          "summary": "American Express / Accor · Industry signal. Metrics: none extracted. Published 2026-07-29; 2 public sources.",
+          "why_it_matters": "Taxonomy: Hotel / Credit card; ecosystem signal: Partner contract shift."
+        },
+        "zh-CN": {
+          "title": "ALL Accor 现已成为美国运通会员奖励转让合作伙伴",
+          "summary": "American Express / Accor · 行业信号。指标：未抽取。发布于 2026-07-29，共 2 个公开来源。",
+          "why_it_matters": "分类：酒店 / 信用卡；生态信号：合作关系变化。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/news/amex-membership-rewards-accor-transfer-partner/",
+          "published_at": "2026-07-29T23:10:49+00:00"
+        },
+        {
+          "source_id": "google-news-loyalty-partner-contracts",
+          "source": "Google News - Loyalty Partner and Cobrand Contracts",
+          "source_type": "rss",
+          "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOS2tuQ0Zyd245dWRSRWNURi1HUTJ4MU1SS3BreDRGdWxFeDA4TTU0TEpWbzc0N01GU3haZ2RnLUY0S0lhNnRQZlMzb2pHNXU1QjBJNDg2LXl4cVNsMUZvWHJ1eFNiV28tcy1XWld0Tmc0RWRVTWlWSzhzNUNFOE9xN2JYSDBkVF9YWDVjYnJiNlRJbnNJMDgw?oc=5",
+          "published_at": "2026-07-28T07:00:00+00:00"
+        },
+        {
+          "source_id": "google-news-loyalty-partner-contracts",
+          "source": "Google News - Loyalty Partner and Cobrand Contracts",
+          "source_type": "rss",
+          "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPNTEtNVdhRV9aR0ZBclhZZm5wUnlTUUtvNlRIVnYzYUxkczg4T3ZHUmJ1SG5vNUdZWlVveVhySEh6Z0tRUzd1XzBvTUM5bU01S2k5QmdqMkxDWDVWOTE2dmkzbHNqYTlCam96cWN6ZFpqaXhRMVJ2UExlUUdMYlNuZTVzZThlY1llWV81SXg2ODRFS3FtNXc0NU5lTkZkTzJwOWJsQ1oxUXJtZUphRWptZG5jR3drOXk4WFRR?oc=5",
+          "published_at": "2026-08-03T15:40:00+00:00"
+        }
+      ],
+      "published_at": "2026-07-29T23:10:49+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Express",
+          "Accor"
+        ],
+        "card_families": [],
+        "topic_type": "industry_signal",
+        "verticals": [
+          "hotel",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [
+          "partner_contract_shift"
+        ],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "长期观察",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多源证实",
+      "risk_label": "正常权益",
+      "action_label": "只观察",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "4099c151d3b982",
+      "lane": "c-end",
+      "priority": "P1",
+      "localized": {
+        "en": {
+          "title": "Transfer Capital One Miles To Avianca Lifemiles And Get A 15% Transfer Bonus; Save On United And Star Alliance Awards",
+          "summary": "United / Avianca LifeMiles / Capital One · Transfer bonus. Metrics: 15%. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline / Credit card; ecosystem signal: Partner contract shift."
+        },
+        "zh-CN": {
+          "title": "将资本一里程转移至 Avianca Lifemiles 并获得 15% 转点奖励；美联航和星空联盟奖励优惠",
+          "summary": "United / Avianca LifeMiles / Capital One · 转点奖励。指标：15%。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：航空 / 信用卡；生态信号：合作关系变化。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "dansdeals",
+          "source": "DansDeals",
+          "source_type": "rss",
+          "url": "https://www.dansdeals.com/points-travel/milespoints/transfer-capital-one-miles-to-avianca-lifemiles-and-get-a-15-transfer-bonus-save-on-united-and-star-alliance-awards/",
+          "published_at": "2026-08-10T18:10:33+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T18:10:33+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "United",
+          "Avianca LifeMiles",
+          "Capital One"
+        ],
+        "card_families": [],
+        "topic_type": "transfer_bonus",
+        "verticals": [
+          "airline",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [
+          "partner_contract_shift"
+        ],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "15%"
+      ]
+    },
+    {
+      "event_id": "91c8ef8317763e",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "AAdvantage Business Loyalty Account: Get 10,000 Miles For Joining (Code BNS10K)",
+          "summary": "American Airlines · Clawback. Metrics: 10,000 Miles / 25,000 points / 25,000 miles / $5,000. Published 2026-08-06; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "AAdvantage 商业忠诚账户：加入即可获得 10,000 英里（代码 BNS10K）",
+          "summary": "American Airlines · 权益追回。指标：10,000 Miles / 25,000 points / 25,000 miles / $5,000。发布于 2026-08-06，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/aadvantage-business-loyalty-account-get-10000-miles-for-joining-code-bns10k/",
+          "published_at": "2026-08-06T23:10:24+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T23:10:24+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Airlines"
+        ],
+        "card_families": [],
+        "topic_type": "clawback",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "需避坑",
+        "impact_horizon": "today"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "可能 clawback",
+      "action_label": "高风险勿操作",
+      "metric_snippets": [
+        "10,000 Miles",
+        "25,000 points",
+        "25,000 miles",
+        "$5,000"
+      ]
+    },
+    {
+      "event_id": "f3af84bd4ef605",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "(Update) Chase Marriott Bonvoy Boundless Cards (2026/2027): Get Up To $100 Back On Airline Purchases ($50 Off $250 Twice)",
+          "summary": "Chase / Marriott · Statement credit. Metrics: $100 / $50 / $250. Published 2026-08-07; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Airline / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "（更新）Chase Marriott Bonvoy Boundless 卡（2026/2027）：航空消费最高返还 100 美元（250 美元立减 50 美元两次）",
+          "summary": "Chase / Marriott · 账单报销。指标：$100 / $50 / $250。发布于 2026-08-07，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 航空 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/chase-marriott-bonvoy-boundless-cards-2026-get-up-to-100-back-on-airline-purchases-50-off-250-twice/",
+          "published_at": "2026-08-07T23:00:05+00:00"
+        }
+      ],
+      "published_at": "2026-08-07T23:00:05+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase",
+          "Marriott"
+        ],
+        "card_families": [],
+        "topic_type": "statement_credit",
+        "verticals": [
+          "hotel",
+          "airline",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多用户 DP",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "$100",
+        "$50",
+        "$250"
+      ]
+    },
+    {
+      "event_id": "428fb8c166bf7d",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "American Express Marriott Bonvoy Brilliant Card: 150,000 Point Bonus + $250 Credit (NLL)",
+          "summary": "American Express / Marriott · Offer. Metrics: 150,000 Point / $250 / $6,000 / $300. Published 2026-08-06; 2 public sources.",
+          "why_it_matters": "Taxonomy: Hotel / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "美国运通万豪旅享家 Brilliant 卡：150,000 点奖励 + 250 美元积分 (NLL)",
+          "summary": "American Express / Marriott · 优惠活动。指标：150,000 Point / $250 / $6,000 / $300。发布于 2026-08-06，共 2 个公开来源。",
+          "why_it_matters": "分类：酒店 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/american-express-marriott-bonvoy-brilliant-card-150000-point-bonus-250-credit-nll/",
+          "published_at": "2026-08-06T21:44:12+00:00"
+        },
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/amex-bonvoy-cards-offer/",
+          "published_at": "2026-07-31T21:08:47+00:00"
+        },
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/american-express-marriott-bonvoy-bevy-card-125000-point-bonus-150-credit-nll/",
+          "published_at": "2026-08-06T21:05:33+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T21:44:12+00:00",
+      "future_event_dates": [
+        "2026-09-22"
+      ],
+      "taxonomy": {
+        "programs": [
+          "American Express",
+          "Marriott"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member",
+          "issuer"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多源证实",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "150,000 Point",
+        "$250",
+        "$6,000",
+        "$300"
+      ]
+    },
+    {
+      "event_id": "bda73c412c9c6e",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "30% Transfer Bonus from Amex Membership Rewards to Marriott Bonvoy",
+          "summary": "American Express / Marriott · Transfer bonus. Metrics: 30%. Published 2026-08-05; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "将 30% 的奖金从美国运通会员奖励转移至万豪旅享家",
+          "summary": "American Express / Marriott · 转点奖励。指标：30%。发布于 2026-08-05，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/amex-mr-marriott-bonvoy-transfer-bonus/",
+          "published_at": "2026-08-05T17:07:21+00:00"
+        }
+      ],
+      "published_at": "2026-08-05T17:07:21+00:00",
+      "future_event_dates": [
+        "2026-09-03"
+      ],
+      "taxonomy": {
+        "programs": [
+          "American Express",
+          "Marriott"
+        ],
+        "card_families": [],
+        "topic_type": "transfer_bonus",
+        "verticals": [
+          "hotel",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "30%"
+      ]
+    },
+    {
+      "event_id": "d78b733a8b1a50",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Hilton took my points!",
+          "summary": "Hilton · System issue. Metrics: none extracted. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "希尔顿拿走了我的积分！",
+          "summary": "Hilton · 系统异常。指标：未抽取。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "ft-hilton",
+          "source": "FlyerTalk - Hilton Honors",
+          "source_type": "rss",
+          "url": "https://www.flyertalk.com/forum/hilton-hilton-honors/2222036-hilton-took-my-points.html",
+          "published_at": "2026-08-10T21:51:19+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T21:51:19+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Hilton"
+        ],
+        "card_families": [],
+        "topic_type": "bug",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "需避坑",
+        "impact_horizon": "today"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "YMMV",
+      "action_label": "高风险勿操作",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "e130a0150ba76f",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Hyatt Place and Hyatt Select Promo: Earn Up to 30K Bonus Points",
+          "summary": "Hyatt · Offer. Metrics: 30K Bonus Points / 3K Bonus Points / 30,000 bonus points / 3,000 bonus points. Published 2026-08-10; 3 public sources.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Hyatt Place 和 Hyatt Select 促销：赚取高达 30K 奖励积分",
+          "summary": "Hyatt · 优惠活动。指标：30K Bonus Points / 3K Bonus Points / 30,000 bonus points / 3,000 bonus points。发布于 2026-08-10，共 3 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "dannydealguru",
+          "source": "DannyDealGuru",
+          "source_type": "rss",
+          "url": "https://dannydealguru.com/hyatt-place-3000-bonus-points-promotion/",
+          "published_at": "2026-08-10T19:23:09+00:00"
+        },
+        {
+          "source_id": "loyaltylobby",
+          "source": "LoyaltyLobby",
+          "source_type": "rss",
+          "url": "https://loyaltylobby.com/2026/08/09/extended-world-of-hyatt-up-to-30000-bonus-points-for-hyatt-place-select-stays-in-the-americas-june-1-september-30-2026/?omhide=true",
+          "published_at": "2026-08-09T04:06:03+00:00"
+        },
+        {
+          "source_id": "frequent-miler",
+          "source": "Frequent Miler",
+          "source_type": "rss",
+          "url": "https://frequentmiler.com/earn-up-to-30k-bonus-points-on-stays-at-hyatt-place-hyatt-select/",
+          "published_at": "2026-08-10T22:45:53+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T19:23:09+00:00",
+      "future_event_dates": [
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Hyatt"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "rental_location",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "多源证实",
+      "risk_label": "正常权益",
+      "action_label": "需报名",
+      "metric_snippets": [
+        "30K Bonus Points",
+        "3K Bonus Points",
+        "30,000 bonus points",
+        "3,000 bonus points"
+      ]
+    },
+    {
+      "event_id": "500c063a2b549b",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Marriott promotion email highly risky and vulnerable to scams / hacking",
+          "summary": "Marriott · Offer. Metrics: 2,000 bonus points / 1,500 bonus miles. Published 2026-08-05; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "万豪促销电子邮件风险极高，容易遭受诈骗/黑客攻击",
+          "summary": "Marriott · 优惠活动。指标：2,000 bonus points / 1,500 bonus miles。发布于 2026-08-05，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "ft-marriott",
+          "source": "FlyerTalk - Marriott Bonvoy",
+          "source_type": "rss",
+          "url": "https://www.flyertalk.com/forum/marriott-marriott-bonvoy/2221784-marriott-promotion-email-highly-risky-vulnerable-scams-hacking.html",
+          "published_at": "2026-08-05T17:42:22+00:00"
+        }
+      ],
+      "published_at": "2026-08-05T17:42:22+00:00",
+      "future_event_dates": [
+        "2026-08-31",
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Marriott"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "YMMV",
+      "action_label": "需报名",
+      "metric_snippets": [
+        "2,000 bonus points",
+        "1,500 bonus miles"
+      ]
+    },
+    {
+      "event_id": "c01d46698a93e6",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Hertz Amex Offer for Platinum Cards: Spend $350, Get $75 Credit",
+          "summary": "American Express / Hertz · Offer. Metrics: $350, / $75. Published 2026-08-08; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card / Rental car; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Hertz Amex 白金卡优惠：满 35​​0 美元，获赠 75 美元积分",
+          "summary": "American Express / Hertz · 优惠活动。指标：$350, / $75。发布于 2026-08-08，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡 / 租车；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "dannydealguru",
+          "source": "DannyDealGuru",
+          "source_type": "rss",
+          "url": "https://dannydealguru.com/hertz-amex-offer-platinum-card/",
+          "published_at": "2026-08-08T23:23:00+00:00"
+        }
+      ],
+      "published_at": "2026-08-08T23:23:00+00:00",
+      "future_event_dates": [
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [
+          "American Express",
+          "Hertz"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "credit_card",
+          "rental_car"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "rental_location",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "$350,",
+        "$75"
+      ]
+    },
+    {
+      "event_id": "74680135c70f63",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Last Chance Deals: 50% Qantas transfer bonus, Hilton Amex Offer, Emirates award sale, & more",
+          "summary": "American Express / Hilton / Emirates / Qantas · Transfer bonus. Metrics: 50%. Published 2026-08-09; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Airline / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "最后机会优惠：50% 澳洲航空转机奖金、希尔顿美国运通优惠、阿联酋航空奖励促销等",
+          "summary": "American Express / Hilton / Emirates / Qantas · 转点奖励。指标：50%。发布于 2026-08-09，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 航空 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "frequent-miler",
+          "source": "Frequent Miler",
+          "source_type": "rss",
+          "url": "https://frequentmiler.com/last-chance-deals/",
+          "published_at": "2026-08-09T01:45:33+00:00"
+        }
+      ],
+      "published_at": "2026-08-09T01:45:33+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Express",
+          "Hilton",
+          "Emirates",
+          "Qantas"
+        ],
+        "card_families": [],
+        "topic_type": "transfer_bonus",
+        "verticals": [
+          "hotel",
+          "airline",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "50%"
+      ]
+    },
+    {
+      "event_id": "f50bb122eb0674",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Updates to Citi® / AAdvantage® Executive World Legend Mastercard® – Annual Fee Rises",
+          "summary": "American Airlines / Citi · Policy or benefit change. Metrics: $695, / $595 / $1,400, / $850. Published 2026-08-03; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card / Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Citi® / AAdvantage® Executive World Legend Mastercard® 更新 – 年费上涨",
+          "summary": "American Airlines / Citi · 政策或权益变化。指标：$695, / $595 / $1,400, / $850。发布于 2026-08-03，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡 / 航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "milestalk",
+          "source": "MilesTalk",
+          "source_type": "rss",
+          "url": "https://milestalk.com/updates-to-citi-aadvantage-executive-world-legend-mastercard-annual-fee-rises/",
+          "published_at": "2026-08-03T21:33:36+00:00"
+        }
+      ],
+      "published_at": "2026-08-03T21:33:36+00:00",
+      "future_event_dates": [
+        "2026-08-23"
+      ],
+      "taxonomy": {
+        "programs": [
+          "American Airlines",
+          "Citi"
+        ],
+        "card_families": [],
+        "topic_type": "policy_change",
+        "verticals": [
+          "credit_card",
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "$695,",
+        "$595",
+        "$1,400,",
+        "$850"
+      ]
+    },
+    {
+      "event_id": "974054c86b073d",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "AmEx Marriott 系列信用卡可Churn链接 (No Lifetime Language (NLL))【2026.8 更新：Brilliant 150k+$250 Offer】",
+          "summary": "Chase / Marriott / American Express · Offer. Metrics: 150k / $250 / 125k / $150. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "AmEx Marriott 系列信用卡可Churn链接 (No Lifetime Language (NLL))【2026.8 更新：Brilliant 150k+$250 Offer】",
+          "summary": "Chase / Marriott / American Express · 优惠活动。指标：150k / $250 / 125k / $150。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/amex-marriott-xiliexinyongkakechurnlianjie-no-lifetime-language-nll2026-3-gengxinbrilliant/",
+          "published_at": "2026-08-10T14:00:29+00:00"
+        },
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/chase-marriott-premier-plus/",
+          "published_at": "2026-08-07T14:03:45+00:00"
+        },
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/amex-marriott-bonvoy-bevy/",
+          "published_at": "2026-08-07T14:04:26+00:00"
+        },
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/amex-spg-luxury/",
+          "published_at": "2026-08-07T14:05:37+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T14:00:29+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase",
+          "Marriott",
+          "American Express"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多用户 DP",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "150k",
+        "$250",
+        "125k",
+        "$150"
+      ]
+    },
+    {
+      "event_id": "bb67579e677b4e",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Citi / AAdvantage Platinum Select World Elite MasterCard – 80,000 Miles With $3,500 Spend",
+          "summary": "American Airlines / Citi · Offer. Metrics: 80,000 Miles / $3,500 / $1,000 / 65,000 miles. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card / Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Citi / AAdvantage Platinum Select World Elite MasterCard – 消费 3,500 美元即可获得 80,000 英里里程",
+          "summary": "American Airlines / Citi · 优惠活动。指标：80,000 Miles / $3,500 / $1,000 / 65,000 miles。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡 / 航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/citi-aadvantage-platinum-select-world-elite-mastercard-80000-miles/",
+          "published_at": "2026-08-10T18:00:28+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T18:00:28+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Airlines",
+          "Citi"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "credit_card",
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多用户 DP",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "80,000 Miles",
+        "$3,500",
+        "$1,000",
+        "65,000 miles"
+      ]
+    },
+    {
+      "event_id": "10a997f62d65c6",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Barclays Lufthansa (LH) Miles & More 信用卡【2026.8 更新：70k 开卡奖励】",
+          "summary": "Lufthansa / Barclays · Offer. Metrics: 70k / $3,. Published 2026-08-09; 2 public sources.",
+          "why_it_matters": "Taxonomy: Airline / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Barclays Lufthansa (LH) Miles & More 信用卡【2026.8 更新：70k 开卡奖励】",
+          "summary": "Lufthansa / Barclays · 优惠活动。指标：70k / $3,。发布于 2026-08-09，共 2 个公开来源。",
+          "why_it_matters": "分类：航空 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/barclaycard-lufthansa/",
+          "published_at": "2026-08-09T13:37:59+00:00"
+        },
+        {
+          "source_id": "dannydealguru",
+          "source": "DannyDealGuru",
+          "source_type": "rss",
+          "url": "https://dannydealguru.com/lufthansa-miles-more-card-70k-bonus/",
+          "published_at": "2026-08-08T18:23:31+00:00"
+        }
+      ],
+      "published_at": "2026-08-09T13:37:59+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Lufthansa",
+          "Barclays"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "airline",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多源证实",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "70k",
+        "$3,"
+      ]
+    },
+    {
+      "event_id": "27b33a566f7587",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Chase United Explorer $500 Statement Credit + 25,000 Miles + 10,000 Miles For Adding Authorized User",
+          "summary": "Chase / United · Statement credit. Metrics: $500 / 25,000 Miles / 10,000 Miles / 25,000 bonus miles. Published 2026-08-05; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Chase United Explorer 500 美元账单积分 + 25,000 里程 + 添加授权用户 10,000 里程",
+          "summary": "Chase / United · 账单报销。指标：$500 / 25,000 Miles / 10,000 Miles / 25,000 bonus miles。发布于 2026-08-05，共 1 个公开来源。",
+          "why_it_matters": "分类：航空 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/chase-united-explorer-500-statement-credit-25000-miles-10000-miles-for-adding-authorized-user/",
+          "published_at": "2026-08-05T02:27:43+00:00"
+        }
+      ],
+      "published_at": "2026-08-05T02:27:43+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase",
+          "United"
+        ],
+        "card_families": [],
+        "topic_type": "statement_credit",
+        "verticals": [
+          "airline",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "$500",
+        "25,000 Miles",
+        "10,000 Miles",
+        "25,000 bonus miles"
+      ]
+    },
+    {
+      "event_id": "9cba9306833e04",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Buy IHG One Rewards Points with a 100% Bonus",
+          "summary": "IHG · Offer. Metrics: 100%. Published 2026-08-03; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "购买 IHG One Rewards 积分可获得 100% 奖励",
+          "summary": "IHG · 优惠活动。指标：100%。发布于 2026-08-03，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/buy-ihg-one-rewards-points/",
+          "published_at": "2026-08-03T14:54:06+00:00"
+        }
+      ],
+      "published_at": "2026-08-03T14:54:06+00:00",
+      "future_event_dates": [
+        "2026-08-17"
+      ],
+      "taxonomy": {
+        "programs": [
+          "IHG"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "100%"
+      ]
+    },
+    {
+      "event_id": "4be32bb639b105",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Buy Aeroplan Points with up to a 110% Bonus",
+          "summary": "Air Canada · Offer. Metrics: 110% / 50% / 70% / 100%. Published 2026-08-06; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "购买 Aeroplan 积分可获得高达 110% 的奖励",
+          "summary": "Air Canada · 优惠活动。指标：110% / 50% / 70% / 100%。发布于 2026-08-06，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/buy-aeroplan-points/",
+          "published_at": "2026-08-06T15:00:42+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T15:00:42+00:00",
+      "future_event_dates": [
+        "2026-08-12"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Air Canada"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "110%",
+        "50%",
+        "70%",
+        "100%"
+      ]
+    },
+    {
+      "event_id": "e2788d308ceb04",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Iberostar Beachfront Resorts Promotions: Up to 50% and $800 Resort Credit at Select Properties and",
+          "summary": "Loyalty programs · Statement credit. Metrics: 50% / $800. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Iberostar Beachfront Resorts 促销：精选酒店高达 50% 和 800 美元的度假村积分",
+          "summary": "忠诚计划 · 账单报销。指标：50% / $800。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "awardwallet",
+          "source": "AwardWallet",
+          "source_type": "rss",
+          "url": "https://awardwallet.com/news/hotels/iberostar-resorts-promotion/?pubDate=2026-08-10",
+          "published_at": "2026-08-10T17:27:12+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T17:27:12+00:00",
+      "future_event_dates": [
+        "2026-08-31"
+      ],
+      "taxonomy": {
+        "programs": [],
+        "card_families": [],
+        "topic_type": "statement_credit",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "50%",
+        "$800"
+      ]
+    },
+    {
+      "event_id": "60a4a1587da6b2",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Earn up to 5 free night awards with new Hyatt promo – but there’s a catch",
+          "summary": "Hyatt · Offer. Metrics: none extracted. Published 2026-08-07; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "通过新的凯悦促销活动赚取最多 5 个免费住宿奖励 - 但有一个问题",
+          "summary": "Hyatt · 优惠活动。指标：未抽取。发布于 2026-08-07，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "frequent-miler",
+          "source": "Frequent Miler",
+          "source_type": "rss",
+          "url": "https://frequentmiler.com/earn-up-to-5-free-night-awards-with-new-hyatt-promo/",
+          "published_at": "2026-08-07T20:50:59+00:00"
+        }
+      ],
+      "published_at": "2026-08-07T20:50:59+00:00",
+      "future_event_dates": [
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Hyatt"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "需报名",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "647021726d142b",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Get a Costco Shop card + Wyndham points when joining Costco",
+          "summary": "Wyndham · Offer. Metrics: none extracted. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "加入 Costco 即可获得 Costco 商店卡 + 温德姆积分",
+          "summary": "Wyndham · 优惠活动。指标：未抽取。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "frequent-miler",
+          "source": "Frequent Miler",
+          "source_type": "rss",
+          "url": "https://frequentmiler.com/get-a-costco-shop-card-wyndham-points-when-joining-costco/",
+          "published_at": "2026-08-10T14:05:15+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T14:05:15+00:00",
+      "future_event_dates": [
+        "2026-09-18"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Wyndham"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "需报名",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "b5f23689d5e969",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "award ticket flexibility/ ease of making changes",
+          "summary": "ANA / Star Alliance · Policy or benefit change. Metrics: none extracted. Published 2026-08-02; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "奖励机票灵活性/易于更改",
+          "summary": "ANA / Star Alliance · 政策或权益变化。指标：未抽取。发布于 2026-08-02，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "ft-ana",
+          "source": "FlyerTalk - ANA Mileage Club",
+          "source_type": "rss",
+          "url": "https://www.flyertalk.com/forum/all-nippon-airways-ana-mileage-club/2221629-award-ticket-flexibility-ease-making-changes.html",
+          "published_at": "2026-08-02T20:49:17+00:00"
+        }
+      ],
+      "published_at": "2026-08-02T20:49:17+00:00",
+      "future_event_dates": [
+        "2026-08-24"
+      ],
+      "taxonomy": {
+        "programs": [
+          "ANA",
+          "Star Alliance"
+        ],
+        "card_families": [],
+        "topic_type": "policy_change",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "9ae3c1117e2bbb",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Lufthansa Miles & More Credit Card: 70k welcome offer",
+          "summary": "Lufthansa · Offer. Metrics: 70k / 70,000 bonus miles / $4,000 / 40%. Published 2026-08-07; 2 public sources.",
+          "why_it_matters": "Taxonomy: Airline / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "汉莎航空 Miles & More 信用卡：70k 迎新优惠",
+          "summary": "Lufthansa · 优惠活动。指标：70k / 70,000 bonus miles / $4,000 / 40%。发布于 2026-08-07，共 2 个公开来源。",
+          "why_it_matters": "分类：航空 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "frequent-miler",
+          "source": "Frequent Miler",
+          "source_type": "rss",
+          "url": "https://frequentmiler.com/lufthansa-miles-more-credit-card-70k-welcome-offer/",
+          "published_at": "2026-08-07T17:57:04+00:00"
+        },
+        {
+          "source_id": "ft-miles-more",
+          "source": "FlyerTalk - Lufthansa Miles & More",
+          "source_type": "rss",
+          "url": "https://www.flyertalk.com/forum/lufthansa-austrian-swiss-brussels-lot-ita-other-partners-miles-more/2221445-offer-credit-card-holders-d-ch-pay-650c-80k-miles-ftl-status.html",
+          "published_at": "2026-07-29T09:36:22+00:00"
+        }
+      ],
+      "published_at": "2026-08-07T17:57:04+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Lufthansa"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "airline",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member",
+          "issuer"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "多源证实",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "70k",
+        "70,000 bonus miles",
+        "$4,000",
+        "40%"
+      ]
+    },
+    {
+      "event_id": "ac21571292f081",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "15% Transfer Bonus from RBC Avion to American Airlines AAdvantage",
+          "summary": "American Airlines · Transfer bonus. Metrics: 15%. Published 2026-08-04; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "15% 转帐奖金从 RBC Avion 转至美国航空 AAdvantage",
+          "summary": "American Airlines · 转点奖励。指标：15%。发布于 2026-08-04，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/rbc-avion-to-american-airlines-aadvantage-transfer-bonus/",
+          "published_at": "2026-08-04T13:30:04+00:00"
+        }
+      ],
+      "published_at": "2026-08-04T13:30:04+00:00",
+      "future_event_dates": [
+        "2026-09-03"
+      ],
+      "taxonomy": {
+        "programs": [
+          "American Airlines"
+        ],
+        "card_families": [],
+        "topic_type": "transfer_bonus",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "15%"
+      ]
+    },
+    {
+      "event_id": "f8b7a0fe527162",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Chase Aeroplan (AC) 信用卡【2026.8 更新：75k+25k 开卡奖励】",
+          "summary": "Chase / Air Canada · Offer. Metrics: 75k / 25k / $4,000 / $20. Published 2026-08-05; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card / Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Chase Aeroplan (AC) 信用卡【2026.8 更新：75k+25k 开卡奖励】",
+          "summary": "Chase / Air Canada · 优惠活动。指标：75k / 25k / $4,000 / $20。发布于 2026-08-05，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡 / 航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/chase-aeroplan/",
+          "published_at": "2026-08-05T14:02:50+00:00"
+        }
+      ],
+      "published_at": "2026-08-05T14:02:50+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase",
+          "Air Canada"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "credit_card",
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "75k",
+        "25k",
+        "$4,000",
+        "$20"
+      ]
+    },
+    {
+      "event_id": "1681b7b2127155",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Chase IHG Premier: 160K Points + 10k Authorized User Bonus + $100 IHG Food & Beverage Credit",
+          "summary": "Chase / IHG · Offer. Metrics: 160K Points / 10k / $100 / 160,000 bonus points. Published 2026-08-06; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Chase IHG Premier：160K 积分 + 10k 授权用户奖励 + $100 IHG 餐饮积分",
+          "summary": "Chase / IHG · 优惠活动。指标：160K Points / 10k / $100 / 160,000 bonus points。发布于 2026-08-06，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/chase-ihg-premier-160k-points-10k-authorized-user-bonus-100-ihg-food-beverage-credit/",
+          "published_at": "2026-08-06T14:00:38+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T14:00:38+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase",
+          "IHG"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "160K Points",
+        "10k",
+        "$100",
+        "160,000 bonus points"
+      ]
+    },
+    {
+      "event_id": "aaecf5e40f82a6",
+      "lane": "c-end",
+      "priority": "P2",
+      "localized": {
+        "en": {
+          "title": "Chase Marriott Bonvoy Boundless Four Free Night Certificates Bonus (Up To 50,000 Points Each)",
+          "summary": "Chase / Marriott · Offer. Metrics: 50,000 Points / $3,000 / $50 / $250. Published 2026-08-07; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Chase Marriott Bonvoy Boundless 四张免费住宿礼券奖励（每张最多 50,000 点积分）",
+          "summary": "Chase / Marriott · 优惠活动。指标：50,000 Points / $3,000 / $50 / $250。发布于 2026-08-07，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/chase-marriott-bonvoy-boundless-four-free-night-certificates-bonus-up-to-50000-points-each/",
+          "published_at": "2026-08-07T21:03:24+00:00"
+        }
+      ],
+      "published_at": "2026-08-07T21:03:24+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase",
+          "Marriott"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel",
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "50,000 Points",
+        "$3,000",
+        "$50",
+        "$250"
+      ]
+    },
+    {
+      "event_id": "e4bbe9f4df3d25",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "New Hyatt Offer: Potentially Lucrative; Really Odd!",
+          "summary": "Hyatt · Offer. Metrics: 2027 at which point. Published 2026-08-04; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "凯悦新优惠：潜在利润丰厚；真的很奇怪！",
+          "summary": "Hyatt · 优惠活动。指标：2027 at which point。发布于 2026-08-04，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "milestalk",
+          "source": "MilesTalk",
+          "source_type": "rss",
+          "url": "https://milestalk.com/new-hyatt-offer-potentially-lucrative-really-odd/",
+          "published_at": "2026-08-04T19:18:24+00:00"
+        }
+      ],
+      "published_at": "2026-08-04T19:18:24+00:00",
+      "future_event_dates": [
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Hyatt"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "需报名",
+      "metric_snippets": [
+        "2027 at which point"
+      ]
+    },
+    {
+      "event_id": "df25c2060b0387",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "ALL Accor £/€50 Gift Card Offer For A Stay In Europe August 7 – September 30, 2026 (Book By August 31)",
+          "summary": "Accor · Offer. Metrics: €50. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "2026 年 8 月 7 日至 9 月 30 日期间入住欧洲的所有雅高酒店 50 英镑/欧元礼品卡优惠（8 月 31 日前预订）",
+          "summary": "Accor · 优惠活动。指标：€50。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "loyaltylobby",
+          "source": "LoyaltyLobby",
+          "source_type": "rss",
+          "url": "https://loyaltylobby.com/2026/08/10/all-accor-e50-gift-card-offer-for-a-stay-in-europe-august-7-september-30-2026-book-by-august-31/?omhide=true",
+          "published_at": "2026-08-10T16:01:02+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T16:01:02+00:00",
+      "future_event_dates": [
+        "2026-09-30",
+        "2026-08-31"
+      ],
+      "taxonomy": {
+        "programs": [
+          "Accor"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "需报名",
+      "metric_snippets": [
+        "€50"
+      ]
+    },
+    {
+      "event_id": "67aede69d8b952",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "Citi AAdvantage Executive 信用卡【2026.8 更新：福利增强，年费涨到 $695】",
+          "summary": "American Airlines / Citi · Policy or benefit change. Metrics: $695 / 75k / 100k. Published 2026-08-03; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card / Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Citi AAdvantage Executive 信用卡【2026.8 更新：福利增强，年费涨到 $695】",
+          "summary": "American Airlines / Citi · 政策或权益变化。指标：$695 / 75k / 100k。发布于 2026-08-03，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡 / 航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/citi-aadvantage-executive/",
+          "published_at": "2026-08-03T16:00:19+00:00"
+        }
+      ],
+      "published_at": "2026-08-03T16:00:19+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Airlines",
+          "Citi"
+        ],
+        "card_families": [],
+        "topic_type": "policy_change",
+        "verticals": [
+          "credit_card",
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "$695",
+        "75k",
+        "100k"
+      ]
+    },
+    {
+      "event_id": "16bfcd0f1465c4",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "IHG Targeted Promo: Earn Double Elite Night Credits Through September 29",
+          "summary": "IHG · Offer. Metrics: none extracted. Published 2026-08-08; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "IHG 针对性促销：9 月 29 日前赚取双倍精英住宿积分",
+          "summary": "IHG · 优惠活动。指标：未抽取。发布于 2026-08-08，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "dannydealguru",
+          "source": "DannyDealGuru",
+          "source_type": "rss",
+          "url": "https://dannydealguru.com/ihg-double-elite-night-credits/",
+          "published_at": "2026-08-08T13:23:25+00:00"
+        }
+      ],
+      "published_at": "2026-08-08T13:23:25+00:00",
+      "future_event_dates": [
+        "2026-09-29"
+      ],
+      "taxonomy": {
+        "programs": [
+          "IHG"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "hotel"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "YMMV",
+      "action_label": "需报名",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "07a0976fc64a5c",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "Buy Atmos Rewards Points with up to 100% Bonus",
+          "summary": "Loyalty programs · Offer. Metrics: 100% / 1.88 cents per point. Published 2026-07-30; 1 public source.",
+          "why_it_matters": "Taxonomy: Loyalty; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "购买 Atmos 奖励积分可获得高达 100% 的奖励",
+          "summary": "忠诚计划 · 优惠活动。指标：100% / 1.88 cents per point。发布于 2026-07-30，共 1 个公开来源。",
+          "why_it_matters": "分类：忠诚计划；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/buy-atmos-rewards-points/",
+          "published_at": "2026-07-30T17:54:05+00:00"
+        }
+      ],
+      "published_at": "2026-07-30T17:54:05+00:00",
+      "future_event_dates": [
+        "2026-08-20"
+      ],
+      "taxonomy": {
+        "programs": [],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [],
+        "ecosystem_signal_types": [],
+        "stakeholders": [],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "100%",
+        "1.88 cents per point"
+      ]
+    },
+    {
+      "event_id": "0c60a4d2e6e4c6",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "New: 30% Amex Transfer Bonus to British Airways, Aer Lingus & Iberia! - Thrifty Traveler",
+          "summary": "American Express / Avios · Transfer bonus. Metrics: 30%. Published 2026-08-03; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card / Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "新：30% 美国运通转点奖励至英国航空、爱尔兰航空和西班牙国家航空！ - 节俭的旅行者",
+          "summary": "American Express / Avios · 转点奖励。指标：30%。发布于 2026-08-03，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡 / 航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "google-news-loyalty-operational-failures",
+          "source": "Google News - Loyalty Operational Failures",
+          "source_type": "rss",
+          "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOSmhnZnJ2dG5peC00cFJ0MzZHSWdNdkZRMDZjU0ZVTFo0ZEZwN2tOWnlhOU9tNG1Qd0VYRmtQV0R5OC1hWEU5b3V5ZmNoQ1RrUDk5YkV2R1NZWFlUSDZ4UjVsbTBuZ3hTSW5Maks4SWtzZklCcjI3bHctU2xhcEhtUlNsYw?oc=5",
+          "published_at": "2026-08-03T12:01:28+00:00"
+        }
+      ],
+      "published_at": "2026-08-03T12:01:28+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Express",
+          "Avios"
+        ],
+        "card_families": [],
+        "topic_type": "transfer_bonus",
+        "verticals": [
+          "credit_card",
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "30%"
+      ]
+    },
+    {
+      "event_id": "e951fa2afda1d2",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "Chase UA Explorer 信用卡【2026.6 更新：35k+$500 或 60k 开卡奖励】",
+          "summary": "Chase · Offer. Metrics: 35k / $500 / 60k / 80k. Published 2026-08-06; 1 public source.",
+          "why_it_matters": "Taxonomy: Credit card; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Chase UA Explorer 信用卡【2026.6 更新：35k+$500 或 60k 开卡奖励】",
+          "summary": "Chase · 优惠活动。指标：35k / $500 / 60k / 80k。发布于 2026-08-06，共 1 个公开来源。",
+          "why_it_matters": "分类：信用卡；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "us-credit-card-guide",
+          "source": "美国信用卡指南",
+          "source_type": "rss",
+          "url": "https://www.uscreditcardguide.com/chase-united-mileageplus-explorer/",
+          "published_at": "2026-08-06T13:30:35+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T13:30:35+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Chase"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "credit_card"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "issuer",
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "YMMV",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "35k",
+        "$500",
+        "60k",
+        "80k"
+      ]
+    },
+    {
+      "event_id": "beae0cd17592a8",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "Merrill+: Redeem Points For 2¢ Each On Airfare",
+          "summary": "Loyalty programs · Offer. Metrics: $500 / 25,000 points. Published 2026-08-06; 1 public source.",
+          "why_it_matters": "Taxonomy: Loyalty; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Merrill+：兑换机票时每点 2 美分的积分",
+          "summary": "忠诚计划 · 优惠活动。指标：$500 / 25,000 points。发布于 2026-08-06，共 1 个公开来源。",
+          "why_it_matters": "分类：忠诚计划；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "doctor-of-credit-cards",
+          "source": "Doctor of Credit - Credit Cards",
+          "source_type": "rss",
+          "url": "https://www.doctorofcredit.com/merrill-redeem-points-for-2%c2%a2-each-on-airfare/",
+          "published_at": "2026-08-06T15:00:48+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T15:00:48+00:00",
+      "future_event_dates": [
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [],
+        "ecosystem_signal_types": [],
+        "stakeholders": [],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "$500",
+        "25,000 points"
+      ]
+    },
+    {
+      "event_id": "893519ec0f8e64",
+      "lane": "ecosystem",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "You Can Now Earn Aeroplan Points on Your Mortgage Payments with Chexy!",
+          "summary": "Air Canada · Industry signal. Metrics: 1 Aeroplan point. Published 2026-08-04; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: Partner contract shift."
+        },
+        "zh-CN": {
+          "title": "您现在可以通过 Chexy 支付抵押贷款赚取 Aeroplan 积分！",
+          "summary": "Air Canada · 行业信号。指标：1 Aeroplan point。发布于 2026-08-04，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：合作关系变化。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/news/chexy-expands-aeroplan-partnership-to-mortgages/",
+          "published_at": "2026-08-04T13:12:05+00:00"
+        }
+      ],
+      "published_at": "2026-08-04T13:12:05+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Air Canada"
+        ],
+        "card_families": [],
+        "topic_type": "industry_signal",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [
+          "partner_contract_shift"
+        ],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "长期观察",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "只观察",
+      "metric_snippets": [
+        "1 Aeroplan point"
+      ]
+    },
+    {
+      "event_id": "be80f757f5af9a",
+      "lane": "ecosystem",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "American Airlines Serving Pecan Lodge Texas Barbecue In First Class… Yay?",
+          "summary": "American Airlines · Industry signal. Metrics: none extracted. Published 2026-08-07; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: Partner contract shift."
+        },
+        "zh-CN": {
+          "title": "美国航空在头等舱提供 Pecan Lodge Texas 烧烤……是吗？",
+          "summary": "American Airlines · 行业信号。指标：未抽取。发布于 2026-08-07，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：合作关系变化。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "one-mile-at-a-time",
+          "source": "One Mile at a Time",
+          "source_type": "rss",
+          "url": "https://onemileatatime.com/news/american-airlines-texas-barbecue-first-class/",
+          "published_at": "2026-08-07T14:53:34+00:00"
+        }
+      ],
+      "published_at": "2026-08-07T14:53:34+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "American Airlines"
+        ],
+        "card_families": [],
+        "topic_type": "industry_signal",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [
+          "partner_contract_shift"
+        ],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "长期观察",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "只观察",
+      "metric_snippets": []
+    },
+    {
+      "event_id": "4afa8fb17c08a6",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "Earn up to 11 miles and Loyalty Points per $1 on American Airlines Vacations packages",
+          "summary": "American Airlines · Offer. Metrics: 11 miles / $1 / 1 mile / 5 miles. Published 2026-08-07; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "购买美国航空度假套餐每 1 美元最多可赚取 11 英里里程和忠诚度积分",
+          "summary": "American Airlines · 优惠活动。指标：11 miles / $1 / 1 mile / 5 miles。发布于 2026-08-07，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "the-points-guy",
+          "source": "The Points Guy",
+          "source_type": "rss",
+          "url": "https://thepointsguy.com/news/american-airlines-vacations-loyalty-points-promo/",
+          "published_at": "2026-08-07T19:00:07+00:00"
+        }
+      ],
+      "published_at": "2026-08-07T19:00:07+00:00",
+      "future_event_dates": [
+        "2026-09-30"
+      ],
+      "taxonomy": {
+        "programs": [
+          "American Airlines"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "11 miles",
+        "$1",
+        "1 mile",
+        "5 miles"
+      ]
+    },
+    {
+      "event_id": "10e2aea605131b",
+      "lane": "c-end",
+      "priority": "P3",
+      "localized": {
+        "en": {
+          "title": "JetBlue Launches New up-to-30% Discount on Points Purchases Through August 18 — But Should You Buy?",
+          "summary": "JetBlue TrueBlue · Offer. Metrics: 30%. Published 2026-08-10; 1 public source.",
+          "why_it_matters": "Taxonomy: Airline; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "捷蓝航空在 8 月 18 日之前推出积分购买高达 30% 的新折扣 — 但您应该购买吗？",
+          "summary": "JetBlue TrueBlue · 优惠活动。指标：30%。发布于 2026-08-10，共 1 个公开来源。",
+          "why_it_matters": "分类：航空；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "awardwallet",
+          "source": "AwardWallet",
+          "source_type": "rss",
+          "url": "https://awardwallet.com/airlines/jetblue-trueblue/buy-jetblue-points/?pubDate=2026-08-10",
+          "published_at": "2026-08-10T16:10:02+00:00"
+        }
+      ],
+      "published_at": "2026-08-10T16:10:02+00:00",
+      "future_event_dates": [
+        "2026-08-18"
+      ],
+      "taxonomy": {
+        "programs": [
+          "JetBlue TrueBlue"
+        ],
+        "card_families": [],
+        "topic_type": "offer",
+        "verticals": [
+          "airline"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member"
+        ],
+        "consumer_impact": "直接可用",
+        "impact_horizon": "next_60_days"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "可直接用",
+      "metric_snippets": [
+        "30%"
+      ]
+    },
+    {
+      "event_id": "35427ab6f93865",
+      "lane": "c-end",
+      "priority": "P4",
+      "localized": {
+        "en": {
+          "title": "20,000 Points off Hotels, Cars, and Gift Cards for Aeroplan Elite Members",
+          "summary": "Air Canada · User datapoint. Metrics: 20,000 Points / 70,000 points. Published 2026-08-06; 1 public source.",
+          "why_it_matters": "Taxonomy: Hotel / Airline / Rental car; ecosystem signal: none assigned."
+        },
+        "zh-CN": {
+          "title": "Aeroplan 精英会员可享受酒店、汽车和礼品卡 20,000 点折扣",
+          "summary": "Air Canada · 用户实测。指标：20,000 Points / 70,000 points。发布于 2026-08-06，共 1 个公开来源。",
+          "why_it_matters": "分类：酒店 / 航空 / 租车；生态信号：未标记。"
+        }
+      },
+      "source_refs": [
+        {
+          "source_id": "prince-of-travel",
+          "source": "Prince of Travel",
+          "source_type": "rss",
+          "url": "https://princeoftravel.com/deals/aeroplan-elite-members-promotion/",
+          "published_at": "2026-08-06T16:43:54+00:00"
+        }
+      ],
+      "published_at": "2026-08-06T16:43:54+00:00",
+      "future_event_dates": [],
+      "taxonomy": {
+        "programs": [
+          "Air Canada"
+        ],
+        "card_families": [],
+        "topic_type": "datapoint",
+        "verticals": [
+          "hotel",
+          "airline",
+          "rental_car"
+        ],
+        "ecosystem_signal_types": [],
+        "stakeholders": [
+          "member",
+          "rental_location"
+        ],
+        "consumer_impact": "长期观察",
+        "impact_horizon": "this_week"
+      },
+      "confidence_label": "博客整理",
+      "risk_label": "正常权益",
+      "action_label": "只观察",
+      "metric_snippets": [
+        "20,000 Points",
+        "70,000 points"
+      ]
+    }
+  ],
+  "health": {
+    "configured_sources": 55,
+    "script_eligible_sources": 53,
+    "script_ok_sources": 50,
+    "script_ok_rate": 0.9434,
+    "p0_script_sources": 21,
+    "p0_ok_sources": 19,
+    "p0_ok_rate": 0.9048,
+    "fallback_sources": 14,
+    "status_counts": {
+      "failed": 3,
+      "ok": 50,
+      "skipped": 2
+    },
+    "events_checked": 40,
+    "duplicate_events": 0,
+    "duplicate_rate": 0.0,
+    "top_events_checked": 20
+  }
+}
